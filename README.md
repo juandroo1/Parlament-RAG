@@ -1,8 +1,10 @@
 # Frag das Parlament
 
+[![CI](https://github.com/juandroo1/Parlament-RAG/actions/workflows/ci.yml/badge.svg)](https://github.com/juandroo1/Parlament-RAG/actions/workflows/ci.yml)
+
 RAG-Anwendung, die Fragen zu Debatten und Geschäften des Schweizer Bundesparlaments beantwortet, auf Deutsch und Französisch. Grundlage sind das Amtliche Bulletin (Wortprotokolle) und Curia Vista (Geschäfte). Jede Aussage ist mit einer überprüfbaren Quelle auf parlament.ch belegt. Die Qualität wird mit einem reproduzierbaren Eval-Set gemessen.
 
-> **Status:** in Entwicklung. Aktuell stehen das Projektgerüst und der Docker-Stack mit Health-Endpoint; Ingestion, Retrieval und Generierung folgen gemäss [`tasks.md`](specs/001-frag-das-parlament/tasks.md).
+> **Status:** in Entwicklung. Aktuell stehen das Projektgerüst, der Docker-Stack mit Datenbankschema und Health-Endpoint sowie die CI; Ingestion, Retrieval und Generierung folgen gemäss [`tasks.md`](specs/001-frag-das-parlament/tasks.md).
 
 ## Quickstart mit Docker
 

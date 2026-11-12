@@ -113,9 +113,9 @@ docker-compose.yml
 
 ## CI (GitHub Actions)
 
-Bei jedem Push und Pull Request:
+Bei jedem Pull Request und jedem Push auf `main`:
 
-1. ruff, mypy, pytest.
+1. ruff, mypy, pytest (inklusive DB-Tests gegen einen Postgres-Service; sie dürfen dort nicht übersprungen werden).
 2. `docker compose build`.
 3. Smoke-Test: `docker compose up -d`, warten bis `app` healthy ist, `GET /health` muss 200 liefern, danach `docker compose down -v`.
 

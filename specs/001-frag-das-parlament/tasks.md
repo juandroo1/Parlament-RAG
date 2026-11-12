@@ -18,7 +18,7 @@ Tasks:
 - [x] 0.2 OData erkunden: `$metadata` laden, die Kette Session → Meeting → Subject → Transcript sowie `Business` verifizieren. Klären: Bedeutung von `Language` gegenüber `LanguageOfText` bei Transcripts (Duplikate?), Felder für Redner/Fraktion/Rat, Deep-Links auf einzelne Voten (AK-2.2), Datumsfelder bei Geschäften. Ergebnis in plan.md, Abschnitt 3, nachtragen und das Datenmodell (Abschnitt 4) bei Bedarf anpassen. 3–5 echte Antworten als Fixtures in `tests/fixtures/` speichern
 - [x] 0.3 Docker: Multi-Stage-Dockerfile (uv, Non-Root), `docker-compose.yml` mit `db` (pgvector) und `app`, Healthchecks, `.dockerignore`. Minimale FastAPI mit `GET /health`, damit `app` etwas zum Starten hat
 - [x] 0.4 Alembic-Migration für `documents` und `chunks` gemäss plan.md (nach den Erkenntnissen aus 0.2), automatisch beim Start von `app` ausgeführt
-- [ ] 0.5 GitHub Actions: ruff, mypy, pytest, `docker compose build` und Smoke-Test auf `/health`. Danach die CI-Checks als Required Status Checks in der Branch Protection von `main` eintragen
+- [x] 0.5 GitHub Actions: ruff, mypy, pytest, `docker compose build` und Smoke-Test auf `/health`. Danach die CI-Checks als Required Status Checks in der Branch Protection von `main` eintragen
 
 ## Phase 1 – Ingestion
 
