@@ -41,6 +41,10 @@ class Settings(BaseSettings):
     odata_timeout_seconds: float = Field(default=60.0, gt=0)
     raw_cache_dir: Path = Path("data/raw")
 
+    # Chunking (plan.md, Abschnitt 5); Höchstgrösse = 1,2-mal Ziel. Experimente: 300/500/800.
+    chunk_target_tokens: int = Field(default=500, ge=50)
+    chunk_overlap_ratio: float = Field(default=0.15, ge=0, lt=0.5)
+
     @property
     def database_url(self) -> str:
         """Verbindungs-URL; nicht Teil von `repr()`, damit das Passwort nicht in Logs landet."""
