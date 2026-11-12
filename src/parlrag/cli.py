@@ -5,6 +5,8 @@ import logging
 from typing import Annotated, cast
 
 import typer
+from rich.console import Console
+from rich.table import Table
 from sqlalchemy.orm import sessionmaker
 
 from parlrag.config import Settings
@@ -13,6 +15,7 @@ from parlrag.ingest.mapping import LANGUAGES, Language
 from parlrag.ingest.odata import ODataClient
 from parlrag.ingest.pipeline import IngestStats, run_ingest
 from parlrag.ingest.source import ODataSource
+from parlrag.stats import CorpusStats, compute_stats
 
 DEFAULT_SINCE = dt.datetime(2023, 12, 1)  # Beginn der 52. Legislatur (spec.md, Abschnitt 5)
 
@@ -99,3 +102,60 @@ def ingest(
         f"Dokumente: {stats.documents} (neu {stored.inserted}, geändert {stored.updated}, "
         f"unverändert {stored.unchanged})"
     )
+
+
+def load_stats(session_id: int | None) -> CorpusStats:
+    """Liest die Statistik aus der Datenbank (in Tests ersetzbar)."""
+    return compute_stats(get_engine(), session_id)
+
+
+def _number(value: float) -> str:
+    return f"{value:,.0f}".replace(",", "'")
+
+
+@app.command()
+def stats(
+    session_id: Annotated[
+        int | None, typer.Option(help="Nur diese Session (Voten und dort debattierte Geschäfte).")
+    ] = None,
+) -> None:
+    """Statistik über die geladenen Dokumente: Umfang, Zeichen, Verteilung, Qualität."""
+    result = load_stats(session_id)
+    console = Console()
+    scope = f"Session {session_id}" if session_id is not None else "gesamter Bestand"
+    console.print(f"[bold]Dokumente ({scope}): {_number(result.total_documents)}[/bold]")
+    if result.first_date:
+        console.print(f"Voten vom {result.first_date} bis {result.last_date}")
+
+    volume = Table("Art", "Sprache", "Dokumente", title="Umfang")
+    for (source_type, language), count in sorted(result.by_type_language.items()):
+        volume.add_row(source_type, language, _number(count))
+    console.print(volume)
+
+    lengths = Table(
+        "Art", "Zeichen", "≈ Tokens", "Mittel", "Median", "P90", "Max", title="Textlänge (Zeichen)"
+    )
+    for source_type, length in sorted(result.lengths.items()):
+        lengths.add_row(
+            source_type,
+            _number(length.total_chars),
+            _number(length.estimated_tokens),
+            _number(length.mean_chars),
+            _number(length.median_chars),
+            _number(length.p90_chars),
+            _number(length.max_chars),
+        )
+    console.print(lengths)
+    console.print("≈ Tokens: grobe Schätzung (Zeichen / 4); genaue Zahlen ab Task 2.1.")
+
+    distribution = Table("Rat bzw. Fraktion", "Voten", title="Verteilung der Voten")
+    for council, count in result.transcripts_by_council.items():
+        distribution.add_row(f"Rat {council}", _number(count))
+    for group, count in result.transcripts_by_parl_group.items():
+        distribution.add_row(group, _number(count))
+    console.print(distribution)
+
+    quality = Table("Prüfung", "Dokumente", title="Qualität")
+    for check, count in result.quality.items():
+        quality.add_row(check, _number(count))
+    console.print(quality)
