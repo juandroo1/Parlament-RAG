@@ -23,7 +23,7 @@ Tasks:
 ## Phase 1 – Ingestion
 
 - [x] 1.1 OData-Client mit Paginierung, Drosselung, Retry und Rohdaten-Cache in `data/raw/`
-- [ ] 1.2 Mapping und Textbereinigung nach `documents`, getestet mit den Fixtures
+- [x] 1.2 Mapping und Textbereinigung nach `documents`, getestet mit den Fixtures
 - [ ] 1.3 CLI `parlrag ingest --since --until --lang`, idempotent über `raw_hash`
 - [ ] 1.4 Testlauf mit einer Session (DE + FR), Statistik ausgeben (Anzahl Voten, Geschäfte, Zeichen)
 
