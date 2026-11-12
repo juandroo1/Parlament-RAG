@@ -1,0 +1,36 @@
+# Secrets und lokale Konfiguration
+.env
+.env.*
+!.env.example
+.claude/settings.local.json
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+build/
+dist/
+*.egg-info/
+
+# Tool-Caches
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Daten und Modelle (Rohdaten-Cache, Embedding-Modelle)
+data/
+*.safetensors
+*.onnx
+*.pt
+*.bin
+
+# Frontend
+node_modules/
+
+# Editor und Betriebssystem
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
