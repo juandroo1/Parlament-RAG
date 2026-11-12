@@ -102,7 +102,7 @@ Goldset (Endstand MVP): mindestens 65 Fragen, davon 40 auf Deutsch und 10 auf Fr
 ## 8. Offene Fragen
 
 - Lizenz und Nutzungsbedingungen der Daten für eine öffentliche Demo verifizieren.
-- Lokales Embedding-Modell oder API-Modell: per Eval entscheiden (Qualität gegen Kosten).
+- Lokales Embedding-Modell oder API-Modell: per Eval entscheiden (Qualität gegen Kosten). Gemessen in Task 2.2: bge-m3 auf der CPU schafft rund 2 Chunks/s, der volle Korpus bräuchte rund 14 Stunden. Vor Task 2.3 zu entscheiden, wie damit umgegangen wird.
 - Hosting der Demo und Schutz vor Missbrauch (Rate-Limit, Kostendeckel).
 - Mehrturn-Gespräche (Folgefragen) für eine spätere Version?
 - Seitenzahl im Amtlichen Bulletin (Platzhalter `[PAGE n]` im Votum) als zusätzliche Quellenangabe in einer späteren Version?
