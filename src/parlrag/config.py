@@ -51,6 +51,9 @@ class Settings(BaseSettings):
     embedding_batch_size: int = Field(default=16, ge=1)
     embedding_max_seq_length: int = Field(default=1024, ge=32, le=8192)
 
+    # Index: Kontext-Header beim Einbetten (Experiment «mit/ohne Header», plan.md Abschnitt 10).
+    index_context_header: bool = True
+
     @property
     def database_url(self) -> str:
         """Verbindungs-URL; nicht Teil von `repr()`, damit das Passwort nicht in Logs landet."""

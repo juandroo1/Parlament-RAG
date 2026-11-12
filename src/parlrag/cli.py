@@ -11,6 +11,8 @@ from sqlalchemy.orm import sessionmaker
 
 from parlrag.config import Settings
 from parlrag.db.session import get_engine
+from parlrag.embeddings import get_embedder
+from parlrag.index.indexer import IndexConfig, IndexStats, index_documents, log_progress
 from parlrag.ingest.mapping import LANGUAGES, Language
 from parlrag.ingest.odata import ODataClient
 from parlrag.ingest.pipeline import IngestStats, run_ingest
@@ -159,3 +161,42 @@ def stats(
     for check, count in result.quality.items():
         quality.add_row(check, _number(count))
     console.print(quality)
+
+
+def execute_index(session_id: int | None, limit: int | None, rebuild: bool) -> IndexStats:
+    """Verdrahtet Konfiguration, Embedder und Datenbank (in Tests ersetzbar)."""
+    settings = Settings()
+    config = IndexConfig.from_settings(settings)
+    typer.echo(f"Index-Signatur: {config.signature}")
+    return index_documents(
+        get_engine(),
+        get_embedder(settings),
+        config,
+        session_id=session_id,
+        limit=limit,
+        rebuild=rebuild,
+        progress=log_progress,
+    )
+
+
+@app.command()
+def index(
+    session_id: Annotated[
+        int | None, typer.Option(help="Nur diese Session (Voten und dort debattierte Geschäfte).")
+    ] = None,
+    limit: Annotated[
+        int | None, typer.Option(min=1, help="Höchstens so viele Dokumente (zum Testen).")
+    ] = None,
+    rebuild: Annotated[
+        bool, typer.Option(help="Alles neu indexieren, auch wenn die Signatur passt.")
+    ] = False,
+) -> None:
+    """Chunkt und bettet neue oder geänderte Dokumente ein (inkrementell)."""
+    result = execute_index(session_id, limit, rebuild)
+    if result.pending == 0:
+        typer.echo("Nichts zu tun: Alle Dokumente sind mit der aktuellen Signatur indexiert.")
+        return
+    typer.echo(
+        f"Indexiert: {result.documents} Dokumente, {result.chunks} Chunks in "
+        f"{result.seconds:.0f} s ({result.chunks_per_second:.1f} Chunks/s)"
+    )

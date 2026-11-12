@@ -39,6 +39,16 @@ docker compose run --rm app parlrag stats --session-id 5215  # nur eine Session
 
 Beispiel Herbstsession 2026: 2'427 Voten (1'737 DE, 690 FR) und 853 Geschäfte je Sprache, geladen in 105 Sekunden.
 
+### Indexieren
+
+```bash
+docker compose run --rm app parlrag index --session-id 5215 --limit 40   # Test: 40 Dokumente
+docker compose run --rm app parlrag index --session-id 5215              # eine Session (rund 2 Stunden)
+docker compose run --rm app parlrag index                                # alles Offene
+```
+
+`parlrag index` chunkt neue oder geänderte Dokumente, bettet sie ein und speichert die Chunks mit Vektor. Es ist inkrementell und kann jederzeit abgebrochen und neu gestartet werden (Commit alle 32 Dokumente). Ändert sich eine Einstellung wie `CHUNK_TARGET_TOKENS` oder `INDEX_CONTEXT_HEADER`, indexiert der nächste Lauf die betroffenen Dokumente neu.
+
 Das Embedding-Modell [BAAI/bge-m3](https://huggingface.co/BAAI/bge-m3) (MIT-Lizenz) läuft lokal auf der CPU. Es wird beim ersten Gebrauch heruntergeladen (rund 4 GB im Docker-Volume `hf-cache`) und nicht ins Image gebacken. Beim Einbetten braucht der Container rund 4 GB Arbeitsspeicher.
 
 Antworten des OData-Dienstes werden roh in `./data/raw/` zwischengespeichert (nicht im Repo). Jede Abfrage geht damit nur einmal an den Dienst; Requests sind gedrosselt (Standard: höchstens einer pro Sekunde) und werden bei Fehlern mit Backoff wiederholt.

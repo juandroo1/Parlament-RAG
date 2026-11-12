@@ -216,6 +216,23 @@ def test_business_without_text_or_in_other_language_is_skipped() -> None:
     assert map_business(BusinessRow.model_validate({**raw, "Language": "IT"}), DEBATES) is None
 
 
+def test_placeholder_sections_without_content_are_dropped() -> None:
+    # Gefunden in Task 2.3: Geschäft 23.304 (FR) hat als «Situation initiale» nur «-».
+    (raw,) = rows("business_20253906_fr.json")
+    document = map_business(
+        BusinessRow.model_validate({**raw, "InitialSituation": "<p>-</p>"}), DEBATES
+    )
+    assert document is not None
+    assert "Situation initiale" not in document.text
+    assert document.text.startswith("## Texte déposé")
+
+
+def test_speech_without_letters_or_digits_is_skipped(pfas_subject: SubjectInfo) -> None:
+    placeholder = "<pd_text><p>\N{EN DASH} \N{HORIZONTAL ELLIPSIS}</p></pd_text>"
+    raw = dict(rows("transcript_subject82315_de.json")[1], Text=placeholder)
+    assert map_transcript(TranscriptRow.model_validate(raw), pfas_subject) is None
+
+
 # --- DocumentData ----------------------------------------------------------------------
 
 

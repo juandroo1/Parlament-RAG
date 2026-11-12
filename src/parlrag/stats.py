@@ -10,26 +10,12 @@ from typing import Any
 
 from sqlalchemy import Connection, Engine, text
 
+from parlrag.db.scope import SESSION_SCOPE_CTE
+
 CHARS_PER_TOKEN_ESTIMATE = 4  # grobe Faustregel; echte Zahlen mit dem Tokenizer in Task 2.1
 
 # Reste von Markup oder Platzhaltern des Amtlichen Bulletins (Textbereinigung, Task 1.2).
 RESIDUAL_MARKUP_PATTERN = r"<[a-zA-Z/]|\[(GZ|VS|NB|NAM|PAGE)"
-
-_SCOPE = """
-WITH session_days AS (
-    SELECT min(date) AS first_day, max(date) AS last_day
-    FROM documents
-    WHERE source_type = 'transcript' AND session_id = CAST(:session_id AS integer)
-),
-scope AS (
-    SELECT d.* FROM documents d
-    WHERE CAST(:session_id AS integer) IS NULL
-       OR (d.source_type = 'transcript' AND d.session_id = CAST(:session_id AS integer))
-       OR (d.source_type = 'business' AND EXISTS (
-            SELECT 1 FROM unnest(d.debate_dates) AS debate(day), session_days s
-            WHERE debate.day BETWEEN s.first_day AND s.last_day))
-)
-"""
 
 
 @dataclass(frozen=True)
@@ -62,7 +48,9 @@ class CorpusStats:
 
 
 def _rows(connection: Connection, query: str, session_id: int | None, **params: Any) -> list[Any]:
-    return list(connection.execute(text(_SCOPE + query), {"session_id": session_id, **params}))
+    return list(
+        connection.execute(text(SESSION_SCOPE_CTE + query), {"session_id": session_id, **params})
+    )
 
 
 def compute_stats(engine: Engine, session_id: int | None = None) -> CorpusStats:

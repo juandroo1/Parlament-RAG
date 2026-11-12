@@ -79,6 +79,11 @@ class DocumentData(BaseModel):
         canonical = json.dumps(self.model_dump(mode="json"), sort_keys=True, ensure_ascii=False)
         return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
 
+    @classmethod
+    def from_record(cls, record: Any) -> "DocumentData":
+        """Aus einer Zeile von `documents` (ORM-Objekt) zurück in ein validiertes Dokument."""
+        return cls.model_validate({name: getattr(record, name) for name in cls.model_fields})
+
     def to_row(self) -> dict[str, Any]:
         """Spaltenwerte für `documents` (ohne `id`)."""
         row = self.model_dump()
@@ -145,6 +150,11 @@ class Debate:
     council: Council
 
 
+def has_content(text: str) -> bool:
+    """Mindestens ein Buchstabe oder eine Ziffer; Platzhalter wie «-» zählen nicht als Text."""
+    return any(character.isalnum() for character in text)
+
+
 def map_transcript(row: TranscriptRow, subject: SubjectInfo) -> DocumentData | None:
     """Votum → Dokument; `None` für Verfahrenstexte, andere Sprachen und leere Texte."""
     if row.subject_id != subject.subject_id:
@@ -153,7 +163,7 @@ def map_transcript(row: TranscriptRow, subject: SubjectInfo) -> DocumentData | N
     if row.type != VOTUM_TYPE or language is None:
         return None
     text = clean_markup(row.text)
-    if not text:
+    if not has_content(text):
         return None
     return DocumentData(
         source_type="transcript",
@@ -183,7 +193,7 @@ def map_business(row: BusinessRow, debates: Iterable[Debate]) -> DocumentData | 
     sections = []
     for field, headings in BUSINESS_SECTIONS:
         body = clean_markup(getattr(row, field))
-        if body:
+        if has_content(body):
             sections.append(f"{SECTION_PREFIX}{headings[language]}\n\n{body}")
     if not sections:
         return None
