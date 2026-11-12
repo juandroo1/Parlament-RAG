@@ -63,6 +63,12 @@ def test_pgdata_volume_is_declared(compose: dict[str, Any], services: dict[str, 
     assert any(v.startswith("pgdata:") for v in services["db"]["volumes"])
 
 
+def test_raw_cache_is_bind_mounted_for_app(services: dict[str, Any]) -> None:
+    app = services["app"]
+    assert "./data/raw:/app/data/raw" in app["volumes"]
+    assert app["environment"]["RAW_CACHE_DIR"] == "/app/data/raw"
+
+
 def test_dockerfile_runs_as_non_root_without_uv() -> None:
     dockerfile = (ROOT / "Dockerfile").read_text(encoding="utf-8")
     final_stage = dockerfile.rsplit("\nFROM ", 1)[1]

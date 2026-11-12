@@ -3,10 +3,11 @@
 Jedes Feld hier muss auch in `.env.example` stehen; ein Test prüft das.
 """
 
+from pathlib import Path
 from typing import Literal
 from urllib.parse import quote
 
-from pydantic import SecretStr
+from pydantic import Field, SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 Effort = Literal["low", "medium", "high", "xhigh", "max"]
@@ -32,6 +33,13 @@ class Settings(BaseSettings):
     anthropic_api_key: SecretStr | None = None
     anthropic_model: str = "claude-opus-5-5"
     anthropic_effort: Effort = "high"
+
+    # OData-Dienst der Parlamentsdienste (plan.md, Abschnitt 3); schonend abfragen.
+    odata_base_url: str = "https://ws.parlament.ch/odata.svc/"
+    odata_min_interval_seconds: float = Field(default=1.0, ge=0)
+    odata_max_retries: int = Field(default=5, ge=0)
+    odata_timeout_seconds: float = Field(default=60.0, gt=0)
+    raw_cache_dir: Path = Path("data/raw")
 
     @property
     def database_url(self) -> str:
