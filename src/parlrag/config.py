@@ -45,6 +45,12 @@ class Settings(BaseSettings):
     chunk_target_tokens: int = Field(default=500, ge=50)
     chunk_overlap_ratio: float = Field(default=0.15, ge=0, lt=0.5)
 
+    # Embeddings (plan.md, Abschnitt 2); das Modell wird erst bei Bedarf geladen.
+    embedding_model: str = "BAAI/bge-m3"
+    embedding_device: str = "cpu"
+    embedding_batch_size: int = Field(default=16, ge=1)
+    embedding_max_seq_length: int = Field(default=1024, ge=32, le=8192)
+
     @property
     def database_url(self) -> str:
         """Verbindungs-URL; nicht Teil von `repr()`, damit das Passwort nicht in Logs landet."""
