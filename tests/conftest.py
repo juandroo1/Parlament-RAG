@@ -6,10 +6,11 @@ from typing import NoReturn
 
 import pytest
 from pydantic import ValidationError
-from sqlalchemy import text
+from sqlalchemy import Engine, text
 from sqlalchemy.exc import OperationalError
 
 from parlrag.config import Settings
+from parlrag.db.migrate import upgrade_head
 from parlrag.db.session import create_db_engine
 
 TEST_DATABASE = "parlrag_test"
@@ -45,3 +46,25 @@ def test_database_url() -> Iterator[str]:
     with admin.connect() as connection:
         connection.execute(text(f"DROP DATABASE IF EXISTS {TEST_DATABASE} WITH (FORCE)"))
     admin.dispose()
+
+
+@pytest.fixture(scope="session")
+def migrated_engine(test_database_url: str) -> Iterator[Engine]:
+    """Engine auf `parlrag_test` mit aktuellem Schema."""
+    upgrade_head(test_database_url)
+    engine = create_db_engine(test_database_url)
+    yield engine
+    engine.dispose()
+
+
+def truncate_documents(engine: Engine) -> None:
+    with engine.begin() as connection:
+        connection.execute(text("TRUNCATE documents CASCADE"))
+
+
+@pytest.fixture
+def empty_db(migrated_engine: Engine) -> Iterator[Engine]:
+    """Migrierte Testdatenbank ohne Dokumente und Chunks; wird danach wieder geleert."""
+    truncate_documents(migrated_engine)
+    yield migrated_engine
+    truncate_documents(migrated_engine)

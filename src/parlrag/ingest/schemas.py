@@ -50,6 +50,13 @@ class ODataRow(BaseModel):
     model_config = ConfigDict(extra="ignore", populate_by_name=True, frozen=True)
 
 
+class SessionRow(ODataRow):
+    id: int = Field(alias="ID")
+    name: str = Field(alias="SessionName")
+    start_date: ODataDateTime = Field(alias="StartDate")
+    end_date: ODataDateTime = Field(alias="EndDate")
+
+
 class MeetingRow(ODataRow):
     id: int = Field(alias="ID")
     session_id: int = Field(alias="IdSession")

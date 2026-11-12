@@ -11,6 +11,7 @@ from sqlalchemy import Engine, func, inspect, select, text
 from sqlalchemy.exc import DataError, IntegrityError
 from sqlalchemy.orm import Session
 
+from conftest import truncate_documents
 from parlrag.db.migrate import downgrade_base, upgrade_head
 from parlrag.db.models import EMBEDDING_DIMENSIONS, Base, Chunk, Document
 from parlrag.db.session import create_db_engine
@@ -28,7 +29,8 @@ def engine(test_database_url: str) -> Iterator[Engine]:
 
 @pytest.fixture
 def session(engine: Engine) -> Iterator[Session]:
-    """Session, deren Änderungen am Ende zurückgerollt werden."""
+    """Session auf leeren Tabellen, deren Änderungen am Ende zurückgerollt werden."""
+    truncate_documents(engine)
     with engine.connect() as connection:
         transaction = connection.begin()
         with Session(bind=connection, join_transaction_mode="create_savepoint") as db_session:
