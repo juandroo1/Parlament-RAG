@@ -54,6 +54,11 @@ class Settings(BaseSettings):
     # Index: Kontext-Header beim Einbetten (Experiment «mit/ohne Header», plan.md Abschnitt 10).
     index_context_header: bool = True
 
+    # Retrieval (plan.md, Abschnitt 6): Kandidaten je Suchart, RRF-Konstante, Anzahl Treffer.
+    retrieval_candidates: int = Field(default=50, ge=1, le=1000)
+    retrieval_rrf_k: int = Field(default=60, ge=1)
+    retrieval_top_n: int = Field(default=20, ge=1)
+
     @property
     def database_url(self) -> str:
         """Verbindungs-URL; nicht Teil von `repr()`, damit das Passwort nicht in Logs landet."""
