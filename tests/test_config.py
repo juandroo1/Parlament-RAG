@@ -39,6 +39,32 @@ def test_defaults() -> None:
     )
 
 
+def test_odata_defaults_are_gentle_on_the_service() -> None:
+    settings = Settings(_env_file=None)
+
+    assert settings.odata_base_url == "https://ws.parlament.ch/odata.svc/"
+    assert settings.odata_min_interval_seconds == 1.0
+    assert settings.odata_max_retries == 5
+    assert settings.raw_cache_dir == Path("data/raw")
+
+
+@pytest.mark.parametrize(
+    ("name", "value"),
+    [
+        ("ODATA_MIN_INTERVAL_SECONDS", "-1"),
+        ("ODATA_MAX_RETRIES", "-1"),
+        ("ODATA_TIMEOUT_SECONDS", "0"),
+    ],
+)
+def test_invalid_odata_settings_are_rejected(
+    monkeypatch: pytest.MonkeyPatch, name: str, value: str
+) -> None:
+    monkeypatch.setenv(name, value)
+
+    with pytest.raises(ValidationError):
+        Settings(_env_file=None)
+
+
 def test_postgres_password_is_required(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.delenv("POSTGRES_PASSWORD")
 
