@@ -30,6 +30,8 @@ services:
     volumes:
       # Rohdaten-Cache der OData-Antworten bleibt auf dem Host erhalten.
       - ./data/raw:/app/data/raw
+      # Embedding-Modell (rund 2,3 GB), einmal geladen und nicht ins Image gebacken.
+      - hf-cache:/home/app/.cache/huggingface
     depends_on:
       db:
         condition: service_healthy
@@ -48,3 +50,4 @@ services:
 
 volumes:
   pgdata:
+  hf-cache:
