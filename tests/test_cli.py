@@ -2,6 +2,7 @@
 
 import datetime as dt
 import logging
+import re
 from typing import Any
 
 import pytest
@@ -54,8 +55,10 @@ def test_http_request_logging_only_when_verbose(
 def test_help_lists_ingest_options() -> None:
     result = runner.invoke(cli.app, ["ingest", "--help"])
     assert result.exit_code == 0
+    # In der CI färbt Rich die Hilfe ein; ANSI-Codes entfernen, bevor verglichen wird.
+    plain = re.sub(r"\x1b\[[0-9;]*m", "", result.output)
     for option in ["--since", "--until", "--lang", "--refresh"]:
-        assert option in result.output
+        assert option in plain
 
 
 def test_ingest_passes_parsed_options(calls: list[dict[str, Any]]) -> None:
