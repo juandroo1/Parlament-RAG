@@ -14,9 +14,11 @@ cd Parlament-RAG
 cp .env.example .env              # Werte eintragen
 docker compose up -d --build      # Datenbank (Postgres + pgvector) und API starten
 docker compose ps                 # beide Services sollten "healthy" sein
-curl http://127.0.0.1:8000/health # {"status":"ok"}
+curl http://127.0.0.1:8000/health # {"status":"ok","database":"ok"}
 docker compose down               # stoppen (Daten bleiben im Volume)
 ```
+
+Beim Start von `app` (und bei jedem `docker compose run --rm app ...`) bringt ein Entrypoint das Datenbankschema per Alembic auf den neuesten Stand.
 
 Die Ports sind nur lokal erreichbar: API auf `127.0.0.1:8000`, Datenbank auf `127.0.0.1:5432`. Läuft auf dem Rechner bereits ein anderes Postgres auf Port 5432, in `.env` z. B. `POSTGRES_PORT=5433` setzen.
 
@@ -27,7 +29,8 @@ Voraussetzung: [uv](https://docs.astral.sh/uv/). Python 3.12 installiert uv bei 
 ```bash
 uv sync                           # Abhängigkeiten installieren
 docker compose up -d db           # nur die Datenbank
-uv run pytest                     # Tests
+uv run alembic upgrade head       # Schema migrieren
+uv run pytest                     # Tests (DB-Tests nutzen eine eigene Datenbank parlrag_test)
 uv run ruff check . && uv run ruff format --check .
 uv run mypy src
 uv run uvicorn parlrag.api.main:app --reload   # API lokal
