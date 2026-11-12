@@ -65,12 +65,19 @@ class SearchHit:
     debate_councils: tuple[str, ...]
     business_numbers: tuple[str, ...]
     url: str
+    speaker_function: str | None = None  # z. B. «BR-F» für Bundesratsmitglieder
+
+    @property
+    def source_key(self) -> str:
+        """Dokument-ID im Goldset-Format `<source_type>:<source_id>` (plan.md, Abschnitt 9)."""
+        return f"{self.source_type}:{self.source_id}"
 
 
 _DETAILS_SQL = text("""
 SELECT c.id, c.document_id, c.chunk_index, c.text, c.metadata ->> 'section',
        d.source_type, d.source_id, d.language, d.title, d.speaker_name, d.parl_group,
-       d.canton, d.council, d.date, d.debate_dates, d.debate_councils, d.business_numbers, d.url
+       d.canton, d.council, d.date, d.debate_dates, d.debate_councils, d.business_numbers, d.url,
+       d.speaker_function
 FROM chunks c JOIN documents d ON d.id = c.document_id
 WHERE c.id IN :ids
 """).bindparams(bindparam("ids", expanding=True))
@@ -163,4 +170,5 @@ def _hit(
         debate_councils=tuple(row[15]),
         business_numbers=tuple(row[16]),
         url=row[17],
+        speaker_function=row[18],
     )
