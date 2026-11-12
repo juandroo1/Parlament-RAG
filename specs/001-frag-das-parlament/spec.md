@@ -100,3 +100,4 @@ Goldset (Endstand MVP): mindestens 65 Fragen, davon 40 auf Deutsch und 10 auf Fr
 - Lokales Embedding-Modell oder API-Modell: per Eval entscheiden (Qualität gegen Kosten).
 - Hosting der Demo und Schutz vor Missbrauch (Rate-Limit, Kostendeckel).
 - Mehrturn-Gespräche (Folgefragen) für eine spätere Version?
+- Filter bei Geschäften (AK-4.2), vor Task 1.2 zu entscheiden: Welches Datum gilt für den Zeitraumfilter (Einreichungsdatum oder Datum der Debatte)? Welcher Rat für den Ratsfilter (Einreichungsrat)? Geschäfte haben keine Fraktion: Fallen sie bei einem Fraktionsfilter weg?

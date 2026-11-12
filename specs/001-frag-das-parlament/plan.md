@@ -42,30 +42,81 @@ Eval-Runner nutzt dieselben Komponenten wie API und CLI.
 
 ## 3. Datenquelle
 
-- OData-v3-Endpunkt: `https://ws.parlament.ch/odata.svc/`, ohne API-Key. Das Schema steht unter `$metadata`.
-- Relevante Entitäten (in Task 0.2 zu verifizieren): `Session`, `Meeting`, `Subject`, `Transcript`, `Business`, `MemberCouncil`. Die Kette Session → Meeting → Subject → Transcript führt zu den Wortprotokollen.
-- Die Sprache wird über das Feld `Language` gesteuert (`DE`, `FR`). Zu prüfen in Task 0.2: Vermutlich ist `Language` nur die Sprache der Metadaten, und ein Votum liegt nur in der Originalsprache vor (Feld `LanguageOfText`). Dann würde das Laden von DE und FR doppelte Voten erzeugen.
-- Paginierung mit `$top`/`$skip`, kurze Pausen zwischen Requests, Retry mit exponentiellem Backoff.
-- Transcript-Texte können Markup enthalten. Die Bereinigung erfolgt in einer eigenen, getesteten Funktion.
-- Das Schema ist nur teilweise dokumentiert. Deshalb wird nie direkt gegen die Live-API getestet, sondern gegen gespeicherte Fixtures.
+- OData-v3-Endpunkt: `https://ws.parlament.ch/odata.svc/`, ohne API-Key. Das Schema steht unter `$metadata` (Kopie in `tests/fixtures/odata/metadata.xml`).
+- Das Schema ist nur teilweise dokumentiert. Deshalb wird nie direkt gegen die Live-API getestet, sondern gegen gespeicherte Fixtures (`tests/fixtures/odata/`, Herkunft im dortigen README).
+
+Verifiziert in Task 0.2 (Stand 2026-11-12, Beispiel: Herbstsession 2026, Ständerat 15.09.2026, Traktandum PFAS):
+
+**Format**
+- Mit `$format=json` liefert der Dienst OData-v3-JSON. Eine Collection kommt entweder als `{"d": [...]}` oder als `{"d": {"results": [...], "__count": ..., "__next": ...}}`; der Client muss beide Formen verarbeiten.
+- Jede Entität hat den Schlüssel `(ID, Language)` und existiert einmal pro Sprache.
+- Int64-Werte (z. B. `Subject.ID`, `Meeting.ID`, `Transcript.ID`, `Transcript.IdSubject`) kommen im JSON als String, Int32-Werte (z. B. `Session.ID`, `Business.ID`) als Zahl. Die Pydantic-Modelle in Task 1.2 wandeln sie um.
+- Datumswerte kommen als `/Date(<ms>)/`. Es handelt sich um Schweizer Ortszeit, die als UTC kodiert ist (ein Sitzungsdatum ist z. B. `00:00 UTC`). Sie werden als lokale Zeit ohne Zeitzone übernommen.
+
+**Kette zu den Wortprotokollen**
+- `Session.ID` → `Meeting.IdSession` → `Subject.IdMeeting` → `Transcript.IdSubject`.
+- `Meeting.Council`: 1 = Nationalrat, 2 = Ständerat, 3 = Vereinigte Bundesversammlung (Kürzel `V`, nicht `VB`).
+- Ein Traktandum (`Subject`) kann mehrere Geschäfte umfassen, verknüpft über `SubjectBusiness(IdSubject, BusinessNumber)`; `BusinessNumber` ist die `Business.ID` (z. B. `20253906`), `BusinessShortNumber` die bekannte Nummer (z. B. `25.3906`). Beispiel: Traktandum 82315 behandelt drei Motionen.
+
+**Sprache der Voten**
+- Bestätigt: `Transcript.Language` ist nur die Sprache der Bezeichnungen. Der `Text` ist in allen Sprachzeilen identisch und liegt nur in der Originalsprache vor; diese steht in `LanguageOfText` (`DE`, `FR`, `IT` oder leer bei Verfahrenstexten).
+- Übersetzt sind nur Bezeichnungen: `CouncilName`, `CantonName`, `ParlGroupName`, `VoteBusinessTitle`. Sprachneutral sind u. a. `ParlGroupAbbreviation` (z. B. `RL`, `S`, `V`, `M-E`), `CantonAbbreviation`, `CouncilId`, `MeetingCouncilAbbreviation`.
+- Folge: Transcripts werden nur aus den Zeilen mit `Language eq 'DE'` geladen; die Dokumentsprache ist `LanguageOfText`.
+
+**Arten von Einträgen**
+- `Type = 1`: Votum. Darunter auch präsidiale Verfahrensvoten (`LanguageOfText` leer, `DisplaySpeaker = false`, Text beginnt mit «Präsident (Name, Präsident):»).
+- `Type = 2`: Verfahrenstext ohne Redner, z. B. Abstimmungsergebnis oder Rückzug.
+- Indexiert werden nur Einträge mit `Type = 1` und `LanguageOfText` in `DE` oder `FR`. Italienische Voten (Nicht-Ziel) und Verfahrenstexte fallen weg.
+
+**Metadaten pro Votum** (AK-2.1, AK-4.2)
+- Redner: `SpeakerFullName`; Funktion: `SpeakerFunction` (z. B. `Mit-M`/`Mit-F` Mitglied, `P-M` Präsident, `1VP`/`2VP` Vizepräsidium, `BR-M`/`BR-F` Bundesrat).
+- Fraktion: `ParlGroupAbbreviation` (sprachneutral); bei Bundesratsmitgliedern leer.
+- `CouncilId` ist der Rat des Redners (99 = Bundesrat), nicht der Rat der Sitzung. Der Rat der Sitzung kommt aus `Meeting.Council` bzw. `MeetingCouncilAbbreviation`.
+- Datum: `MeetingDate` (Text, `YYYYMMDD`); Reihenfolge: `SortOrder`.
+
+**Textformat**
+- Voten: `<pd_text>` mit `<p>`, `<b>`, `<i>` und Platzhaltern `[GZ]`, `[VS]`, `[NB]` (geschütztes Leerzeichen), `[PAGE n]` (Seitenzahl im Amtlichen Bulletin), `[NAM]`.
+- Geschäfte: normales HTML mit `<p>`, `<ul>`, `<li>`, `<span>`, `<br>`, `&nbsp;`.
+
+**Geschäfte (Curia Vista)**
+- Die Textfelder sind echte Übersetzungen; DE und FR sind getrennte Dokumente.
+- Bei einer Motion gefüllt: `Title`, `SubmittedText`, `ReasonText`, `FederalCouncilResponseText`. Weitere Felder (`Description`, `InitialSituation` usw.) sind bei anderen Geschäftsarten zu prüfen (Task 1.2).
+- Abkürzungen sind übersetzt (`NR` gegenüber `CN`); Filter verwenden deshalb numerische IDs (`SubmissionCouncil`).
+- Datumsfelder: `SubmissionDate`, `BusinessStatusDate`, `FederalCouncilProposalDate`.
+- Umfang: Geladen werden nur Geschäfte, die über `SubjectBusiness` mit einem Traktandum im Zeitraum verknüpft sind (spec.md, Abschnitt 5). Seit 2023-12-01 wurden 10'221 Geschäfte eingereicht, die meisten davon nie im Rat debattiert.
+
+**Deep-Links** (AK-2.2)
+- Votum im Amtlichen Bulletin: `https://www.parlament.ch/de/ratsbetrieb/amtliches-bulletin/amtliches-bulletin-die-verhandlungen?SubjectId={Subject.ID}#votum{Transcript.SortOrder}`. Das Format stammt aus dem Seitentemplate; die Seite rendert im Browser, der Anker lässt sich per HTTP nicht prüfen.
+- Druckansicht eines einzelnen Votums: `https://print.parlament.ch/printview/?contentId={Transcript.ID}`.
+- Geschäft: `https://www.parlament.ch/de/ratsbetrieb/suche-curia-vista/geschaeft?AffairId={Business.ID}` (HTTP 200 geprüft). Für französische Dokumente `/fr/` statt `/de/` (nicht separat geprüft).
+
+**Paginierung und Umfang**
+- Pro Antwort höchstens 1000 Zeilen. Der Server blättert selbst: Die Antwort enthält einen `__next`-Link mit `$skiptoken`, dem der Client folgt (kein `$skip`). `$inlinecount=allpages` liefert `__count`.
+- Kurze Pausen zwischen Requests, Retry mit exponentiellem Backoff.
+- Seit 2023-12-01: 41'245 Transcript-Einträge, davon 36'382 mit `Type = 1`; eine ordentliche Session hat rund 4'300 Einträge.
 
 ## 4. Datenmodell
 
 ```
 documents
-  id              uuid pk
-  source_type     text  -- 'transcript' | 'business'
-  source_id       text  -- ID aus OData
-  language        text  -- 'de' | 'fr'
-  title           text
-  text            text
-  speaker_name    text null
-  parl_group      text null
-  council         text null  -- 'NR' | 'SR' | 'VB'
-  date            date
-  business_number text null
-  url             text
-  raw_hash        text  -- für idempotente Ingestion
+  id               uuid pk
+  source_type      text  -- 'transcript' | 'business'
+  source_id        text  -- Transcript.ID bzw. Business.ID
+  language         text  -- 'de' | 'fr'; Transcript: LanguageOfText, Business: Sprachversion
+  title            text  -- Transcript: Titel des Traktandums; Business: Title
+  text             text  -- bereinigt
+  speaker_name     text null
+  speaker_function text null  -- z. B. 'Mit-M', 'BR-F'
+  parl_group       text null  -- ParlGroupAbbreviation, sprachneutral
+  canton           text null  -- CantonAbbreviation
+  council          text null  -- Rat der Sitzung: 'NR' | 'SR' | 'V'
+  date             date
+  business_numbers text[]     -- Kurznummern, z. B. {'25.3902','25.3906'}; leer, wenn keine
+  session_id       int null
+  subject_id       bigint null  -- für den Deep-Link
+  sort_order       int null     -- für den Deep-Link (#votum{sort_order})
+  url              text
+  raw_hash         text  -- für idempotente Ingestion
   unique (source_type, source_id, language)
 
 chunks
@@ -82,7 +133,7 @@ chunks
 
 Eval-Läufe werden nicht in der Datenbank gespeichert, sondern als Dateien in `evals/results/` (Abschnitt 9).
 
-Indizes: GIN auf `chunks.tsv`, HNSW auf `chunks.embedding` (Cosine), B-Tree auf `documents(date, council, parl_group)`.
+Indizes: GIN auf `chunks.tsv`, HNSW auf `chunks.embedding` (Cosine), B-Tree auf `documents(date, council, parl_group)`, GIN auf `documents.business_numbers`.
 
 ## 5. Chunking
 
@@ -172,4 +223,8 @@ GET /health
 | 2026-11-12 | Embeddings: bge-m3 lokal über sentence-transformers mit dem CPU-Build von PyTorch (eigener PyTorch-CPU-Index in `pyproject.toml`). Das Modell wird erst bei Bedarf geladen; `GET /health` hängt nicht davon ab. | Ohne CPU-Index zieht uv unter Linux die CUDA-Version (mehrere GB). Laden beim Start würde Startzeit und CI-Smoke-Test belasten. ONNX und API-Modelle verworfen bzw. als Experiment in Abschnitt 10. |
 | 2026-11-12 | Zitate: Das LLM liefert nur die Nummern `n` der übergebenen Quellen; der Server ordnet sie den Chunks zu (Abschnitt 7). Native Citations der Claude API vorerst nicht. | Erfundene Quellen-IDs sind so technisch ausgeschlossen (AK-2.3), die Lösung passt zum LLM-Interface und ist gut testbar. Native Citations lassen sich nicht mit strukturierter Ausgabe kombinieren. |
 | 2026-11-12 | Tabelle `eval_runs` gestrichen. Eval-Ergebnisse liegen nur als Dateien in `evals/results/`. | Die Dateien werden committet und bilden die Historie. Eine zweite Kopie in der DB müsste synchron gehalten werden und ginge mit `docker compose down -v` verloren. |
+| 2026-11-12 | Transcripts nur aus den Zeilen mit `Language eq 'DE'` laden; Dokumentsprache ist `LanguageOfText`. Indexiert werden nur Einträge mit `Type = 1` und `LanguageOfText` in DE oder FR. (Task 0.2) | Der Text ist in allen Sprachzeilen identisch, sonst entstünden Duplikate. Italienisch ist ein Nicht-Ziel; Verfahrenstexte und Abstimmungsergebnisse sind keine Voten. |
+| 2026-11-12 | Datenmodell `documents`: `business_numbers text[]` statt `business_number`; neue Felder `speaker_function`, `canton`, `session_id`, `subject_id`, `sort_order`; Ratskürzel `V` statt `VB`; `parl_group` als sprachneutrale Abkürzung. (Task 0.2) | Ein Traktandum umfasst oft mehrere Geschäfte; `subject_id` und `sort_order` werden für den Deep-Link gebraucht (AK-2.2); Fraktionsnamen sind übersetzt, die Abkürzungen nicht. |
+| 2026-11-12 | Paginierung über den `__next`-Link (`$skiptoken`) statt `$top`/`$skip`. (Task 0.2) | Der Server begrenzt auf 1000 Zeilen pro Antwort und blättert selbst. |
+| 2026-11-12 | Geschäfte nur laden, wenn sie über `SubjectBusiness` mit einem Traktandum im Zeitraum verknüpft sind. (Task 0.2) | Entspricht spec.md, Abschnitt 5 («sofern im Zeitraum behandelt»); die meisten der rund 10'000 eingereichten Geschäfte wurden nie debattiert. |
 | 2026-11-12 | Evals laufen nur lokal mit uv, nicht im Container. | Im Image gibt es kein `.git` (kein Git-SHA), und die Ergebnisse in `evals/results/` sollen direkt committet werden. |
