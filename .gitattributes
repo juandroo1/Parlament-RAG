@@ -1,1 +1,5 @@
 * text=auto eol=lf
+
+# Rohantworten des OData-Dienstes byte-genau speichern
+tests/fixtures/odata/*.json -text
+tests/fixtures/odata/*.xml -text
