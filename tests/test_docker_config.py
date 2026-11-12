@@ -69,6 +69,25 @@ def test_raw_cache_is_bind_mounted_for_app(services: dict[str, Any]) -> None:
     assert app["environment"]["RAW_CACHE_DIR"] == "/app/data/raw"
 
 
+def test_model_cache_is_a_volume_not_part_of_the_image(
+    compose: dict[str, Any], services: dict[str, Any]
+) -> None:
+    assert "hf-cache" in compose["volumes"]
+    assert "hf-cache:/home/app/.cache/huggingface" in services["app"]["volumes"]
+    dockerfile = (ROOT / "Dockerfile").read_text(encoding="utf-8")
+    assert "HF_HOME=/home/app/.cache/huggingface" in dockerfile
+    assert "chown -R app:app /home/app/.cache" in dockerfile
+
+
+def test_torch_comes_from_the_cpu_index() -> None:
+    pyproject = (ROOT / "pyproject.toml").read_text(encoding="utf-8")
+    assert 'torch = [{ index = "pytorch-cpu" }]' in pyproject
+    assert 'url = "https://download.pytorch.org/whl/cpu"' in pyproject
+    lock = (ROOT / "uv.lock").read_text(encoding="utf-8")
+    assert 'name = "nvidia-' not in lock
+    assert 'name = "triton"' not in lock
+
+
 def test_dockerfile_runs_as_non_root_without_uv() -> None:
     dockerfile = (ROOT / "Dockerfile").read_text(encoding="utf-8")
     final_stage = dockerfile.rsplit("\nFROM ", 1)[1]

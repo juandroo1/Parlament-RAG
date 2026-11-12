@@ -23,9 +23,13 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 FROM python:3.12-slim AS runtime
 ENV PATH="/app/.venv/bin:${PATH}" \
     PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1
+    PYTHONUNBUFFERED=1 \
+    HF_HOME=/home/app/.cache/huggingface
+# Der Modell-Cache gehört dem App-User; das Volume hf-cache übernimmt diese Rechte.
 RUN groupadd --system --gid 10001 app \
-    && useradd --system --uid 10001 --gid app --create-home --home-dir /home/app app
+    && useradd --system --uid 10001 --gid app --create-home --home-dir /home/app app \
+    && mkdir -p /home/app/.cache/huggingface \
+    && chown -R app:app /home/app/.cache
 WORKDIR /app
 COPY --from=builder --chown=app:app /app/.venv /app/.venv
 COPY --chmod=0755 docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh

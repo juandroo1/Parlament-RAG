@@ -40,6 +40,15 @@ Eval-Runner nutzt dieselben Komponenten wie API und CLI.
 | Container | Docker Compose mit `db`, `app`, `web` | Ein Befehl startet alles, lokal und in der Demo identisch |
 | Observability | structlog mit Tokens, Latenz und Kosten pro Anfrage | Produktionsdenken sichtbar machen |
 
+Messung bge-m3 im Container (Task 2.2):
+- Image 2,09 GB (vorher 286 MB); davon `torch` (CPU-Build) 809 MB, `transformers` 120 MB, `scipy`/`sympy`/`sklearn` rund 230 MB. Kein CUDA, keine `nvidia-*`-Pakete.
+- Volume `hf-cache` nach dem ersten Download 4,3 GB. Laden aus dem Cache: 10 s; Tokenizer allein: Sekunden.
+- Arbeitsspeicher beim Einbetten: rund 4,1 GB (relevant für das Deployment, Task 6.3).
+- Suchanfrage einbetten: Median 98 ms (AK-1.3).
+- Durchsatz: rund 2 Chunks/s (siehe Abschnitt 11).
+- Deutsch und Französisch mit gleicher Bedeutung: Cosine 0,78; deutscher Satz zu anderem Thema: 0,42 (US-5).
+- Echte Tokens gegenüber der Schätzung Zeichen / 4: Median 0,91, P10 0,82, P90 1,04. Einzelne Chunks liegen mit echten Tokens über der Höchstgrösse (max. 629); ab Task 2.3 zählt der Chunker mit dem echten Tokenizer.
+
 ## 3. Datenquelle
 
 - OData-v3-Endpunkt: `https://ws.parlament.ch/odata.svc/`, ohne API-Key. Das Schema steht unter `$metadata` (Kopie in `tests/fixtures/odata/metadata.xml`).
@@ -225,7 +234,7 @@ GET /health
 | Risiko | Massnahme |
 |---|---|
 | OData-Schema ist undokumentiert oder ändert sich | Rohdaten-Cache, Mapping-Tests mit Fixtures |
-| Embeddings auf der CPU dauern lange | Zuerst eine Session indexieren, dann ausbauen; Batch-Verarbeitung |
+| Embeddings auf der CPU dauern lange. Gemessen in Task 2.2 (Docker, 16 CPUs, bge-m3, Chunks mit Header, ~300 Tokens): rund 2 Chunks/s (8 Threads 2,1/s, 16 Threads 2,4/s). Voller Korpus (~100'000 Chunks) ≈ 14 Stunden, eine Session (~11'000 Chunks) ≈ 1,5 Stunden. | Zuerst eine Session indexieren, dann ausbauen; Batch-Verarbeitung; inkrementell indexieren. Entscheid: Variante A, voller Index einmal über Nacht, Experimente auf einer Session (Entscheidungsprotokoll). |
 | Kosten durch LLM-as-Judge | `smoke`-Suite klein halten, `full` nur bei grösseren Änderungen |
 | Missbrauch der öffentlichen Demo | Rate-Limit, Tageskostendeckel |
 | Opus 5.5 mit Effort `high` überschreitet p95 < 10 s (Thinking lässt sich bei Opus 5.5 nicht abschalten) | Latenz in jedem Eval-Lauf messen; bei Überschreitung Effort oder Modell per Eval vergleichen und im Entscheidungsprotokoll festhalten |
@@ -271,4 +280,6 @@ GET /health
 | 2026-11-12 | Statistik als eigener Befehl `parlrag stats [--session-id]`, berechnet aus der Datenbank: Umfang, Zeichen (Summe, Mittel, Median, P90, Max), Token-Schätzung (Zeichen / 4, als «≈» gekennzeichnet), Verteilung nach Rat und Fraktion, Qualitätszähler (Restmarkup, leere Titel, Voten ohne Redner, Dokumente ohne Chunks). Testlauf mit der Herbstsession 2026. (Task 1.4) | Zählt den Bestand statt nur einen Lauf und ist in Task 2.6 wiederverwendbar. Echte Token-Zahlen erst mit dem Tokenizer von bge-m3 (Task 2.1). |
 | 2026-11-12 | Chunker (Task 2.1): Der Tokenzähler wird übergeben; bis der bge-m3-Tokenizer mit Task 2.2 verfügbar ist, gilt die Schätzung Zeichen / 4. Einheiten sind Sätze mit Markierung des Absatzbeginns; kein Satzende nach Einzelbuchstaben (z. B.), Zahlen (5. Oktober) und gängigen Abkürzungen (Mio., Art.). Geschnitten wird an einer Absatzgrenze, sobald die Zielgrösse erreicht ist, oder schon ab 80 % des Ziels, wenn der nächste Absatz nicht mehr passt; mitten im Absatz nur, wenn sein Ende unter der harten Grenze (1,2 × Ziel) nicht erreichbar ist. Sätze über der Grenze werden an Wortgrenzen geteilt. Die Zielgrösse wird pro Dokument ausgeglichen (Gesamttokens / Anzahl Chunks), damit kein winziger Rest entsteht. Overlap: ganze Schlusssätze des vorherigen Chunks bis 15 % des Ziels. Konfigurierbar über `CHUNK_TARGET_TOKENS` und `CHUNK_OVERLAP_RATIO`. | Echte Tokenzahlen brauchen die Abhängigkeiten aus Task 2.2. Satzgrenzen halten Zitate lesbar (AK-2.1). Chunkgrösse ist ein geplantes Experiment (Abschnitt 10). |
 | 2026-11-12 | Geschäfte: ein eigener Titel-Chunk und Chunks pro Abschnitt; die Abschnittsüberschrift steht in `metadata["section"]` und im Kontext-Header, nicht im Chunk-Text. Kontext-Header mit Fraktionsabkürzung (z. B. `RL`) statt vollem Namen, in der Sprache des Dokuments; Bundesratsmitglieder als «Bundesrat» bzw. «Conseil fédéral». (Task 2.1) | Der Header fliesst nicht in die Volltextsuche ein; der Titel-Chunk macht Geschäftstitel per Volltext auffindbar. Volle Fraktionsnamen werden nicht gespeichert (sprachabhängig). |
+| 2026-11-12 | Embeddings (Task 2.2): `sentence-transformers` mit `torch` aus dem PyTorch-CPU-Index (expliziter uv-Index). Interface `Embedder` in `parlrag.embeddings`, Auswahl nur über `get_embedder()`. Modell und Tokenizer werden getrennt und erst bei Bedarf geladen (thread-sicher); `torch` wird erst dann importiert. Normalisierte Vektoren, `EMBEDDING_MAX_SEQ_LENGTH=1024`, `EMBEDDING_BATCH_SIZE=16`. Modell-Cache im Volume `hf-cache` (`HF_HOME`). Tests mit echtem Modell nur mit `PARLRAG_RUN_MODEL_TESTS=1` (Marker `model`). | bge-m3 bringt eine fertige sentence-transformers-Konfiguration; der optionale Reranker läuft genauso. Der Tokenizer allein liefert echte Tokenzahlen für den Chunker, ohne das 2,3-GB-Modell zu laden. Chunks sind höchstens rund 600 Tokens plus Header. Die CI lädt das Modell nicht herunter. |
+| 2026-11-12 | Durchsatz bge-m3 (rund 2 Chunks/s auf der CPU, Task 2.2): Variante A. bge-m3 bleibt lokal auf der CPU. Der volle Korpus wird einmal indexiert (rund 14 Stunden, z. B. über Nacht), danach nur inkrementell (neue Sessions je rund 1,5 Stunden). Der Teilkorpus für Experimente ist **eine** Session statt zwei bis drei (ersetzt den früheren Eintrag zum Teilkorpus). Ein API-Embedding-Modell bleibt ein Experiment (Abschnitt 10). Entscheid Sandro. | Kein zusätzlicher Anbieter, keine Kosten, keine Abhängigkeit vom Netz bei der Suche. Mit einer Session dauert eine Experiment-Variante rund 1,5 Stunden statt 3 bis 5. Verworfen: ONNX/int8 (mehr Aufwand, Qualitätsverlust zu prüfen) und API-Modell für den Index (zweiter Anbieter). |
 | 2026-11-12 | Evals laufen nur lokal mit uv, nicht im Container. | Im Image gibt es kein `.git` (kein Git-SHA), und die Ergebnisse in `evals/results/` sollen direkt committet werden. |

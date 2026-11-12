@@ -14,7 +14,9 @@ dependencies = [
     "psycopg[binary]>=3.3.9",
     "pydantic>=2.9",
     "pydantic-settings>=2.6",
+    "sentence-transformers>=6.3.0",
     "sqlalchemy>=2.1.8",
+    "torch>=2.15.0",
     "typer>=0.29.1",
     "uvicorn>=0.54.0",
 ]
@@ -30,6 +32,15 @@ dev = [
     "ruff>=0.8",
     "types-pyyaml>=6.0.12.20261111",
 ]
+
+# PyTorch nur als CPU-Build: ohne diesen Index zieht uv unter Linux die CUDA-Pakete (mehrere GB).
+[tool.uv.sources]
+torch = [{ index = "pytorch-cpu" }]
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
 
 [build-system]
 requires = ["hatchling"]
@@ -52,6 +63,12 @@ strict = true
 mypy_path = "src"
 plugins = ["pydantic.mypy"]
 
+# Grosse ML-Bibliotheken werden nur verzögert importiert; mypy prüft sie nicht mit.
+[[tool.mypy.overrides]]
+module = ["sentence_transformers.*", "transformers.*", "torch.*"]
+follow_imports = "skip"
+ignore_missing_imports = true
+
 [tool.pydantic-mypy]
 init_forbid_extra = true
 init_typed = true
@@ -62,4 +79,5 @@ testpaths = ["tests"]
 addopts = "-ra"
 markers = [
     "db: braucht ein erreichbares Postgres (lokal den db-Container); wird sonst übersprungen",
+    "model: lädt das echte Embedding-Modell; nur mit PARLRAG_RUN_MODEL_TESTS=1",
 ]
