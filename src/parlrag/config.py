@@ -24,7 +24,9 @@ class Settings(BaseSettings):
     postgres_user: str = "parlrag"
     postgres_password: SecretStr
     postgres_db: str = "parlrag"
-    postgres_host: str = "localhost"
+    # 127.0.0.1 statt localhost: Unter Windows löst localhost zuerst zu ::1 auf,
+    # Docker bindet den Port aber nur an 127.0.0.1.
+    postgres_host: str = "127.0.0.1"
     postgres_port: int = 5432
 
     anthropic_api_key: SecretStr | None = None
@@ -37,6 +39,6 @@ class Settings(BaseSettings):
         user = quote(self.postgres_user, safe="")
         password = quote(self.postgres_password.get_secret_value(), safe="")
         return (
-            f"postgresql://{user}:{password}@{self.postgres_host}:{self.postgres_port}"
+            f"postgresql+psycopg://{user}:{password}@{self.postgres_host}:{self.postgres_port}"
             f"/{self.postgres_db}"
         )
