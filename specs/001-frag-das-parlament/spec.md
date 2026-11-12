@@ -105,4 +105,5 @@ Goldset (Endstand MVP): mindestens 65 Fragen, davon 40 auf Deutsch und 10 auf Fr
 - Lokales Embedding-Modell oder API-Modell: per Eval entscheiden (Qualität gegen Kosten).
 - Hosting der Demo und Schutz vor Missbrauch (Rate-Limit, Kostendeckel).
 - Mehrturn-Gespräche (Folgefragen) für eine spätere Version?
+- Seitenzahl im Amtlichen Bulletin (Platzhalter `[PAGE n]` im Votum) als zusätzliche Quellenangabe in einer späteren Version?
 - Deployment unter Linux (Task 6.3): Der Container-User (UID 10001) darf im Bind-Mount `./data/raw` eventuell nicht schreiben. Lösung beim Deployment festlegen (Besitzrechte des Ordners oder benanntes Volume).
