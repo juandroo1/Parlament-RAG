@@ -95,6 +95,20 @@ Verifiziert in Task 0.2 (Stand 2026-11-12, Beispiel: Herbstsession 2026, Stände
 - Kurze Pausen zwischen Requests, Retry mit exponentiellem Backoff.
 - Seit 2023-12-01: 41'245 Transcript-Einträge, davon 36'382 mit `Type = 1`; eine ordentliche Session hat rund 4'300 Einträge.
 
+**Testlauf Herbstsession 2026** (Task 1.4, `parlrag ingest --since 2026-09-14 --until 2026-10-02`, danach `parlrag stats --session-id 5215`)
+- Lauf: 34 Sitzungen, 936 Traktanden, 89 Requests, 105 s (gedrosselt, leerer Cache). Zweiter Lauf: 0 Requests, 5 s, alle 4'133 Dokumente unverändert.
+- Voten mit `Type = 1`: 3'326. Davon übernommen 2'427 (1'737 DE, 690 FR); übersprungen 857 ohne `LanguageOfText` und 42 italienische. Von den 857 ohne Sprache sind 855 präsidiale Verfahrensvoten (`DisplaySpeaker = false`) und 2 Ansprachen des Ratspräsidenten (Begrüssung einer Delegation, Würdigung eines Ratsweibels); deren Wegfall ist vertretbar.
+- Geschäfte: 876 behandelt, davon 853 mit Text (je DE und FR).
+- Textlänge Voten: Mittel 2'542, Median 1'823, P90 5'301, Max 34'304 Zeichen (insgesamt 6,2 Mio.). Geschäfte: Mittel 2'758, Median 2'035, P90 6'037, Max 12'913 (insgesamt 4,7 Mio.).
+- Verteilung: NR 1'562, SR 863, Vereinigte Bundesversammlung 2 Voten. 529 Voten ohne Fraktion (vor allem Bundesratsmitglieder); fraktionslose Ratsmitglieder haben die Abkürzung `FRAKTIONSLOS`.
+- Qualität: kein Restmarkup, keine leeren Titel, keine Voten ohne Redner.
+- 10 Geschäftsdokumente aus dem früheren Eintagestest wurden aktualisiert, weil sie an weiteren Tagen debattiert wurden (Zusammenführung der Debatten, wie vorgesehen).
+
+**Hochrechnung auf den Korpus seit 2023-12-01** (grob, für Task 2.6):
+- Voten: 36'382 × 73 % übernommen ≈ 26'500 Dokumente ≈ 67 Mio. Zeichen ≈ 17 Mio. Tokens (Faustregel Zeichen / 4).
+- Geschäfte: geschätzt 5'000 bis 8'000 verschiedene, also 10'000 bis 16'000 Dokumente ≈ 28 bis 44 Mio. Zeichen.
+- Ingest mit leerem Cache: rund 15 Sessions × 1 bis 2 Minuten ≈ 25 Minuten.
+
 ## 4. Datenmodell
 
 ```
@@ -247,4 +261,5 @@ GET /health
 | 2026-11-12 | Textbereinigung: `[NB]` wird zu einem Leerzeichen; `[GZ]`, `[VS]`, `[NAM]` und `[PAGE n]` werden entfernt. (Task 1.2) | Die Seitenzahl im Amtlichen Bulletin ist nicht Teil der Spec (siehe «Offene Fragen»). |
 | 2026-11-12 | Ingest (`parlrag ingest`): `--since`/`--until` inklusive, bezogen auf das Sitzungsdatum (Standard 2023-12-01 bis heute). Voten pro Sitzungstag mit Server-Filter `Type eq 1`, Traktanden pro Sitzung, Geschäfte in Paketen von 40 IDs pro Sprache. Ein Commit pro Session. (Task 1.3) | Auch einzelne Tage ladbar, kleinere Antworten, wenige Requests; ein abgebrochener Lauf verliert keine fertigen Sessions. |
 | 2026-11-12 | Beim Upsert werden `debate_dates`/`debate_councils` eines Geschäfts mit dem Bestand vereinigt. Ändert sich ein Dokument (`raw_hash`), werden seine Chunks gelöscht. (Task 1.3) | Läufe über verschiedene Zeiträume dürfen frühere Debatten nicht überschreiben (AK-4.3). Dokumente ohne Chunks zeigen dem Index-Befehl (Task 2.3), was neu zu indexieren ist. Nachteil: Eine nachträglich entfernte Debatte bliebe stehen. |
+| 2026-11-12 | Statistik als eigener Befehl `parlrag stats [--session-id]`, berechnet aus der Datenbank: Umfang, Zeichen (Summe, Mittel, Median, P90, Max), Token-Schätzung (Zeichen / 4, als «≈» gekennzeichnet), Verteilung nach Rat und Fraktion, Qualitätszähler (Restmarkup, leere Titel, Voten ohne Redner, Dokumente ohne Chunks). Testlauf mit der Herbstsession 2026. (Task 1.4) | Zählt den Bestand statt nur einen Lauf und ist in Task 2.6 wiederverwendbar. Echte Token-Zahlen erst mit dem Tokenizer von bge-m3 (Task 2.1). |
 | 2026-11-12 | Evals laufen nur lokal mit uv, nicht im Container. | Im Image gibt es kein `.git` (kein Git-SHA), und die Ergebnisse in `evals/results/` sollen direkt committet werden. |
