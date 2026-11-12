@@ -1,6 +1,8 @@
 """Gemeinsame Fixtures. Datenbank-Tests laufen in einer eigenen Datenbank `parlrag_test`."""
 
+import os
 from collections.abc import Iterator
+from typing import NoReturn
 
 import pytest
 from pydantic import ValidationError
@@ -11,15 +13,23 @@ from parlrag.config import Settings
 from parlrag.db.session import create_db_engine
 
 TEST_DATABASE = "parlrag_test"
+REQUIRE_DB_ENV = "PARLRAG_REQUIRE_DB"
+
+
+def skip_or_fail(reason: str) -> NoReturn:
+    """Ohne Datenbank lokal überspringen; in der CI (`PARLRAG_REQUIRE_DB=1`) fehlschlagen."""
+    if os.environ.get(REQUIRE_DB_ENV) == "1":
+        pytest.fail(f"{reason} ({REQUIRE_DB_ENV}=1 verlangt eine Datenbank)")
+    pytest.skip(reason)
 
 
 @pytest.fixture(scope="session")
 def test_database_url() -> Iterator[str]:
-    """Legt `parlrag_test` frisch an und entfernt sie am Ende; ohne erreichbares Postgres: skip."""
+    """Legt `parlrag_test` frisch an und entfernt sie am Ende; ohne Postgres: skip bzw. fail."""
     try:
         settings = Settings()
     except ValidationError:
-        pytest.skip("Keine Datenbank-Konfiguration (.env bzw. POSTGRES_*) vorhanden")
+        skip_or_fail("Keine Datenbank-Konfiguration (.env bzw. POSTGRES_*) vorhanden")
 
     admin = create_db_engine(settings.database_url, isolation_level="AUTOCOMMIT")
     try:
@@ -28,7 +38,7 @@ def test_database_url() -> Iterator[str]:
             connection.execute(text(f"CREATE DATABASE {TEST_DATABASE}"))
     except OperationalError:
         admin.dispose()
-        pytest.skip("Postgres nicht erreichbar (docker compose up -d db)")
+        skip_or_fail("Postgres nicht erreichbar (docker compose up -d db)")
 
     yield settings.model_copy(update={"postgres_db": TEST_DATABASE}).database_url
 

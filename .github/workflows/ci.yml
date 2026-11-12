@@ -1,0 +1,84 @@
+name: CI
+
+# Jeder Pull Request und jeder Push auf main (CLAUDE.md, Abschnitt CI).
+# Evals laufen hier bewusst nicht, weil sie API-Kosten verursachen.
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint-test:
+    name: Lint & Test
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    services:
+      # Wegwerf-Datenbank nur für diesen Lauf; die Zugangsdaten sind kein Secret.
+      postgres:
+        image: pgvector/pgvector:pg16
+        env:
+          POSTGRES_USER: parlrag
+          POSTGRES_PASSWORD: parlrag
+          POSTGRES_DB: parlrag
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U parlrag -d parlrag"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      POSTGRES_USER: parlrag
+      POSTGRES_PASSWORD: parlrag
+      POSTGRES_DB: parlrag
+      POSTGRES_HOST: 127.0.0.1
+      POSTGRES_PORT: "5432"
+      # DB-Tests dürfen in der CI nicht still übersprungen werden.
+      PARLRAG_REQUIRE_DB: "1"
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
+        with:
+          version: "0.13.7"
+          enable-cache: true
+      - name: Install dependencies
+        run: uv sync --frozen
+      - name: Ruff (lint)
+        run: uv run ruff check .
+      - name: Ruff (format)
+        run: uv run ruff format --check .
+      - name: Mypy
+        run: uv run mypy src tests
+      - name: Pytest
+        run: uv run pytest
+
+  docker-smoke:
+    name: Docker smoke test
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Create .env from template
+        run: cp .env.example .env
+      - name: Build
+        run: docker compose build
+      - name: Start stack and wait for healthchecks
+        run: docker compose up -d --wait --wait-timeout 120
+      - name: Check GET /health
+        run: |
+          body="$(curl --fail --silent --show-error http://127.0.0.1:8000/health)"
+          echo "$body"
+          test "$body" = '{"status":"ok","database":"ok"}'
+      - name: Show logs on failure
+        if: failure()
+        run: docker compose logs
+      - name: Tear down
+        if: always()
+        run: docker compose down -v
