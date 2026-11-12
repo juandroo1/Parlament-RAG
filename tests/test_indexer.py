@@ -1,57 +1,24 @@
 """Inkrementelle Indexierung (Task 2.3), mit nachgebautem Embedder gegen `parlrag_test`."""
 
-import hashlib
 import re
-from collections.abc import Sequence
 from typing import Any
 
-import numpy as np
 import pytest
 from sqlalchemy import Engine, func, select
 from sqlalchemy.orm import Session, sessionmaker
 from typer.testing import CliRunner
 
+from fakes import FakeEmbedder
 from ingest_fakes import PFAS_DAY, FixtureSource
 from parlrag import cli
 from parlrag.db.models import Chunk, Document
-from parlrag.embeddings import EmbeddingError, Vectors
+from parlrag.embeddings import EmbeddingError
 from parlrag.index.chunker import ChunkingConfig, approximate_token_count, chunk_document
 from parlrag.index.indexer import IndexConfig, IndexStats, index_documents
 from parlrag.ingest.mapping import DocumentData, Language
 from parlrag.ingest.pipeline import run_ingest
 
 BOTH: frozenset[Language] = frozenset({"de", "fr"})
-
-
-class FakeEmbedder:
-    """Deterministische Vektoren aus dem Text-Hash; merkt sich alle eingebetteten Texte."""
-
-    model_name = "fake/model"
-    dimensions = 1024
-
-    def __init__(self, fail_after: int | None = None) -> None:
-        self.texts: list[str] = []
-        self.calls = 0
-        self.fail_after = fail_after
-
-    def embed_documents(self, texts: Sequence[str]) -> Vectors:
-        self.calls += 1
-        if self.fail_after is not None and self.calls > self.fail_after:
-            raise EmbeddingError("simulierter Fehler")
-        self.texts.extend(texts)
-        vectors = np.empty((len(texts), self.dimensions), dtype=np.float32)
-        for row, value in enumerate(texts):
-            seed = int.from_bytes(hashlib.sha256(value.encode()).digest()[:8], "big")
-            vector = np.random.default_rng(seed).normal(size=self.dimensions)
-            vectors[row] = vector / np.linalg.norm(vector)
-        return vectors
-
-    def embed_query(self, text: str) -> Vectors:
-        vector: Vectors = self.embed_documents([text])[0]
-        return vector
-
-    def count_tokens(self, text: str) -> int:
-        return approximate_token_count(text)
 
 
 CONFIG = IndexConfig(model_name="fake/model")
