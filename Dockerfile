@@ -28,6 +28,9 @@ RUN groupadd --system --gid 10001 app \
     && useradd --system --uid 10001 --gid app --create-home --home-dir /home/app app
 WORKDIR /app
 COPY --from=builder --chown=app:app /app/.venv /app/.venv
+COPY --chmod=0755 docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 USER app
 EXPOSE 8000
+# Der Entrypoint führt die Migrationen aus, bevor der Befehl startet.
+ENTRYPOINT ["docker-entrypoint.sh"]
 CMD ["uvicorn", "parlrag.api.main:app", "--host", "0.0.0.0", "--port", "8000"]
