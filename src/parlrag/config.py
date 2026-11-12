@@ -4,6 +4,7 @@ Jedes Feld hier muss auch in `.env.example` stehen; ein Test prüft das.
 """
 
 from typing import Literal
+from urllib.parse import quote
 
 from pydantic import SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -20,7 +21,22 @@ class Settings(BaseSettings):
         extra="ignore",
     )
 
-    database_url: str = "postgresql://parlrag:parlrag@localhost:5432/parlrag"
+    postgres_user: str = "parlrag"
+    postgres_password: SecretStr
+    postgres_db: str = "parlrag"
+    postgres_host: str = "localhost"
+    postgres_port: int = 5432
+
     anthropic_api_key: SecretStr | None = None
     anthropic_model: str = "claude-opus-5-5"
     anthropic_effort: Effort = "high"
+
+    @property
+    def database_url(self) -> str:
+        """Verbindungs-URL; nicht Teil von `repr()`, damit das Passwort nicht in Logs landet."""
+        user = quote(self.postgres_user, safe="")
+        password = quote(self.postgres_password.get_secret_value(), safe="")
+        return (
+            f"postgresql://{user}:{password}@{self.postgres_host}:{self.postgres_port}"
+            f"/{self.postgres_db}"
+        )

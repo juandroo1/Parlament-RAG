@@ -7,15 +7,20 @@ license = "MIT"
 license-files = ["LICENSE"]
 requires-python = ">=3.12,<3.13"
 dependencies = [
+    "fastapi>=0.162.5",
     "pydantic>=2.9",
     "pydantic-settings>=2.6",
+    "uvicorn>=0.54.0",
 ]
 
 [dependency-groups]
 dev = [
+    "httpx2>=2.16.0",
     "mypy>=1.13",
     "pytest>=8.3",
+    "pyyaml>=6.0.3",
     "ruff>=0.8",
+    "types-pyyaml>=6.0.12.20261111",
 ]
 
 [build-system]

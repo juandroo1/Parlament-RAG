@@ -1,0 +1,32 @@
+# Secrets und lokale Umgebung
+.env
+.env.*
+.venv
+.git
+.gitignore
+.gitattributes
+.claude
+
+# Daten, Modelle, Frontend-Abhängigkeiten
+data/
+node_modules
+*.safetensors
+*.onnx
+*.pt
+*.bin
+
+# Caches
+__pycache__
+*.py[cod]
+.mypy_cache
+.ruff_cache
+.pytest_cache
+
+# Nicht im Image benötigt
+tests/
+specs/
+evals/
+web/
+Dockerfile
+docker-compose*.yml
+.dockerignore
