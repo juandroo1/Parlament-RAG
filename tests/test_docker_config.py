@@ -73,6 +73,20 @@ def test_dockerfile_runs_as_non_root_without_uv() -> None:
     assert "uv sync --frozen --no-dev" in dockerfile
 
 
+def test_entrypoint_runs_migrations_before_command() -> None:
+    dockerfile = (ROOT / "Dockerfile").read_text(encoding="utf-8")
+    final_stage = dockerfile.rsplit("\nFROM ", 1)[1]
+    assert 'ENTRYPOINT ["docker-entrypoint.sh"]' in final_stage
+
+    script = (ROOT / "docker-entrypoint.sh").read_bytes()
+    assert b"\r" not in script, "CRLF bricht das Skript im Linux-Container"
+    lines = script.decode("utf-8").splitlines()
+    assert lines[0] == "#!/bin/sh"
+    assert "set -e" in lines
+    migrate = lines.index("python -m parlrag.db.migrate")
+    assert lines.index('exec "$@"') > migrate
+
+
 @pytest.mark.parametrize("entry", [".git", ".venv", "data/", "node_modules", "__pycache__", ".env"])
 def test_dockerignore_contains_required_entries(entry: str) -> None:
     lines = (ROOT / ".dockerignore").read_text(encoding="utf-8").splitlines()

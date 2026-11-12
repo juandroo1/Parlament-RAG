@@ -32,9 +32,11 @@ def test_defaults() -> None:
     assert settings.anthropic_model == "claude-opus-5-5"
     assert settings.anthropic_effort == "high"
     assert settings.anthropic_api_key is None
-    assert settings.postgres_host == "localhost"
+    assert settings.postgres_host == "127.0.0.1"
     assert settings.postgres_port == 5432
-    assert settings.database_url == "postgresql://parlrag:test-password@localhost:5432/parlrag"
+    assert (
+        settings.database_url == "postgresql+psycopg://parlrag:test-password@127.0.0.1:5432/parlrag"
+    )
 
 
 def test_postgres_password_is_required(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -54,7 +56,7 @@ def test_environment_overrides_defaults(monkeypatch: pytest.MonkeyPatch) -> None
 
     assert settings.anthropic_model == "claude-sonnet-5-5"
     assert settings.anthropic_effort == "low"
-    assert settings.database_url == "postgresql://parlrag:test-password@db:6543/parlrag"
+    assert settings.database_url == "postgresql+psycopg://parlrag:test-password@db:6543/parlrag"
 
 
 def test_database_url_escapes_special_characters(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -62,7 +64,10 @@ def test_database_url_escapes_special_characters(monkeypatch: pytest.MonkeyPatch
 
     settings = Settings(_env_file=None)
 
-    assert settings.database_url == "postgresql://parlrag:p%40ss%3Aw%2Frd@localhost:5432/parlrag"
+    assert (
+        settings.database_url
+        == "postgresql+psycopg://parlrag:p%40ss%3Aw%2Frd@127.0.0.1:5432/parlrag"
+    )
 
 
 def test_invalid_effort_is_rejected(monkeypatch: pytest.MonkeyPatch) -> None:
