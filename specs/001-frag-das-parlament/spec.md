@@ -45,6 +45,11 @@ Als Nutzerin will ich nach Rat, Zeitraum und Fraktion filtern.
 
 - AK-4.1: Filter wirken bereits beim Retrieval, nicht erst nachträglich auf die Treffer.
 - AK-4.2: Mit Filter enthält die Antwort ausschliesslich Quellen, die den Filter erfüllen.
+- AK-4.3: Für Geschäfte (Curia Vista) gilt:
+  - Zeitraum: Ein Geschäft erfüllt den Filter, wenn es im Zeitraum mindestens einmal im Rat debattiert wurde. Das Einreichungsdatum wird angezeigt, aber nicht gefiltert.
+  - Rat: Ein Geschäft erfüllt den Filter, wenn es in diesem Rat debattiert wurde.
+  - Fraktion: Bei einem Fraktionsfilter fallen Geschäfte weg; es zählen nur Voten von Mitgliedern dieser Fraktion.
+  - Bekannte Grenze: Zeitraum und Rat werden bei Geschäften unabhängig geprüft. Ein Geschäft, das 2024 im Nationalrat und 2025 im Ständerat debattiert wurde, erfüllt auch «Ständerat + 2024».
 
 ### US-5 Sprachübergreifende Suche
 Als Nutzerin will ich mit einer deutschen Frage auch relevante französische Voten finden (und umgekehrt).
@@ -100,4 +105,3 @@ Goldset (Endstand MVP): mindestens 65 Fragen, davon 40 auf Deutsch und 10 auf Fr
 - Lokales Embedding-Modell oder API-Modell: per Eval entscheiden (Qualität gegen Kosten).
 - Hosting der Demo und Schutz vor Missbrauch (Rate-Limit, Kostendeckel).
 - Mehrturn-Gespräche (Folgefragen) für eine spätere Version?
-- Filter bei Geschäften (AK-4.2), vor Task 1.2 zu entscheiden: Welches Datum gilt für den Zeitraumfilter (Einreichungsdatum oder Datum der Debatte)? Welcher Rat für den Ratsfilter (Einreichungsrat)? Geschäfte haben keine Fraktion: Fallen sie bei einem Fraktionsfilter weg?
