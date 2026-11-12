@@ -109,8 +109,10 @@ documents
   speaker_function text null  -- z. B. 'Mit-M', 'BR-F'
   parl_group       text null  -- ParlGroupAbbreviation, sprachneutral
   canton           text null  -- CantonAbbreviation
-  council          text null  -- Rat der Sitzung: 'NR' | 'SR' | 'V'
-  date             date
+  council          text null  -- Transcript: Rat der Sitzung 'NR' | 'SR' | 'V'; Business: null
+  date             date       -- Transcript: Sitzungsdatum; Business: Einreichungsdatum (nur Anzeige)
+  debate_dates     date[]     -- Business: Daten aller Debatten im Zeitraum (Filter); Transcript: leer
+  debate_councils  text[]     -- Business: Räte dieser Debatten (Filter); Transcript: leer
   business_numbers text[]     -- Kurznummern, z. B. {'25.3902','25.3906'}; leer, wenn keine
   session_id       int null
   subject_id       bigint null  -- für den Deep-Link
@@ -143,7 +145,7 @@ Indizes: GIN auf `chunks.tsv`, HNSW auf `chunks.embedding` (Cosine), B-Tree auf 
 
 ## 6. Retrieval
 
-1. Filter (Rat, Zeitraum, Fraktion) als SQL-`WHERE`, angewendet vor der Suche.
+1. Filter (Rat, Zeitraum, Fraktion) als SQL-`WHERE`, angewendet vor der Suche. Voten werden über `date`, `council` und `parl_group` gefiltert, Geschäfte über `debate_dates` und `debate_councils`; bei einem Fraktionsfilter werden Geschäfte ausgeschlossen (AK-4.3).
 2. Volltext Top 50 und Vektor Top 50.
 3. RRF, daraus die Top 20.
 4. Optional ein Reranker auf die Top 8 (Entscheid per Eval, Task 6.1).
@@ -227,4 +229,5 @@ GET /health
 | 2026-11-12 | Datenmodell `documents`: `business_numbers text[]` statt `business_number`; neue Felder `speaker_function`, `canton`, `session_id`, `subject_id`, `sort_order`; Ratskürzel `V` statt `VB`; `parl_group` als sprachneutrale Abkürzung. (Task 0.2) | Ein Traktandum umfasst oft mehrere Geschäfte; `subject_id` und `sort_order` werden für den Deep-Link gebraucht (AK-2.2); Fraktionsnamen sind übersetzt, die Abkürzungen nicht. |
 | 2026-11-12 | Paginierung über den `__next`-Link (`$skiptoken`) statt `$top`/`$skip`. (Task 0.2) | Der Server begrenzt auf 1000 Zeilen pro Antwort und blättert selbst. |
 | 2026-11-12 | Geschäfte nur laden, wenn sie über `SubjectBusiness` mit einem Traktandum im Zeitraum verknüpft sind. (Task 0.2) | Entspricht spec.md, Abschnitt 5 («sofern im Zeitraum behandelt»); die meisten der rund 10'000 eingereichten Geschäfte wurden nie debattiert. |
+| 2026-11-12 | Filter bei Geschäften (AK-4.3): Zeitraum und Rat beziehen sich auf die Debatten des Geschäfts (`debate_dates`, `debate_councils`), nicht auf Einreichungsdatum und Einreichungsrat. Bei einem Fraktionsfilter fallen Geschäfte weg. Zeitraum und Rat werden unabhängig geprüft; keine eigene Tabelle pro Debatte. Entscheid Sandro. | Eine Nutzerin, die nach «Ständerat, 2025» filtert, will wissen, was dort und dann behandelt wurde. Geschäftsdokumente enthalten auch die Antwort des Bundesrates und gehören keiner Fraktion. Der Grenzfall bei der Kombination von Zeitraum und Rat ist selten und wird als bekannte Grenze dokumentiert. |
 | 2026-11-12 | Evals laufen nur lokal mit uv, nicht im Container. | Im Image gibt es kein `.git` (kein Git-SHA), und die Ergebnisse in `evals/results/` sollen direkt committet werden. |
