@@ -34,7 +34,7 @@ Tasks:
 - [ ] 2.3 CLI `parlrag index`, inkrementell (nur neue oder geänderte Dokumente)
 - [ ] 2.4 Volltextsuche, Vektorsuche, RRF und Filter
 - [ ] 2.5 CLI `parlrag search "..."` gibt Treffer mit Scores und Metadaten aus
-- [ ] 2.6 Vollständiger Ingest und Index bis zu einem festen Stichtag. Stichtag und Teilkorpus für Experimente (zwei bis drei Sessions) festlegen und in plan.md festhalten. Laufzeit, Anzahl Dokumente und Chunks sowie DB-Grösse dokumentieren
+- [ ] 2.6 Vollständiger Ingest und Index bis zu einem festen Stichtag. Stichtag und Teilkorpus für Experimente (eine Session) festlegen und in plan.md festhalten. Die volle Indexierung dauert rund 14 Stunden (bge-m3 auf der CPU) und läuft am besten über Nacht. Laufzeit, Anzahl Dokumente und Chunks sowie DB-Grösse dokumentieren
 
 ## Phase 3 – Evals zuerst
 

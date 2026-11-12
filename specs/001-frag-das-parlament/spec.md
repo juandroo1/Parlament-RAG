@@ -72,7 +72,7 @@ Als Nutzerin will ich mich darauf verlassen können, dass das System wiedergibt,
 - Wortprotokolle (Amtliches Bulletin) von Nationalrat und Ständerat ab Beginn der 52. Legislatur (Wintersession 2023) bis heute.
 - Geschäfte aus Curia Vista mit Titel, eingereichtem Text, Antwort des Bundesrates und Status, sofern sie im Zeitraum behandelt wurden.
 - Sprachen: Deutsch und Französisch.
-- Für Evals gilt ein eingefrorener Korpus bis zu einem festen Stichtag (festgelegt in Task 2.6), damit Läufe über die Zeit vergleichbar bleiben. Experimente laufen auf einem festen Teilkorpus von zwei bis drei Sessions.
+- Für Evals gilt ein eingefrorener Korpus bis zu einem festen Stichtag (festgelegt in Task 2.6), damit Läufe über die Zeit vergleichbar bleiben. Experimente laufen auf einem festen Teilkorpus von einer Session.
 
 ## 6. Qualitätsziele
 
@@ -102,7 +102,7 @@ Goldset (Endstand MVP): mindestens 65 Fragen, davon 40 auf Deutsch und 10 auf Fr
 ## 8. Offene Fragen
 
 - Lizenz und Nutzungsbedingungen der Daten für eine öffentliche Demo verifizieren.
-- Lokales Embedding-Modell oder API-Modell: per Eval entscheiden (Qualität gegen Kosten). Gemessen in Task 2.2: bge-m3 auf der CPU schafft rund 2 Chunks/s, der volle Korpus bräuchte rund 14 Stunden. Vor Task 2.3 zu entscheiden, wie damit umgegangen wird.
+- Lokales Embedding-Modell oder API-Modell: per Eval entscheiden (Qualität gegen Kosten). Gemessen in Task 2.2: bge-m3 auf der CPU schafft rund 2 Chunks/s, der volle Korpus braucht rund 14 Stunden. Entschieden: bge-m3 bleibt; einmal voll indexieren, danach inkrementell; Experimente auf einer Session (plan.md, Entscheidungsprotokoll). Offen bleibt der Vergleich mit einem API-Modell als Experiment.
 - Hosting der Demo und Schutz vor Missbrauch (Rate-Limit, Kostendeckel).
 - Mehrturn-Gespräche (Folgefragen) für eine spätere Version?
 - Seitenzahl im Amtlichen Bulletin (Platzhalter `[PAGE n]` im Votum) als zusätzliche Quellenangabe in einer späteren Version?
