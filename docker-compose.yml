@@ -26,6 +26,10 @@ services:
       # Im Compose-Netz heisst der Datenbank-Host `db` und lauscht auf 5432.
       POSTGRES_HOST: db
       POSTGRES_PORT: "5432"
+      RAW_CACHE_DIR: /app/data/raw
+    volumes:
+      # Rohdaten-Cache der OData-Antworten bleibt auf dem Host erhalten.
+      - ./data/raw:/app/data/raw
     depends_on:
       db:
         condition: service_healthy
