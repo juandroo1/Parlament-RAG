@@ -15,7 +15,13 @@ from parlrag.db.scope import SESSION_SCOPE_CTE
 CHARS_PER_TOKEN_ESTIMATE = 4  # grobe Faustregel; echte Zahlen mit dem Tokenizer in Task 2.1
 
 # Reste von Markup oder Platzhaltern des Amtlichen Bulletins (Textbereinigung, Task 1.2).
-RESIDUAL_MARKUP_PATTERN = r"<[a-zA-Z/]|\[(GZ|VS|NB|NAM|PAGE)"
+# Nur die Tags und Platzhalter, die in den Quellen vorkommen; Links in spitzen Klammern
+# (<https://…>) oder Abkürzungen wie [VStG] sind normaler Text (Fehlalarme in Task 2.6).
+# Achtung: In Postgres-Regex ist `\b` ein Backspace, keine Wortgrenze.
+RESIDUAL_MARKUP_PATTERN = (
+    r"</?(pd_text|p|b|i|br|span|ul|ol|li|h[1-6]|strong|em|div|a|table|tr|td)([\s/][^>]*)?>"
+    r"|\[(GZ|VS|NB|NAM|PAGE ?[0-9]*)\]"
+)
 
 
 @dataclass(frozen=True)
@@ -32,6 +38,26 @@ class LengthStats:
         return self.total_chars // CHARS_PER_TOKEN_ESTIMATE
 
 
+@dataclass(frozen=True)
+class IndexSummary:
+    """Stand des Index im gewählten Umfang (Task 2.6)."""
+
+    indexed_documents: int = 0
+    chunks: int = 0
+    mean_chunk_tokens: float = 0.0
+    chunks_by_signature: dict[str, int] = field(default_factory=dict)
+
+
+@dataclass(frozen=True)
+class StorageSizes:
+    """Speicherbedarf in Bytes; immer für die ganze Datenbank, unabhängig vom Umfang."""
+
+    database: int = 0
+    documents_table: int = 0
+    chunks_table: int = 0
+    vector_index: int = 0
+
+
 @dataclass
 class CorpusStats:
     by_type_language: dict[tuple[str, str], int] = field(default_factory=dict)
@@ -41,6 +67,8 @@ class CorpusStats:
     first_date: dt.date | None = None
     last_date: dt.date | None = None
     quality: dict[str, int] = field(default_factory=dict)
+    index: IndexSummary = field(default_factory=IndexSummary)
+    storage: StorageSizes = field(default_factory=StorageSizes)
 
     @property
     def total_documents(self) -> int:
@@ -126,4 +154,32 @@ def compute_stats(engine: Engine, session_id: int | None = None) -> CorpusStats:
             "Votum ohne Redner": no_speaker,
             "ohne Chunks": no_chunks,
         }
+
+        ((indexed, chunks, mean_tokens),) = _rows(
+            connection,
+            "SELECT count(DISTINCT c.document_id), count(*), coalesce(avg(c.token_count), 0) "
+            "FROM chunks c JOIN scope s ON s.id = c.document_id",
+            session_id,
+        )
+        signatures = _rows(
+            connection,
+            "SELECT coalesce(c.metadata ->> 'index', '-'), count(*) "
+            "FROM chunks c JOIN scope s ON s.id = c.document_id GROUP BY 1 ORDER BY 2 DESC, 1",
+            session_id,
+        )
+        stats.index = IndexSummary(
+            indexed_documents=indexed,
+            chunks=chunks,
+            mean_chunk_tokens=float(mean_tokens),
+            chunks_by_signature={signature: count for signature, count in signatures},
+        )
+
+        sizes = connection.execute(
+            text(
+                "SELECT pg_database_size(current_database()), "
+                "pg_total_relation_size('documents'), pg_total_relation_size('chunks'), "
+                "coalesce(pg_relation_size(to_regclass('ix_chunks_embedding_hnsw')), 0)"
+            )
+        ).one()
+        stats.storage = StorageSizes(*(int(value) for value in sizes))
     return stats

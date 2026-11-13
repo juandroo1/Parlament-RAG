@@ -4,16 +4,18 @@ import datetime as dt
 import re
 
 import pytest
-from sqlalchemy import Engine, select
+from sqlalchemy import Engine, func, select
 from sqlalchemy.orm import Session, sessionmaker
 from typer.testing import CliRunner
 
+from fakes import FakeEmbedder
 from ingest_fakes import PFAS_DAY, FixtureSource
 from parlrag import cli
 from parlrag.db.models import Chunk, Document
+from parlrag.index.indexer import IndexConfig, index_documents
 from parlrag.ingest.mapping import Language
 from parlrag.ingest.pipeline import collect_session, run_ingest
-from parlrag.stats import CorpusStats, LengthStats, compute_stats
+from parlrag.stats import CorpusStats, IndexSummary, LengthStats, StorageSizes, compute_stats
 
 BOTH: frozenset[Language] = frozenset({"de", "fr"})
 
@@ -70,6 +72,37 @@ def test_volume_lengths_and_distribution(ingested: Engine) -> None:
 
 
 @pytest.mark.db
+@pytest.mark.parametrize(
+    "legitimate",
+    [
+        "Siehe <https://www.bj.admin.ch/bj/de/home.html> > Publikationen.",
+        "Die Kantone können sog. <weitere Nutzungszonen> vorsehen.",
+        "Gemäss Bundesgesetz über die Verrechnungssteuer [VStG] und [VSA; SR 513.11].",
+        "Der Wert liegt bei <5 Prozent.",
+    ],
+)
+def test_quality_check_ignores_legitimate_brackets(ingested: Engine, legitimate: str) -> None:
+    """Fehlalarme aus dem vollen Ingest (Task 2.6) zählen nicht als Restmarkup."""
+    with Session(ingested) as db, db.begin():
+        michel = db.scalars(select(Document).where(Document.source_id == "418982")).one()
+        michel.text += " " + legitimate
+
+    assert compute_stats(ingested).quality["Restmarkup"] == 0
+
+
+@pytest.mark.db
+@pytest.mark.parametrize(
+    "residue", ["<p>Rest</p>", '<span class="x">Rest', "Zeile<br/>", "[GZ]", "[PAGE 727]"]
+)
+def test_quality_check_detects_each_kind_of_residue(ingested: Engine, residue: str) -> None:
+    with Session(ingested) as db, db.begin():
+        michel = db.scalars(select(Document).where(Document.source_id == "418982")).one()
+        michel.text += " " + residue
+
+    assert compute_stats(ingested).quality["Restmarkup"] == 1
+
+
+@pytest.mark.db
 def test_quality_checks_detect_problems(ingested: Engine) -> None:
     with Session(ingested) as db, db.begin():
         michel = db.scalars(select(Document).where(Document.source_id == "418982")).one()
@@ -100,6 +133,18 @@ def test_stats_command_prints_tables(monkeypatch: pytest.MonkeyPatch) -> None:
         first_date=dt.date(2026, 9, 14),
         last_date=dt.date(2026, 10, 2),
         quality={"Restmarkup": 0, "ohne Chunks": 5200},
+        index=IndexSummary(
+            indexed_documents=4133,
+            chunks=10978,
+            mean_chunk_tokens=270.4,
+            chunks_by_signature={"BAAI/bge-m3|target=500": 10978},
+        ),
+        storage=StorageSizes(
+            database=900 * 1024 * 1024,
+            documents_table=60 * 1024 * 1024,
+            chunks_table=800 * 1024 * 1024,
+            vector_index=500 * 1024 * 1024,
+        ),
     )
     requested: list[int | None] = []
 
@@ -119,3 +164,28 @@ def test_stats_command_prints_tables(monkeypatch: pytest.MonkeyPatch) -> None:
     assert "5'200'000" in plain  # ≈ Tokens
     assert "Rat NR" in plain
     assert "Restmarkup" in plain
+    assert "10'978" in plain  # Chunks
+    assert "Signatur BAAI/bge-m3|target=500" in plain
+    assert "800 MB" in plain and "500 MB" in plain
+
+
+@pytest.mark.db
+def test_index_summary_and_storage(ingested: Engine) -> None:
+    before = compute_stats(ingested)
+    assert before.index.indexed_documents == 0 and before.index.chunks == 0
+
+    index_documents(ingested, FakeEmbedder(), IndexConfig(model_name="fake/model"))
+    after = compute_stats(ingested)
+
+    with Session(ingested) as db:
+        chunk_count = db.scalar(select(func.count()).select_from(Chunk))
+    assert after.index.indexed_documents == 8
+    assert after.index.chunks == chunk_count
+    assert after.index.mean_chunk_tokens > 0
+    assert after.index.chunks_by_signature == {
+        IndexConfig(model_name="fake/model").signature: chunk_count
+    }
+    assert after.quality["ohne Chunks"] == 0
+    assert after.storage.database > after.storage.chunks_table > 0
+    assert after.storage.vector_index > 0
+    assert compute_stats(ingested, session_id=9999).index.chunks == 0
