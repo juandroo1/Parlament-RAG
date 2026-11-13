@@ -2,9 +2,12 @@
 
 import datetime as dt
 import logging
+import time
+from enum import StrEnum
 from typing import Annotated, cast
 
 import typer
+from pydantic import ValidationError
 from rich.console import Console
 from rich.table import Table
 from sqlalchemy.orm import sessionmaker
@@ -17,6 +20,8 @@ from parlrag.ingest.mapping import LANGUAGES, Language
 from parlrag.ingest.odata import ODataClient
 from parlrag.ingest.pipeline import IngestStats, run_ingest
 from parlrag.ingest.source import ODataSource
+from parlrag.retrieval import RetrievalConfig, Retriever, SearchFilters
+from parlrag.retrieval.formatting import format_results, results_json
 from parlrag.stats import CorpusStats, compute_stats
 
 DEFAULT_SINCE = dt.datetime(2023, 12, 1)  # Beginn der 52. Legislatur (spec.md, Abschnitt 5)
@@ -200,3 +205,63 @@ def index(
         f"Indexiert: {result.documents} Dokumente, {result.chunks} Chunks in "
         f"{result.seconds:.0f} s ({result.chunks_per_second:.1f} Chunks/s)"
     )
+
+
+class ModeChoice(StrEnum):
+    hybrid = "hybrid"
+    fulltext = "fulltext"
+    vector = "vector"
+
+
+class CouncilChoice(StrEnum):
+    NR = "NR"
+    SR = "SR"
+    V = "V"
+
+
+def build_retriever() -> Retriever:
+    """Verdrahtet Datenbank, Embedder und Konfiguration (in Tests ersetzbar)."""
+    settings = Settings()
+    return Retriever(get_engine(), get_embedder(settings), RetrievalConfig.from_settings(settings))
+
+
+@app.command()
+def search(
+    query: Annotated[str, typer.Argument(help="Frage oder Suchbegriffe.")],
+    mode: Annotated[ModeChoice, typer.Option(help="Suchart.")] = ModeChoice.hybrid,
+    top: Annotated[int, typer.Option(min=1, max=100, help="Anzahl Treffer.")] = 10,
+    council: Annotated[CouncilChoice | None, typer.Option(help="Nur dieser Rat.")] = None,
+    date_from: Annotated[
+        dt.datetime | None, typer.Option(formats=["%Y-%m-%d"], help="Ab Datum (inklusive).")
+    ] = None,
+    date_to: Annotated[
+        dt.datetime | None, typer.Option(formats=["%Y-%m-%d"], help="Bis Datum (inklusive).")
+    ] = None,
+    parl_group: Annotated[
+        str | None, typer.Option(help="Nur Voten dieser Fraktion, z. B. RL, S, V, M-E, G, GL.")
+    ] = None,
+    as_json: Annotated[bool, typer.Option("--json", help="Ausgabe als JSON.")] = False,
+) -> None:
+    """Nur Retrieval: Treffer mit Scores, Metadaten, Ausschnitt und Link (zum Prüfen)."""
+    try:
+        filters = SearchFilters(
+            council=council.value if council else None,
+            date_from=date_from.date() if date_from else None,
+            date_to=date_to.date() if date_to else None,
+            parl_group=parl_group,
+        )
+    except ValidationError as exc:
+        raise typer.BadParameter(exc.errors()[0]["msg"], param_hint="--date-from") from exc
+
+    retriever = build_retriever()
+    model_load_ms = None
+    if mode is not ModeChoice.fulltext:
+        # Modell vorab laden, damit die gemessene Suchzeit den einmaligen Start nicht enthält.
+        start = time.monotonic()
+        retriever.embedder.embed_query("Modell laden")
+        model_load_ms = (time.monotonic() - start) * 1000
+    start = time.monotonic()
+    hits = retriever.search(query, filters, mode=mode.value, top_n=top)
+    duration_ms = (time.monotonic() - start) * 1000
+    render = results_json if as_json else format_results
+    typer.echo(render(query, mode.value, filters, hits, duration_ms, model_load_ms))
