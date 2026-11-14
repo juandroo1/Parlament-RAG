@@ -4,6 +4,7 @@
 - Claude Opus 5.5 denkt immer (adaptiv); gesteuert wird nur über den Effort.
 - Serverseitiger Fallback bei Ablehnungen (`fallbacks: "default"`): Lehnt das Modell ab,
   antwortet im selben Aufruf ein anderes Modell. Kosten werden pro beteiligtem Modell gerechnet.
+  Nur für Modelle, die ihn unterstützen (z. B. nicht Haiku 5.5).
 - Das SDK wiederholt 408/409/429/5xx und Verbindungsfehler selbst.
 """
 
@@ -29,6 +30,16 @@ from parlrag.llm.pricing import cost_usd
 logger = logging.getLogger(__name__)
 
 FALLBACK_BETA = "server-side-fallback-2026-07-01"
+# Modelle mit serverseitigem Fallback; bei anderen (z. B. Haiku 5.5) wäre der Parameter ein Fehler.
+FALLBACK_MODELS = frozenset(
+    {
+        "claude-opus-5-5",
+        "claude-sonnet-5-5",
+        "claude-opus-5",
+        "claude-fable-5-2",
+        "claude-fable-5-1",
+    }
+)
 DEFAULT_MAX_TOKENS = 16_000
 DEFAULT_TIMEOUT_SECONDS = 120.0
 
@@ -41,14 +52,15 @@ class AnthropicLLM:
         effort: Effort,
         *,
         max_tokens: int = DEFAULT_MAX_TOKENS,
-        fallback: bool = True,
+        fallback: bool | None = None,
         clock: Callable[[], float] = time.perf_counter,
     ) -> None:
         self.client = client
         self._model = model
         self.effort = effort
         self.max_tokens = max_tokens
-        self.fallback = fallback
+        # Ohne Angabe: Fallback, wenn das Modell ihn unterstützt.
+        self.fallback = model in FALLBACK_MODELS if fallback is None else fallback
         self.clock = clock
 
     @property

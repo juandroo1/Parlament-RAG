@@ -1,8 +1,9 @@
 """Geschätzte Kosten pro Aufruf (spec.md, Abschnitt 6: Kosten pro Frage).
 
-Preise in USD pro Million Tokens, Anthropic-API, Stand 2026-11. Thinking-Tokens werden als
-Output abgerechnet und sind in `output_tokens` enthalten. Cache schreiben gilt für die
-Standard-TTL von 5 Minuten.
+Preise in USD pro Million Tokens, Anthropic-API, Stand 2026-11
+(https://platform.claude.com/docs/en/about-claude/pricing). Thinking-Tokens werden als Output
+abgerechnet und sind in `output_tokens` enthalten. Cache schreiben gilt für die Standard-TTL von
+5 Minuten. Haiku 5.5 kostet mehr, wenn der Prompt (Input inklusive Cache) über 100'000 Tokens hat.
 """
 
 from dataclasses import dataclass
@@ -16,11 +17,22 @@ class ModelPrice:
     output: float
     cache_write: float
     cache_read: float
+    # Preisstufe für lange Prompts: ab `long_prompt_tokens` Input-Tokens gilt `long_prompt`.
+    long_prompt_tokens: int | None = None
+    long_prompt: "ModelPrice | None" = None
 
 
 PRICES: dict[str, ModelPrice] = {
     "claude-opus-5-5": ModelPrice(input=4.00, output=20.00, cache_write=5.00, cache_read=0.20),
     "claude-sonnet-5-5": ModelPrice(input=2.00, output=10.00, cache_write=2.50, cache_read=0.10),
+    "claude-haiku-5-5": ModelPrice(
+        input=0.10,
+        output=0.50,
+        cache_write=0.125,
+        cache_read=0.01,
+        long_prompt_tokens=100_000,
+        long_prompt=ModelPrice(input=0.50, output=2.50, cache_write=0.625, cache_read=0.05),
+    ),
     # Mögliche Ziele des serverseitigen Fallbacks bei Ablehnungen.
     "claude-opus-5": ModelPrice(input=5.00, output=25.00, cache_write=6.25, cache_read=0.50),
     "claude-opus-4-8": ModelPrice(input=5.00, output=25.00, cache_write=6.25, cache_read=0.50),
@@ -38,6 +50,9 @@ def cost_usd(
     price = PRICES.get(model)
     if price is None:
         return None
+    prompt_tokens = input_tokens + cache_creation_input_tokens + cache_read_input_tokens
+    if price.long_prompt and price.long_prompt_tokens and prompt_tokens > price.long_prompt_tokens:
+        price = price.long_prompt
     return (
         input_tokens * price.input
         + output_tokens * price.output

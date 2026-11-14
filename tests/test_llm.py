@@ -277,3 +277,23 @@ def test_pricing() -> None:
     assert cost_usd(MODEL, 0, 1_000_000) == pytest.approx(20.00)
     assert cost_usd("claude-sonnet-5-5", 0, 0, 1_000_000, 1_000_000) == pytest.approx(2.60)
     assert cost_usd("claude-unknown-9", 1, 1) is None
+
+
+def test_fallback_only_for_models_that_support_it() -> None:
+    """Haiku 5.5 hat keinen serverseitigen Fallback; der Parameter liesse den Aufruf scheitern."""
+    messages = FakeMessages(_response(Answer(answer="x", citations=[]), model="claude-haiku-5-5"))
+    client = SimpleNamespace(beta=SimpleNamespace(messages=messages))
+    haiku = AnthropicLLM(client, "claude-haiku-5-5", "low")  # type: ignore[arg-type]
+    sonnet = AnthropicLLM(client, "claude-sonnet-5-5", "high")  # type: ignore[arg-type]
+
+    assert not haiku.fallback and sonnet.fallback
+    result = haiku.generate(system="s", user="u", schema=Answer)
+    assert "fallbacks" not in messages.calls[0]
+    assert not result.fallback_used
+
+
+def test_haiku_pricing_has_long_prompt_tier() -> None:
+    short = cost_usd("claude-haiku-5-5", 100_000, 1_000_000)
+    assert short == pytest.approx(0.01 + 0.50)
+    long = cost_usd("claude-haiku-5-5", 60_000, 1_000_000, 0, 50_000)  # Prompt 110'000 Tokens
+    assert long == pytest.approx((60_000 * 0.50 + 1_000_000 * 2.50 + 50_000 * 0.05) / 1_000_000)
