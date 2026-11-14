@@ -39,6 +39,10 @@ class Settings(BaseSettings):
     anthropic_model: str = "claude-opus-5-5"
     anthropic_effort: Effort = "high"
 
+    # Judge der Antwort-Evals (Task 4.5a): bewertet Zitate, Faithfulness und Neutralität.
+    judge_model: str = "claude-sonnet-5-5"
+    judge_effort: Effort = "medium"
+
     # Generierung (plan.md, Abschnitt 7): so viele Chunks gehen als nummerierte Quellen ans LLM.
     answer_context_chunks: int = Field(default=8, ge=1, le=50)
     # Unter dieser Cosine-Similarity des besten Vektortreffers: «keine ausreichende Grundlage»

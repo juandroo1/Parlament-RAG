@@ -49,7 +49,8 @@ Tasks:
 - [x] 4.2 Antwort-Prompt, strukturierte Ausgabe und Zitatvalidierung (AK-2.3): Modell liefert nur Quellennummern, Server ordnet sie den Chunks zu
 - [x] 4.3 Logik für «keine ausreichende Grundlage»: Schwellwert (Cosine-Similarity bzw. Reranker-Score, nicht RRF) und Modellsignal, Schwellwert auf dem Goldset kalibrieren
 - [x] 4.4 CLI `parlrag ask "..."`
-- [ ] 4.5 Judge-Prompt und Antwort-Metriken im Eval-Runner (Zitiergenauigkeit, Faithfulness, Ablehnungsquote, falsche Ablehnungen, Neutralität, Antwortsprache, Latenz p95, Kosten); Goldset auf 65 Fragen ausbauen
+- [x] 4.5a Judge-Prompt und Antwort-Metriken im Eval-Runner (Zitiergenauigkeit, Faithfulness, Ablehnungsquote, falsche Ablehnungen, Neutralität, Antwortsprache, Latenz p95, Kosten): `parlrag eval --answers`, erster Smoke-Lauf
+- [ ] 4.5b Goldset auf 65 Fragen ausbauen (Review wie in 3.1), Baseline-Lauf mit Antworten, Schwelle neu kalibrieren, rund 10 % der Judge-Urteile von Hand gegenprüfen und die Übereinstimmung dokumentieren, Kosten pro Frage im README
 
 ## Phase 5 – API und UI
 

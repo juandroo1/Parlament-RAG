@@ -17,12 +17,18 @@ from parlrag.config import Settings
 from parlrag.db.session import get_engine
 from parlrag.embeddings import get_embedder
 from parlrag.evals import DEFAULT_GOLDEN_PATH, GoldenSetError, load_golden
+from parlrag.evals.answers import AnswerResult, SupportsAsk, evaluate_answers
+from parlrag.evals.judge import Judge
 from parlrag.evals.results import (
+    ANSWER_HEADER,
     DEFAULT_RESULTS_DIR,
     SUBSET_HEADER,
     THRESHOLD_HEADER,
     EvalError,
     EvalRun,
+    answer_progress,
+    answer_rows,
+    answer_summary,
     comparison_warning,
     find_previous,
     git_state,
@@ -48,7 +54,7 @@ from parlrag.ingest.mapping import LANGUAGES, Language
 from parlrag.ingest.odata import ODataClient
 from parlrag.ingest.pipeline import IngestStats, run_ingest
 from parlrag.ingest.source import ODataSource
-from parlrag.llm import LLMError
+from parlrag.llm import LLMError, get_llm
 from parlrag.retrieval import RetrievalConfig, Retriever, SearchFilters, SearchMode
 from parlrag.retrieval.formatting import format_results, results_json
 from parlrag.stats import CorpusStats, compute_stats
@@ -347,6 +353,27 @@ def describe_eval(retriever: Retriever) -> tuple[dict[str, Any], dict[str, Any]]
     return config, corpus_snapshot(retriever.engine)
 
 
+def build_answer_evaluation(
+    retriever: Retriever,
+) -> tuple[SupportsAsk, Judge, dict[str, Any]]:
+    """Pipeline wie `ask` (mit geteiltem Retriever) und Judge (in Tests ersetzbar)."""
+    settings = Settings()
+    pipeline = build_pipeline(settings, retriever=retriever)
+    judge = Judge(get_llm(settings, model=settings.judge_model, effort=settings.judge_effort))
+    config: dict[str, Any] = {
+        "answer_model": settings.anthropic_model,
+        "answer_effort": settings.anthropic_effort,
+        "llm_backend": settings.llm_backend,
+        "judge_model": settings.judge_model,
+        "judge_effort": settings.judge_effort,
+        "answer_prompt_version": pipeline.generator.prompt.version,
+        "judge_prompt_version": judge.prompt.version,
+        "answer_context_chunks": settings.answer_context_chunks,
+        "answer_min_similarity": settings.answer_min_similarity,
+    }
+    return pipeline, judge, config
+
+
 @app.command("eval")
 def eval_command(
     suite: Annotated[
@@ -361,8 +388,18 @@ def eval_command(
     results_dir: Annotated[
         Path, typer.Option(help="Verzeichnis der Ergebnisdateien.")
     ] = DEFAULT_RESULTS_DIR,
+    answers: Annotated[
+        bool,
+        typer.Option(
+            "--answers",
+            help="Auch Antworten erzeugen und per Judge bewerten (LLM-Aufrufe, kostet).",
+        ),
+    ] = False,
 ) -> None:
-    """Retrieval-Evals auf dem Goldset; nur lokal mit uv (Git-SHA in der Ergebnisdatei)."""
+    """Evals auf dem Goldset; nur lokal mit uv (Git-SHA in der Ergebnisdatei).
+
+    Ohne `--answers` nur Retrieval (deterministisch, ohne LLM).
+    """
     console = Console()
     try:
         sha, dirty = git_state()
@@ -372,9 +409,19 @@ def eval_command(
         raise typer.Exit(1) from exc
     retriever = build_retriever()
     chosen = mode.value if mode else retriever.config.mode
+    answer_parts = None
+    if answers:
+        try:  # vor dem Retrieval: ein fehlender Key oder eine fehlende CLI bricht sofort ab
+            answer_parts = build_answer_evaluation(retriever)
+        except LLMError as exc:
+            console.print(f"[red]{exc}[/red]")
+            raise typer.Exit(1) from exc
+    answer_model = answer_parts[2]["answer_model"] if answer_parts else None
     try:
         previous_path = compare or (
-            find_previous(results_dir, suite.value, chosen) if results_dir.exists() else None
+            find_previous(results_dir, suite.value, chosen, answer_model)
+            if results_dir.exists()
+            else None
         )
         previous = load_run(previous_path) if previous_path else None
     except EvalError as exc:
@@ -398,6 +445,15 @@ def eval_command(
         )
 
     report = evaluate_retrieval(selection, retriever, chosen, progress=show_progress)
+    answer_report = None
+    if answer_parts:
+        pipeline, judge, _ = answer_parts
+
+        def show_answer(answer: AnswerResult) -> None:
+            console.print(answer_progress(answer), highlight=False)
+
+        console.print(f"\nAntworten ({answer_model}) und Judge ({judge.model}):")
+        answer_report = evaluate_answers(selection, pipeline, judge, chosen, progress=show_answer)
     min_similarity = config.get("answer_min_similarity")
     threshold = (
         threshold_report(selection, report.similarities, float(min_similarity))
@@ -415,12 +471,15 @@ def eval_command(
         skipped_unanswerable=report.skipped_unanswerable,
         config=config,
         corpus=corpus,
-        metrics=report.metrics,
+        metrics={**report.metrics, **(answer_report.metrics if answer_report else {})},
         subsets=report.subsets,
         questions=report.questions,
         previous=previous_path.name if previous_path else None,
         similarities=report.similarities,
         threshold=threshold,
+        answer_config=answer_parts[2] if answer_parts else None,
+        answer_counts=answer_report.counts if answer_report else {},
+        answers=answer_report.answers if answer_report else [],
     )
     path = write_run(run, previous, results_dir)
 
@@ -449,6 +508,12 @@ def eval_command(
         for threshold_row in threshold_rows(threshold):
             threshold_table.add_row(*threshold_row)
         console.print(threshold_table)
+    if run.answers:
+        console.print(answer_summary(run))
+        answers_table = Table(*ANSWER_HEADER, title="Antworten")
+        for answer_row in answer_rows(run):
+            answers_table.add_row(*answer_row)
+        console.print(answers_table)
     missed = misses(run)
     console.print(f"Verfehlte Quellen (Recall@10 < 1): {len(missed)}")
     for line in missed:
