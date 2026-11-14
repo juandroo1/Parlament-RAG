@@ -167,6 +167,25 @@ def stats(
         quality.add_row(check, _number(count))
     console.print(quality)
 
+    index_table = Table("Kennzahl", "Wert", title="Index")
+    index_table.add_row("indexierte Dokumente", _number(result.index.indexed_documents))
+    index_table.add_row("Chunks", _number(result.index.chunks))
+    index_table.add_row("Tokens je Chunk (Mittel)", _number(result.index.mean_chunk_tokens))
+    for signature, count in result.index.chunks_by_signature.items():
+        index_table.add_row(f"Signatur {signature}", _number(count))
+    console.print(index_table)
+
+    storage = Table("Objekt", "Grösse", title="Speicher (ganze Datenbank)")
+    storage.add_row("Datenbank", _megabytes(result.storage.database))
+    storage.add_row("Tabelle documents (mit Indizes)", _megabytes(result.storage.documents_table))
+    storage.add_row("Tabelle chunks (mit Indizes)", _megabytes(result.storage.chunks_table))
+    storage.add_row("davon HNSW-Index", _megabytes(result.storage.vector_index))
+    console.print(storage)
+
+
+def _megabytes(size: int) -> str:
+    return f"{size / 1024 / 1024:,.0f} MB".replace(",", "'")
+
 
 def execute_index(session_id: int | None, limit: int | None, rebuild: bool) -> IndexStats:
     """Verdrahtet Konfiguration, Embedder und Datenbank (in Tests ersetzbar)."""
