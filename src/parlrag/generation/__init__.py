@@ -1,6 +1,7 @@
 """Generierung: Antwort mit Quellennummern und Zitatvalidierung (plan.md, Abschnitt 7)."""
 
 from parlrag.generation.answer import (
+    INSUFFICIENT_NOTICE,
     AnswerGenerator,
     AnswerOutput,
     CitationError,
@@ -11,6 +12,7 @@ from parlrag.generation.answer import (
 )
 
 __all__ = [
+    "INSUFFICIENT_NOTICE",
     "AnswerGenerator",
     "AnswerOutput",
     "CitationError",

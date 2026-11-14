@@ -7,6 +7,7 @@ Modi vergleichbar sind. `fulltext` lädt kein Embedding-Modell.
 
 import datetime as dt
 import uuid
+from collections.abc import Sequence
 from dataclasses import dataclass
 from typing import Any
 
@@ -19,7 +20,7 @@ from parlrag.retrieval.fulltext import search_fulltext
 from parlrag.retrieval.fusion import reciprocal_rank_fusion
 from parlrag.retrieval.vector import search_vector
 
-__all__ = ["RetrievalConfig", "Retriever", "SearchHit", "SearchMode"]
+__all__ = ["RetrievalConfig", "Retriever", "SearchHit", "SearchMode", "best_similarity"]
 
 
 @dataclass(frozen=True)
@@ -176,3 +177,13 @@ def _hit(
         url=row[17],
         speaker_function=row[18],
     )
+
+
+def best_similarity(hits: Sequence[SearchHit]) -> float | None:
+    """Höchste Cosine-Similarity der Vektortreffer; None ohne Vektorsuche (Modus `fulltext`).
+
+    Grundlage der Schwelle für «keine ausreichende Grundlage» (plan.md, Abschnitt 6); der
+    RRF-Score hängt nur vom Rang ab und taugt dafür nicht.
+    """
+    similarities = [hit.vector_similarity for hit in hits if hit.vector_similarity is not None]
+    return max(similarities) if similarities else None

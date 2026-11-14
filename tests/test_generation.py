@@ -9,6 +9,7 @@ import pytest
 from pydantic import BaseModel
 
 from parlrag.generation import (
+    INSUFFICIENT_NOTICE,
     AnswerGenerator,
     AnswerOutput,
     CitationError,
@@ -31,7 +32,7 @@ SPEECH = SearchHit(
     fulltext_rank=None,
     fulltext_score=None,
     vector_rank=1,
-    vector_similarity=0.54,
+    vector_similarity=0.70,
     source_type="transcript",
     source_id="422528",
     language="de",
@@ -187,12 +188,66 @@ def test_unknown_cost_stays_unknown_over_attempts() -> None:
     assert result.usage is not None and result.usage.cost_usd is None
 
 
-def test_insufficient_context_without_citations_is_valid() -> None:
+def test_model_signal_gives_fixed_notice_and_keeps_model_text() -> None:
     llm = FakeLLM(_out("Die gefundenen Quellen beantworten die Frage nicht.", [], True))
     result = AnswerGenerator(llm).generate("Was beschloss der Bieler Stadtrat?", HITS)
 
-    assert result.insufficient_context and result.sources == []
-    assert result.attempts == 1
+    assert result.insufficient_context and result.insufficient_reason == "model"
+    assert result.answer == INSUFFICIENT_NOTICE["de"]
+    assert result.model_answer == "Die gefundenen Quellen beantworten die Frage nicht."
+    assert result.sources == [] and result.attempts == 1
+    assert result.usage is not None  # Kosten des Aufrufs bleiben sichtbar
+    assert result.best_similarity == pytest.approx(0.70)
+
+
+def test_model_signal_with_citations_shows_no_sources() -> None:
+    llm = FakeLLM(_out("Die Quellen behandeln anderes [1].", [1], True))
+    result = AnswerGenerator(llm).generate("Frage?", HITS)
+    assert result.insufficient_reason == "model" and result.sources == []
+
+
+def _with_similarity(similarity: float | None) -> list[SearchHit]:
+    return [dataclasses.replace(hit, vector_similarity=similarity) for hit in HITS]
+
+
+def test_low_similarity_skips_the_llm() -> None:
+    llm = FakeLLM()
+    hits = _with_similarity(0.50)
+    result = AnswerGenerator(llm, min_similarity=0.55).generate("Wer gewann den Final?", hits)
+
+    assert llm.calls == []
+    assert result.insufficient_context and result.insufficient_reason == "low_similarity"
+    assert result.answer == INSUFFICIENT_NOTICE["de"]
+    assert result.best_similarity == pytest.approx(0.50)
+    assert result.usage is None and result.attempts == 0 and result.sources == []
+
+
+def test_similarity_at_threshold_goes_to_the_llm() -> None:
+    llm = FakeLLM(_out("Aussage [1].", [1]))
+    result = AnswerGenerator(llm, min_similarity=0.55).generate("Frage?", _with_similarity(0.55))
+    assert len(llm.calls) == 1 and not result.insufficient_context
+    assert result.insufficient_reason is None
+
+
+def test_best_similarity_over_all_hits_counts() -> None:
+    hits = [dataclasses.replace(SPEECH, vector_similarity=None), *_with_similarity(0.61)[1:]]
+    llm = FakeLLM(_out("Aussage [2].", [2]))
+    result = AnswerGenerator(llm, min_similarity=0.60).generate("Frage?", hits)
+    assert result.best_similarity == pytest.approx(0.61) and len(llm.calls) == 1
+
+
+def test_search_without_similarity_skips_the_threshold() -> None:
+    llm = FakeLLM(_out("Aussage [1].", [1]))
+    result = AnswerGenerator(llm, min_similarity=0.99).generate("Frage?", _with_similarity(None))
+    assert len(llm.calls) == 1 and result.best_similarity is None
+
+
+def test_notice_in_french() -> None:
+    llm = FakeLLM()
+    result = AnswerGenerator(llm, min_similarity=0.9).generate(
+        "Qu'a décidé le conseil municipal de Bienne ?", HITS
+    )
+    assert result.answer == INSUFFICIENT_NOTICE["fr"]
 
 
 def test_no_hits_means_no_llm_call() -> None:
@@ -200,6 +255,7 @@ def test_no_hits_means_no_llm_call() -> None:
     result = AnswerGenerator(llm).generate("Frage?", [])
 
     assert result.insufficient_context and result.usage is None and result.attempts == 0
+    assert result.insufficient_reason == "no_hits" and result.answer == INSUFFICIENT_NOTICE["de"]
     assert llm.calls == []
 
 
