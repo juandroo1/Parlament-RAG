@@ -4,7 +4,7 @@
 
 RAG-Anwendung, die Fragen zu Debatten und Geschäften des Schweizer Bundesparlaments beantwortet, auf Deutsch und Französisch. Grundlage sind das Amtliche Bulletin (Wortprotokolle) und Curia Vista (Geschäfte). Jede Aussage ist mit einer überprüfbaren Quelle auf parlament.ch belegt. Die Qualität wird mit einem reproduzierbaren Eval-Set gemessen.
 
-> **Status:** in Entwicklung. Aktuell stehen das Projektgerüst, der Docker-Stack mit Datenbankschema und Health-Endpoint sowie die CI; Ingestion, Retrieval und Generierung folgen gemäss [`tasks.md`](specs/001-frag-das-parlament/tasks.md).
+> **Status:** in Entwicklung. Aktuell stehen der Docker-Stack mit CI, Ingestion, Indexierung und hybride Suche über den ganzen Korpus; Generierung, Evals, API und UI folgen gemäss [`tasks.md`](specs/001-frag-das-parlament/tasks.md).
 
 ## Quickstart mit Docker
 
@@ -48,6 +48,24 @@ docker compose run --rm app parlrag index                                # alles
 ```
 
 `parlrag index` chunkt neue oder geänderte Dokumente, bettet sie ein und speichert die Chunks mit Vektor. Es ist inkrementell und kann jederzeit abgebrochen und neu gestartet werden (Commit alle 32 Dokumente). Ändert sich eine Einstellung wie `CHUNK_TARGET_TOKENS` oder `INDEX_CONTEXT_HEADER`, indexiert der nächste Lauf die betroffenen Dokumente neu.
+
+### Korpus-Stand
+
+Der Korpus für die Evals ist auf den **Stichtag 2026-10-02** eingefroren (Ende der Herbstsession 2026): 15 Sessions seit der Wintersession 2023, 42'515 Dokumente (26'401 Voten, 8'057 Geschäfte je Sprache) und 102'891 Chunks. Experimente laufen auf dem Teilkorpus Herbstsession 2026 (`--session-id 5215`). Den gleichen Stand erzeugen:
+
+```bash
+docker compose run --rm app parlrag ingest --since 2023-12-01 --until 2026-10-02   # rund 20 Minuten
+```
+
+Der volle Index dauert auf der CPU rund 17 Stunden (1,7 Chunks/s), die Datenbank braucht danach 1,7 GB. Am besten läuft er losgelöst im Hintergrund, zuerst der Teilkorpus, dann der Rest:
+
+```bash
+docker compose run -d --name parlrag-index app sh -c "parlrag index --session-id 5215 && parlrag index"
+docker logs -f parlrag-index     # Fortschritt
+docker stop parlrag-index        # anhalten; mit demselben Befehl fortsetzen (vorher docker rm parlrag-index)
+```
+
+Laufzeiten und Grössen im Detail: [`plan.md`, Abschnitt 3](specs/001-frag-das-parlament/plan.md).
 
 ### Suchen (nur Retrieval)
 
