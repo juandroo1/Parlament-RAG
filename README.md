@@ -104,7 +104,11 @@ uv run parlrag eval --suite full --mode fulltext   # alle Fragen, nur Volltext
 uv run parlrag eval --suite full --compare evals/results/<lauf>.json
 ```
 
-Gemessen werden Recall@5, @10 und @20 sowie MRR@10, auf Dokumenten statt Chunks. Dazu kommt die Suchdauer p50/p95, jeweils insgesamt und pro Teilset (`de`, `fr`, `crosslingual`, `filter`, `teilkorpus`, `wertend`). Jeder Lauf schreibt `evals/results/<datum>_<sha>_<suite>-<modus>.json` mit Konfiguration und Korpus-Stand, dazu eine Markdown-Zusammenfassung. Die Ausgabe zeigt pro Metrik die Differenz zum letzten Lauf mit derselben Suite und demselben Modus und listet die Fragen, deren erwartete Quellen nicht unter den Top 10 liegen. Dazu kommt die Wirkung der Schwelle für «keine ausreichende Grundlage» (`ANSWER_MIN_SIMILARITY`): wie viele unbeantwortbare Fragen sie ohne LLM abfängt und wie viele beantwortbare sie fälschlich abweist. Die Ergebnisse werden committet und bilden die Historie. Antwort-Metriken (Zitiergenauigkeit, Ablehnungen, Neutralität) folgen in Task 4.5.
+Gemessen werden Recall@5, @10 und @20 sowie MRR@10, auf Dokumenten statt Chunks. Dazu kommt die Suchdauer p50/p95, jeweils insgesamt und pro Teilset (`de`, `fr`, `crosslingual`, `filter`, `teilkorpus`, `wertend`). Jeder Lauf schreibt `evals/results/<datum>_<sha>_<suite>-<modus>.json` mit Konfiguration und Korpus-Stand, dazu eine Markdown-Zusammenfassung. Die Ausgabe zeigt pro Metrik die Differenz zum letzten Lauf mit derselben Suite und demselben Modus und listet die Fragen, deren erwartete Quellen nicht unter den Top 10 liegen. Dazu kommt die Wirkung der Schwelle für «keine ausreichende Grundlage» (`ANSWER_MIN_SIMILARITY`): wie viele unbeantwortbare Fragen sie ohne LLM abfängt und wie viele beantwortbare sie fälschlich abweist. Die Ergebnisse werden committet und bilden die Historie. Mit `--answers` erzeugt der Lauf zusätzlich für jede Frage eine Antwort (wie `parlrag ask`) und lässt sie von einem Judge-Modell (`JUDGE_MODEL`, Standard Sonnet 5.5) bewerten. Ausgewiesen werden Zitiergenauigkeit, Faithfulness, Ablehnungsquote bei unbeantwortbaren Fragen, falsche Ablehnungen, Neutralität bei wertenden Fragen, Antwortsprache, Antwortzeit p50/p95 und Kosten pro Frage. Das kostet LLM-Aufrufe: rund zwei pro Frage.
+
+```bash
+uv run parlrag eval --suite smoke --answers
+```
 
 ### Experimente
 
