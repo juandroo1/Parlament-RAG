@@ -11,7 +11,7 @@ from typer.testing import CliRunner
 
 from fakes import FakeEmbedder
 from parlrag import cli
-from parlrag.retrieval import SearchFilters, SearchHit
+from parlrag.retrieval import RetrievalConfig, SearchFilters, SearchHit
 from parlrag.retrieval.formatting import format_hit, snippet
 
 runner = CliRunner()
@@ -76,6 +76,7 @@ class FakeRetriever:
         self.hits = hits
         self.calls: list[dict[str, Any]] = []
         self.embedder = FakeEmbedder()
+        self.config = RetrievalConfig()
 
     def search(
         self, query: str, filters: SearchFilters | None = None, *, mode: str, top_n: int
@@ -177,10 +178,10 @@ def test_search_prints_hits_and_passes_options(fake: FakeRetriever) -> None:
     assert "business:20253906" in result.output
 
 
-def test_defaults_are_hybrid_top_10_without_filters(fake: FakeRetriever) -> None:
+def test_defaults_are_configured_mode_top_10_without_filters(fake: FakeRetriever) -> None:
     result = runner.invoke(cli.app, ["search", "PFAS"])
     assert result.exit_code == 0, result.output
-    assert fake.calls[0]["mode"] == "hybrid"
+    assert fake.calls[0]["mode"] == "vector"
     assert fake.calls[0]["top_n"] == 10
     assert fake.calls[0]["filters"] == SearchFilters()
 
@@ -190,7 +191,7 @@ def test_json_output_contains_all_fields(fake: FakeRetriever) -> None:
 
     assert result.exit_code == 0, result.output
     payload = json.loads(result.output)
-    assert payload["query"] == "PFAS" and payload["mode"] == "hybrid"
+    assert payload["query"] == "PFAS" and payload["mode"] == "vector"
     assert [hit["source_key"] for hit in payload["hits"]] == [
         "transcript:418982",
         "business:20253906",
@@ -220,3 +221,11 @@ def test_invalid_options_are_rejected(fake: FakeRetriever, args: list[str]) -> N
     result = runner.invoke(cli.app, ["search", "PFAS", *args])
     assert result.exit_code == 2
     assert fake.calls == []
+
+
+def test_configured_mode_is_used_when_option_is_missing(fake: FakeRetriever) -> None:
+    fake.config = RetrievalConfig(mode="hybrid")
+    runner.invoke(cli.app, ["search", "PFAS"])
+    runner.invoke(cli.app, ["search", "PFAS", "--mode", "fulltext"])
+
+    assert [call["mode"] for call in fake.calls] == ["hybrid", "fulltext"]

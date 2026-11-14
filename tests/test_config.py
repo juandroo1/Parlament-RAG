@@ -32,6 +32,7 @@ def test_defaults() -> None:
     assert settings.anthropic_model == "claude-opus-5-5"
     assert settings.anthropic_effort == "high"
     assert settings.anthropic_api_key is None
+    assert settings.retrieval_mode == "vector"
     assert settings.postgres_host == "127.0.0.1"
     assert settings.postgres_port == 5432
     assert (
@@ -77,8 +78,10 @@ def test_environment_overrides_defaults(monkeypatch: pytest.MonkeyPatch) -> None
     monkeypatch.setenv("ANTHROPIC_EFFORT", "low")
     monkeypatch.setenv("POSTGRES_HOST", "db")
     monkeypatch.setenv("POSTGRES_PORT", "6543")
+    monkeypatch.setenv("RETRIEVAL_MODE", "hybrid")
 
     settings = Settings(_env_file=None)
+    assert settings.retrieval_mode == "hybrid"
 
     assert settings.anthropic_model == "claude-sonnet-5-5"
     assert settings.anthropic_effort == "low"
@@ -123,3 +126,9 @@ def test_env_example_contains_no_api_key() -> None:
     for line in ENV_EXAMPLE.read_text(encoding="utf-8").splitlines():
         if line.startswith("ANTHROPIC_API_KEY="):
             assert line == "ANTHROPIC_API_KEY="
+
+
+def test_invalid_retrieval_mode_is_rejected(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("RETRIEVAL_MODE", "bm25")
+    with pytest.raises(ValidationError):
+        Settings(_env_file=None)

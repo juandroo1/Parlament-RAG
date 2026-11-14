@@ -1,25 +1,25 @@
 """Retriever: Volltext und Vektor, fusioniert mit RRF (plan.md, Abschnitt 6).
 
-Modi: `hybrid` (Standard), `fulltext` und `vector` (für die Baseline in Task 3.3). In den
-Einzelmodi ist der Score ebenfalls 1 / (k + Rang), damit alle Modi vergleichbar sind.
-`fulltext` lädt kein Embedding-Modell.
+Modi: `vector` (Standard gemäss Baseline in Task 3.3, einstellbar über `RETRIEVAL_MODE`),
+`fulltext` und `hybrid`. In den Einzelmodi ist der Score ebenfalls 1 / (k + Rang), damit alle
+Modi vergleichbar sind. `fulltext` lädt kein Embedding-Modell.
 """
 
 import datetime as dt
 import uuid
 from dataclasses import dataclass
-from typing import Any, Literal
+from typing import Any
 
 from sqlalchemy import Engine, bindparam, text
 
-from parlrag.config import Settings
+from parlrag.config import SearchMode, Settings
 from parlrag.embeddings import Embedder
 from parlrag.retrieval.filters import SearchFilters
 from parlrag.retrieval.fulltext import search_fulltext
 from parlrag.retrieval.fusion import reciprocal_rank_fusion
 from parlrag.retrieval.vector import search_vector
 
-SearchMode = Literal["hybrid", "fulltext", "vector"]
+__all__ = ["RetrievalConfig", "Retriever", "SearchHit", "SearchMode"]
 
 
 @dataclass(frozen=True)
@@ -27,6 +27,7 @@ class RetrievalConfig:
     candidates: int = 50
     rrf_k: int = 60
     top_n: int = 20
+    mode: SearchMode = "vector"
 
     @classmethod
     def from_settings(cls, settings: Settings) -> "RetrievalConfig":
@@ -34,6 +35,7 @@ class RetrievalConfig:
             candidates=settings.retrieval_candidates,
             rrf_k=settings.retrieval_rrf_k,
             top_n=settings.retrieval_top_n,
+            mode=settings.retrieval_mode,
         )
 
 
@@ -96,9 +98,11 @@ class Retriever:
         query: str,
         filters: SearchFilters | None = None,
         *,
-        mode: SearchMode = "hybrid",
+        mode: SearchMode | None = None,
         top_n: int | None = None,
     ) -> list[SearchHit]:
+        """Sucht mit `mode`, ohne Angabe mit der Standard-Suchart der Konfiguration."""
+        mode = mode or self.config.mode
         filters = filters or SearchFilters()
         limit = self.config.candidates
         fulltext: list[tuple[uuid.UUID, float]] = []

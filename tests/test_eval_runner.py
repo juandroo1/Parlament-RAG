@@ -29,7 +29,7 @@ from parlrag.evals.results import (
     write_run,
 )
 from parlrag.evals.runner import CHUNKS_PER_QUERY, evaluate_retrieval, select_suite
-from parlrag.retrieval import SearchFilters, SearchHit
+from parlrag.retrieval import RetrievalConfig, SearchFilters, SearchHit
 
 ITEMS = [
     {
@@ -111,6 +111,7 @@ class FakeRetriever:
         self.by_question = {item.question: hits.get(item.id, []) for item in GOLDEN}
         self.calls: list[dict[str, Any]] = []
         self.embedder = FakeEmbedder()
+        self.config = RetrievalConfig()
 
     def search(
         self,
@@ -328,6 +329,7 @@ def test_eval_cli_writes_results_and_compares_with_previous_run(eval_env: dict[s
     first = runner.invoke(cli.app, ["eval", "--suite", "full", *eval_env["args"]])
     assert first.exit_code == 0, first.output
     assert "Kein Vorlauf" in first.output
+    assert "full · vector" in first.output  # Standard-Suchart aus der Konfiguration
     assert "Recall@10" in first.output and "crosslingual" in first.output
     assert "q02 (Recall@10 0.00): transcript:3 #12" in first.output
 
@@ -337,8 +339,8 @@ def test_eval_cli_writes_results_and_compares_with_previous_run(eval_env: dict[s
 
     files = sorted(eval_env["results"].glob("*.json"))
     assert [f.name[11:] for f in files] == [
-        "abc1234_full-hybrid-2.json",
-        "abc1234_full-hybrid.json",
+        "abc1234_full-vector-2.json",
+        "abc1234_full-vector.json",
     ]
     latest = load_run(files[0])
     assert latest.previous == files[1].name
