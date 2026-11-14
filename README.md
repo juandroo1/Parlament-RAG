@@ -84,6 +84,10 @@ Antworten des OData-Dienstes werden roh in `./data/raw/` zwischengespeichert (ni
 
 Die Ports sind nur lokal erreichbar: API auf `127.0.0.1:8000`, Datenbank auf `127.0.0.1:5432`. Läuft auf dem Rechner bereits ein anderes Postgres auf Port 5432, in `.env` z. B. `POSTGRES_PORT=5433` setzen.
 
+## Evals
+
+Das Goldset [`evals/datasets/golden.jsonl`](evals/datasets/golden.jsonl) enthält 33 Fragen mit den erwarteten Quellen (Goldset v1): 20 beantwortbare auf Deutsch, 5 auf Französisch, 5 unbeantwortbare und 3 wertende, davon 5 sprachübergreifend und 19 auf den Teilkorpus Herbstsession 2026. Claude hat sie aus dem Korpus vorgeschlagen, Sandro hat jede Frage geprüft. Schema, Tags und Regeln stehen in [`evals/datasets/README.md`](evals/datasets/README.md). Der Eval-Runner folgt in Task 3.2.
+
 ## Lokale Entwicklung mit uv
 
 Voraussetzung: [uv](https://docs.astral.sh/uv/). Python 3.12 installiert uv bei Bedarf selbst. Die Datenbank läuft auch dann im Container.
