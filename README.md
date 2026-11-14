@@ -110,6 +110,26 @@ Gemessen werden Recall@5, @10 und @20 sowie MRR@10, auf Dokumenten statt Chunks.
 uv run parlrag eval --suite smoke --answers
 ```
 
+### Qualität (Baseline)
+
+Gemessen am 14.11.2026 auf dem Goldset v2 (65 Fragen) gegen den eingefrorenen Korpus, Suchart Vektor (`evals/results/2026-11-14_a201a9c_full-vector-answers.md`). Antworten von Claude Haiku 5.5 (Effort `low`), bewertet von Claude Sonnet 5.5 als Judge; beide über ein Claude-Abo (`LLM_BACKEND=claude-code`).
+
+| Metrik | Baseline | Ziel |
+|---|---|---|
+| Recall@10 | 0.774 | ≥ 0.80 |
+| Recall@10 sprachübergreifend | 0.700 | ≥ 0.80 |
+| Zitiergenauigkeit | 0.976 | ≥ 0.90 |
+| Faithfulness | 0.979 | – |
+| Ablehnungsquote (unbeantwortbar) | 0.90 (9 von 10) | ≥ 0.90 |
+| Falsche Ablehnungen | 0.02 (1 von 50) | ≤ 0.05 |
+| Neutralität (wertend) | 1.00 (5 von 5) | 1.00 |
+| Antwortsprache | 0.985 (64 von 65) | gemessen |
+| Antwortzeit p95 | 12.7 s, inklusive Start der Claude-CLI | < 10 s |
+
+**Kosten pro Frage:** Über das Abo schätzt Claude Code rund 0.0017 USD pro Antwort (Haiku) und 0.039 USD pro Urteil des Judge; verrechnet wird das nicht. Mit API-Key und denselben Token-Mengen (im Mittel 9'100 Input- und 1'300 Output-Tokens pro Antwort) wären es rund 0.0016 USD mit Haiku 5.5, 0.031 USD mit Sonnet 5.5 und 0.062 USD mit Opus 5.5, dem Standardmodell; ein Urteil des Judge (Sonnet) kostet rund 0.028 USD. Opus schreibt bei Effort `high` voraussichtlich mehr Output-Tokens als Haiku, die Zahl für Opus ist deshalb eine Untergrenze. Die Antwortzeit über das Abo enthält rund 1,5 s für den Start der CLI; AK-1.3 wird mit einem API-Key beurteilt.
+
+**Prüfung des Judge:** 51 Urteile zu 7 Antworten (≈ 10 %) wurden gegen den Wortlaut der Quellen geprüft; 47 bestätigt, Übereinstimmung 92 % (`evals/results/2026-11-14_a201a9c_judge-check.md`). Die Prüfung hat Claude Opus 5.5 vorgenommen und Sandro freigegeben; eine unabhängige Prüfung jedes Urteils von Hand steht noch aus. Der Judge war eher zu nachsichtig bei Sinnverschiebungen, die beiden Antwort-Metriken sind deshalb eher leicht überschätzt.
+
 ### Experimente
 
 Gemessen auf dem Goldset v1 (`full`, 28 beantwortbare Fragen) gegen den eingefrorenen Korpus. Die Details stehen in `evals/results/`, die Entscheide im [Entscheidungsprotokoll](specs/001-frag-das-parlament/plan.md#12-entscheidungsprotokoll).
