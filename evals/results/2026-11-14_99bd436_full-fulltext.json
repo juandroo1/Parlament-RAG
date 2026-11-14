@@ -1,0 +1,1052 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-11-14T13:12:24.649257+01:00",
+  "git_sha": "99bd4366ba1843acdc43207a22d7115d0584841c",
+  "git_dirty": false,
+  "suite": "full",
+  "mode": "fulltext",
+  "golden": "evals/datasets/golden.jsonl",
+  "questions_total": 33,
+  "skipped_unanswerable": 5,
+  "config": {
+    "chunks_per_query": 100,
+    "retrieval_candidates": 50,
+    "retrieval_rrf_k": 60,
+    "embedding_model": "BAAI/bge-m3",
+    "embedding_max_seq_length": 1024,
+    "index_signature": "BAAI/bge-m3|target=500|overlap=0.15|header=1|chunker=v1"
+  },
+  "corpus": {
+    "documents": 42515,
+    "chunks": 102891,
+    "chunks_by_signature": {
+      "BAAI/bge-m3|target=500|overlap=0.15|header=1|chunker=v1": 102891
+    }
+  },
+  "metrics": {
+    "recall@5": 0.29166666666666663,
+    "recall@10": 0.3988095238095238,
+    "recall@20": 0.41666666666666663,
+    "mrr@10": 0.2702380952380952,
+    "search_p50_ms": 300.2806000004057,
+    "search_p95_ms": 1771.33689999755
+  },
+  "subsets": {
+    "de": {
+      "n": 22,
+      "metrics": {
+        "recall@5": 0.356060606060606,
+        "recall@10": 0.446969696969697,
+        "recall@20": 0.4696969696969697,
+        "mrr@10": 0.32916666666666666,
+        "search_p50_ms": 300.2806000004057,
+        "search_p95_ms": 1771.33689999755
+      }
+    },
+    "fr": {
+      "n": 6,
+      "metrics": {
+        "recall@5": 0.05555555555555555,
+        "recall@10": 0.2222222222222222,
+        "recall@20": 0.2222222222222222,
+        "mrr@10": 0.05416666666666667,
+        "search_p50_ms": 263.0018000054406,
+        "search_p95_ms": 901.5886999986833
+      }
+    },
+    "crosslingual": {
+      "n": 5,
+      "metrics": {
+        "recall@5": 0.0,
+        "recall@10": 0.0,
+        "recall@20": 0.0,
+        "mrr@10": 0.0,
+        "search_p50_ms": 602.9296000051545,
+        "search_p95_ms": 988.9682000066387
+      }
+    },
+    "filter": {
+      "n": 6,
+      "metrics": {
+        "recall@5": 0.5,
+        "recall@10": 0.6666666666666666,
+        "recall@20": 0.6666666666666666,
+        "mrr@10": 0.30416666666666664,
+        "search_p50_ms": 246.294399999897,
+        "search_p95_ms": 551.4841999975033
+      }
+    },
+    "teilkorpus": {
+      "n": 19,
+      "metrics": {
+        "recall@5": 0.2192982456140351,
+        "recall@10": 0.2192982456140351,
+        "recall@20": 0.2456140350877193,
+        "mrr@10": 0.2736842105263158,
+        "search_p50_ms": 432.42099999042694,
+        "search_p95_ms": 3844.8183000000427
+      }
+    },
+    "wertend": {
+      "n": 3,
+      "metrics": {
+        "recall@5": 0.1111111111111111,
+        "recall@10": 0.1111111111111111,
+        "recall@20": 0.1111111111111111,
+        "mrr@10": 0.06666666666666667,
+        "search_p50_ms": 211.1490999959642,
+        "search_p95_ms": 220.55969999928493
+      }
+    }
+  },
+  "questions": [
+    {
+      "id": "q01",
+      "language": "de",
+      "tags": [
+        "teilkorpus",
+        "smoke"
+      ],
+      "expected_source_ids": [
+        "transcript:422495",
+        "transcript:422526",
+        "transcript:422528"
+      ],
+      "ranks": {
+        "transcript:422495": null,
+        "transcript:422526": null,
+        "transcript:422528": null
+      },
+      "top_documents": [
+        "business:20263387",
+        "business:20263192",
+        "transcript:375856",
+        "business:20234090",
+        "business:20234111",
+        "transcript:377117",
+        "business:20240435",
+        "transcript:337672",
+        "transcript:346165",
+        "business:20254879"
+      ],
+      "metrics": {
+        "recall@5": 0.0,
+        "recall@10": 0.0,
+        "recall@20": 0.0,
+        "mrr@10": 0.0
+      },
+      "search_ms": 3844.8183000000427
+    },
+    {
+      "id": "q02",
+      "language": "de",
+      "tags": [
+        "crosslingual",
+        "teilkorpus",
+        "smoke"
+      ],
+      "expected_source_ids": [
+        "transcript:422494",
+        "transcript:422531"
+      ],
+      "ranks": {
+        "transcript:422494": null,
+        "transcript:422531": null
+      },
+      "top_documents": [
+        "business:20263387",
+        "business:20263192",
+        "business:20250079",
+        "transcript:351776",
+        "business:20240061",
+        "transcript:346019",
+        "transcript:376011",
+        "transcript:354389",
+        "business:20240435",
+        "transcript:337672"
+      ],
+      "metrics": {
+        "recall@5": 0.0,
+        "recall@10": 0.0,
+        "recall@20": 0.0,
+        "mrr@10": 0.0
+      },
+      "search_ms": 988.9682000066387
+    },
+    {
+      "id": "q03",
+      "language": "de",
+      "tags": [
+        "teilkorpus"
+      ],
+      "expected_source_ids": [
+        "transcript:422547"
+      ],
+      "ranks": {
+        "transcript:422547": null
+      },
+      "top_documents": [
+        "transcript:361904",
+        "business:20243524",
+        "business:20243052",
+        "business:20254879",
+        "business:20243411",
+        "business:20263192",
+        "transcript:361907",
+        "business:20263720",
+        "business:20230065",
+        "business:20254438"
+      ],
+      "metrics": {
+        "recall@5": 0.0,
+        "recall@10": 0.0,
+        "recall@20": 0.0,
+        "mrr@10": 0.0
+      },
+      "search_ms": 1771.33689999755
+    },
+    {
+      "id": "q04",
+      "language": "fr",
+      "tags": [
+        "fr",
+        "crosslingual",
+        "teilkorpus",
+        "smoke"
+      ],
+      "expected_source_ids": [
+        "transcript:422506"
+      ],
+      "ranks": {
+        "transcript:422506": null
+      },
+      "top_documents": [
+        "transcript:351127",
+        "transcript:367553",
+        "transcript:350000",
+        "business:20240435",
+        "business:20263192",
+        "transcript:349327",
+        "transcript:371095",
+        "transcript:422541",
+        "transcript:366706",
+        "transcript:355311"
+      ],
+      "metrics": {
+        "recall@5": 0.0,
+        "recall@10": 0.0,
+        "recall@20": 0.0,
+        "mrr@10": 0.0
+      },
+      "search_ms": 901.5886999986833
+    },
+    {
+      "id": "q05",
+      "language": "de",
+      "tags": [
+        "teilkorpus",
+        "smoke"
+      ],
+      "expected_source_ids": [
+        "transcript:422818",
+        "transcript:422822",
+        "transcript:422849"
+      ],
+      "ranks": {
+        "transcript:422818": null,
+        "transcript:422822": null,
+        "transcript:422849": 1
+      },
+      "top_documents": [
+        "transcript:422849",
+        "business:20260054",
+        "business:20263192",
+        "business:20263387",
+        "business:20264003",
+        "transcript:422718",
+        "business:20257685",
+        "business:20240435",
+        "transcript:337672",
+        "transcript:344298"
+      ],
+      "metrics": {
+        "recall@5": 0.3333333333333333,
+        "recall@10": 0.3333333333333333,
+        "recall@20": 0.3333333333333333,
+        "mrr@10": 1.0
+      },
+      "search_ms": 482.5473999953829
+    },
+    {
+      "id": "q06",
+      "language": "de",
+      "tags": [
+        "teilkorpus"
+      ],
+      "expected_source_ids": [
+        "business:20260054"
+      ],
+      "ranks": {
+        "business:20260054": 1
+      },
+      "top_documents": [
+        "business:20260054",
+        "transcript:422849",
+        "business:20263192",
+        "business:20264003",
+        "business:20263387",
+        "transcript:337672",
+        "business:20210403",
+        "business:20257685",
+        "business:20234230",
+        "business:20240435"
+      ],
+      "metrics": {
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "recall@20": 1.0,
+        "mrr@10": 1.0
+      },
+      "search_ms": 432.42099999042694
+    },
+    {
+      "id": "q07",
+      "language": "de",
+      "tags": [
+        "teilkorpus",
+        "smoke"
+      ],
+      "expected_source_ids": [
+        "transcript:418909",
+        "business:20244494"
+      ],
+      "ranks": {
+        "transcript:418909": null,
+        "business:20244494": null
+      },
+      "top_documents": [
+        "transcript:353896",
+        "business:20263192",
+        "transcript:370948",
+        "transcript:350169",
+        "transcript:358051",
+        "business:20263387",
+        "transcript:422566",
+        "transcript:337672",
+        "transcript:419363",
+        "transcript:348240"
+      ],
+      "metrics": {
+        "recall@5": 0.0,
+        "recall@10": 0.0,
+        "recall@20": 0.0,
+        "mrr@10": 0.0
+      },
+      "search_ms": 474.45049999805633
+    },
+    {
+      "id": "q08",
+      "language": "de",
+      "tags": [
+        "teilkorpus"
+      ],
+      "expected_source_ids": [
+        "transcript:420527",
+        "business:20243961"
+      ],
+      "ranks": {
+        "transcript:420527": 1,
+        "business:20243961": 14
+      },
+      "top_documents": [
+        "transcript:420527",
+        "business:20263192",
+        "business:20263387",
+        "transcript:337672",
+        "transcript:419363",
+        "transcript:350169",
+        "transcript:346605",
+        "transcript:358051",
+        "transcript:348240",
+        "transcript:350166"
+      ],
+      "metrics": {
+        "recall@5": 0.5,
+        "recall@10": 0.5,
+        "recall@20": 1.0,
+        "mrr@10": 1.0
+      },
+      "search_ms": 372.64800000411924
+    },
+    {
+      "id": "q09",
+      "language": "de",
+      "tags": [
+        "filter",
+        "teilkorpus",
+        "smoke"
+      ],
+      "expected_source_ids": [
+        "transcript:419592",
+        "business:20260026"
+      ],
+      "ranks": {
+        "transcript:419592": 3,
+        "business:20260026": 1
+      },
+      "top_documents": [
+        "business:20260026",
+        "transcript:419565",
+        "transcript:419592",
+        "business:20243635",
+        "transcript:365052",
+        "business:20253571",
+        "transcript:358088",
+        "business:20230439",
+        "transcript:357268",
+        "transcript:357521"
+      ],
+      "metrics": {
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "recall@20": 1.0,
+        "mrr@10": 1.0
+      },
+      "search_ms": 551.4841999975033
+    },
+    {
+      "id": "q10",
+      "language": "de",
+      "tags": [
+        "crosslingual",
+        "teilkorpus"
+      ],
+      "expected_source_ids": [
+        "transcript:420159"
+      ],
+      "ranks": {
+        "transcript:420159": null
+      },
+      "top_documents": [
+        "transcript:419444",
+        "business:20260029",
+        "transcript:376929",
+        "transcript:330100",
+        "transcript:419491",
+        "transcript:372893",
+        "transcript:420153",
+        "transcript:369956",
+        "business:20250402",
+        "transcript:367529"
+      ],
+      "metrics": {
+        "recall@5": 0.0,
+        "recall@10": 0.0,
+        "recall@20": 0.0,
+        "mrr@10": 0.0
+      },
+      "search_ms": 194.80050000129268
+    },
+    {
+      "id": "q11",
+      "language": "de",
+      "tags": [
+        "filter",
+        "teilkorpus"
+      ],
+      "expected_source_ids": [
+        "transcript:421772"
+      ],
+      "ranks": {
+        "transcript:421772": null
+      },
+      "top_documents": [
+        "transcript:422586",
+        "business:20260023",
+        "transcript:341877",
+        "business:20260425",
+        "transcript:420093",
+        "transcript:348091",
+        "business:20230439",
+        "transcript:376966",
+        "business:20260038",
+        "transcript:421673"
+      ],
+      "metrics": {
+        "recall@5": 0.0,
+        "recall@10": 0.0,
+        "recall@20": 0.0,
+        "mrr@10": 0.0
+      },
+      "search_ms": 273.69799998996314
+    },
+    {
+      "id": "q12",
+      "language": "fr",
+      "tags": [
+        "fr",
+        "teilkorpus",
+        "smoke"
+      ],
+      "expected_source_ids": [
+        "transcript:421775"
+      ],
+      "ranks": {
+        "transcript:421775": null
+      },
+      "top_documents": [
+        "business:20254534",
+        "business:20260023",
+        "transcript:350000",
+        "transcript:351127",
+        "transcript:349327",
+        "business:20260425",
+        "transcript:367553",
+        "business:20233322",
+        "business:20263181",
+        "business:20260038"
+      ],
+      "metrics": {
+        "recall@5": 0.0,
+        "recall@10": 0.0,
+        "recall@20": 0.0,
+        "mrr@10": 0.0
+      },
+      "search_ms": 655.534000004991
+    },
+    {
+      "id": "q13",
+      "language": "de",
+      "tags": [
+        "crosslingual",
+        "teilkorpus",
+        "smoke"
+      ],
+      "expected_source_ids": [
+        "transcript:408632"
+      ],
+      "ranks": {
+        "transcript:408632": null
+      },
+      "top_documents": [
+        "business:20254258",
+        "business:20254534",
+        "transcript:337633",
+        "transcript:332247",
+        "transcript:356943",
+        "business:20243161",
+        "business:20254063",
+        "business:20243439",
+        "transcript:333735",
+        "business:20243127"
+      ],
+      "metrics": {
+        "recall@5": 0.0,
+        "recall@10": 0.0,
+        "recall@20": 0.0,
+        "mrr@10": 0.0
+      },
+      "search_ms": 602.9296000051545
+    },
+    {
+      "id": "q14",
+      "language": "de",
+      "tags": [
+        "filter",
+        "teilkorpus"
+      ],
+      "expected_source_ids": [
+        "transcript:420393",
+        "transcript:420430"
+      ],
+      "ranks": {
+        "transcript:420393": null,
+        "transcript:420430": null
+      },
+      "top_documents": [
+        "transcript:355216",
+        "transcript:376093",
+        "transcript:340442",
+        "transcript:364932",
+        "transcript:343276",
+        "business:20170400",
+        "transcript:419815",
+        "transcript:329475",
+        "transcript:352137",
+        "business:20220454"
+      ],
+      "metrics": {
+        "recall@5": 0.0,
+        "recall@10": 0.0,
+        "recall@20": 0.0,
+        "mrr@10": 0.0
+      },
+      "search_ms": 88.19389999553096
+    },
+    {
+      "id": "q15",
+      "language": "de",
+      "tags": [
+        "teilkorpus"
+      ],
+      "expected_source_ids": [
+        "business:20260022"
+      ],
+      "ranks": {
+        "business:20260022": 1
+      },
+      "top_documents": [
+        "business:20260022",
+        "transcript:370507",
+        "transcript:370340",
+        "transcript:370319",
+        "transcript:369768",
+        "transcript:369776",
+        "transcript:374851",
+        "business:20263240",
+        "transcript:369732",
+        "transcript:370506"
+      ],
+      "metrics": {
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "recall@20": 1.0,
+        "mrr@10": 1.0
+      },
+      "search_ms": 152.1221000002697
+    },
+    {
+      "id": "q16",
+      "language": "fr",
+      "tags": [
+        "fr",
+        "teilkorpus"
+      ],
+      "expected_source_ids": [
+        "business:20254464"
+      ],
+      "ranks": {
+        "business:20254464": null
+      },
+      "top_documents": [
+        "transcript:365374",
+        "transcript:364173",
+        "transcript:357060",
+        "transcript:355941",
+        "business:20234110",
+        "transcript:365403",
+        "transcript:420925",
+        "transcript:365338",
+        "transcript:419363",
+        "transcript:334810"
+      ],
+      "metrics": {
+        "recall@5": 0.0,
+        "recall@10": 0.0,
+        "recall@20": 0.0,
+        "mrr@10": 0.0
+      },
+      "search_ms": 263.0018000054406
+    },
+    {
+      "id": "q17",
+      "language": "de",
+      "tags": [
+        "smoke"
+      ],
+      "expected_source_ids": [
+        "business:20240073"
+      ],
+      "ranks": {
+        "business:20240073": 8
+      },
+      "top_documents": [
+        "transcript:347674",
+        "transcript:358088",
+        "transcript:361225",
+        "business:20243221",
+        "transcript:373089",
+        "transcript:340191",
+        "transcript:354808",
+        "business:20240073",
+        "transcript:351762",
+        "transcript:358109"
+      ],
+      "metrics": {
+        "recall@5": 0.0,
+        "recall@10": 1.0,
+        "recall@20": 1.0,
+        "mrr@10": 0.125
+      },
+      "search_ms": 351.07390000484884
+    },
+    {
+      "id": "q18",
+      "language": "de",
+      "tags": [
+        "filter",
+        "smoke"
+      ],
+      "expected_source_ids": [
+        "transcript:344169"
+      ],
+      "ranks": {
+        "transcript:344169": 5
+      },
+      "top_documents": [
+        "transcript:366097",
+        "transcript:362604",
+        "transcript:368622",
+        "transcript:345084",
+        "transcript:344169",
+        "transcript:371636",
+        "transcript:376929",
+        "transcript:346344",
+        "transcript:366528",
+        "transcript:339044"
+      ],
+      "metrics": {
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "recall@20": 1.0,
+        "mrr@10": 0.2
+      },
+      "search_ms": 127.45379999978468
+    },
+    {
+      "id": "q19",
+      "language": "de",
+      "tags": [
+        "crosslingual",
+        "smoke"
+      ],
+      "expected_source_ids": [
+        "transcript:359974"
+      ],
+      "ranks": {
+        "transcript:359974": null
+      },
+      "top_documents": [
+        "business:20263192",
+        "business:20263387",
+        "transcript:337672",
+        "business:20234324",
+        "business:20240435",
+        "transcript:369500",
+        "transcript:369598",
+        "transcript:367387",
+        "transcript:348091",
+        "business:20230439"
+      ],
+      "metrics": {
+        "recall@5": 0.0,
+        "recall@10": 0.0,
+        "recall@20": 0.0,
+        "mrr@10": 0.0
+      },
+      "search_ms": 298.1784000003245
+    },
+    {
+      "id": "q20",
+      "language": "de",
+      "tags": [
+        "filter"
+      ],
+      "expected_source_ids": [
+        "transcript:367575"
+      ],
+      "ranks": {
+        "transcript:367575": 2
+      },
+      "top_documents": [
+        "transcript:339392",
+        "transcript:367575",
+        "business:20230065",
+        "business:20244360",
+        "business:20243497",
+        "business:20223091",
+        "transcript:335833",
+        "transcript:367562",
+        "business:20243508",
+        "business:20250100"
+      ],
+      "metrics": {
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "recall@20": 1.0,
+        "mrr@10": 0.5
+      },
+      "search_ms": 503.44010000117123
+    },
+    {
+      "id": "q21",
+      "language": "de",
+      "tags": [],
+      "expected_source_ids": [
+        "business:20240054"
+      ],
+      "ranks": {
+        "business:20240054": 6
+      },
+      "top_documents": [
+        "business:20243508",
+        "transcript:341519",
+        "transcript:340268",
+        "transcript:341382",
+        "transcript:340343",
+        "business:20240054",
+        "business:20243497",
+        "business:20240053",
+        "transcript:340341",
+        "business:20243506"
+      ],
+      "metrics": {
+        "recall@5": 0.0,
+        "recall@10": 1.0,
+        "recall@20": 1.0,
+        "mrr@10": 0.16666666666666666
+      },
+      "search_ms": 300.2806000004057
+    },
+    {
+      "id": "q22",
+      "language": "de",
+      "tags": [],
+      "expected_source_ids": [
+        "business:20230051"
+      ],
+      "ranks": {
+        "business:20230051": 1
+      },
+      "top_documents": [
+        "business:20230051",
+        "business:20244655",
+        "transcript:357232",
+        "transcript:367116",
+        "transcript:350442",
+        "transcript:352037",
+        "transcript:332468",
+        "transcript:350114",
+        "transcript:360776",
+        "transcript:357420"
+      ],
+      "metrics": {
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "recall@20": 1.0,
+        "mrr@10": 1.0
+      },
+      "search_ms": 13.042599995969795
+    },
+    {
+      "id": "q23",
+      "language": "de",
+      "tags": [],
+      "expected_source_ids": [
+        "transcript:375309"
+      ],
+      "ranks": {
+        "transcript:375309": 4
+      },
+      "top_documents": [
+        "transcript:347274",
+        "transcript:367073",
+        "transcript:358023",
+        "transcript:375309",
+        "transcript:344271",
+        "transcript:364045",
+        "transcript:364213",
+        "transcript:347268",
+        "transcript:362511",
+        "transcript:348829"
+      ],
+      "metrics": {
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "recall@20": 1.0,
+        "mrr@10": 0.25
+      },
+      "search_ms": 255.0601000111783
+    },
+    {
+      "id": "q24",
+      "language": "fr",
+      "tags": [
+        "fr",
+        "filter"
+      ],
+      "expected_source_ids": [
+        "transcript:347667"
+      ],
+      "ranks": {
+        "transcript:347667": 8
+      },
+      "top_documents": [
+        "business:20240073",
+        "business:20243221",
+        "business:20243852",
+        "business:20243851",
+        "transcript:348359",
+        "business:20243605",
+        "transcript:350877",
+        "transcript:347667",
+        "business:20233162",
+        "transcript:349304"
+      ],
+      "metrics": {
+        "recall@5": 0.0,
+        "recall@10": 1.0,
+        "recall@20": 1.0,
+        "mrr@10": 0.125
+      },
+      "search_ms": 246.294399999897
+    },
+    {
+      "id": "q25",
+      "language": "fr",
+      "tags": [
+        "fr"
+      ],
+      "expected_source_ids": [
+        "transcript:377686"
+      ],
+      "ranks": {
+        "transcript:377686": null
+      },
+      "top_documents": [
+        "transcript:351127",
+        "transcript:367553",
+        "business:20240435",
+        "transcript:350000",
+        "business:20263192",
+        "transcript:422541",
+        "business:20233322",
+        "business:20263181",
+        "business:20260038",
+        "business:20260033"
+      ],
+      "metrics": {
+        "recall@5": 0.0,
+        "recall@10": 0.0,
+        "recall@20": 0.0,
+        "mrr@10": 0.0
+      },
+      "search_ms": 616.9664000044577
+    },
+    {
+      "id": "q26",
+      "language": "de",
+      "tags": [
+        "wertend",
+        "teilkorpus",
+        "smoke"
+      ],
+      "expected_source_ids": [
+        "transcript:421345",
+        "transcript:421772",
+        "transcript:421630"
+      ],
+      "ranks": {
+        "transcript:421345": null,
+        "transcript:421772": 29,
+        "transcript:421630": null
+      },
+      "top_documents": [
+        "transcript:422586",
+        "business:20254534",
+        "transcript:421646",
+        "business:20260023",
+        "business:20254262",
+        "transcript:372972",
+        "transcript:351126",
+        "business:20243524",
+        "business:20253555",
+        "business:20250100"
+      ],
+      "metrics": {
+        "recall@5": 0.0,
+        "recall@10": 0.0,
+        "recall@20": 0.0,
+        "mrr@10": 0.0
+      },
+      "search_ms": 211.1490999959642
+    },
+    {
+      "id": "q27",
+      "language": "de",
+      "tags": [
+        "wertend",
+        "teilkorpus"
+      ],
+      "expected_source_ids": [
+        "transcript:419419",
+        "transcript:419420",
+        "transcript:420159"
+      ],
+      "ranks": {
+        "transcript:419419": null,
+        "transcript:419420": null,
+        "transcript:420159": null
+      },
+      "top_documents": [
+        "business:20260029",
+        "transcript:420127",
+        "transcript:329557",
+        "transcript:359119",
+        "transcript:419444",
+        "transcript:419491",
+        "transcript:367610",
+        "business:20253232",
+        "transcript:338852",
+        "transcript:419504"
+      ],
+      "metrics": {
+        "recall@5": 0.0,
+        "recall@10": 0.0,
+        "recall@20": 0.0,
+        "mrr@10": 0.0
+      },
+      "search_ms": 106.00220000196714
+    },
+    {
+      "id": "q28",
+      "language": "fr",
+      "tags": [
+        "fr",
+        "wertend",
+        "teilkorpus",
+        "smoke"
+      ],
+      "expected_source_ids": [
+        "transcript:422704",
+        "transcript:422718",
+        "transcript:422849"
+      ],
+      "ranks": {
+        "transcript:422704": 5,
+        "transcript:422718": null,
+        "transcript:422849": null
+      },
+      "top_documents": [
+        "business:20260054",
+        "transcript:422776",
+        "business:20264003",
+        "business:20250100",
+        "transcript:422704",
+        "business:20250308",
+        "transcript:333255",
+        "business:20254534",
+        "transcript:349034",
+        "business:20241067"
+      ],
+      "metrics": {
+        "recall@5": 0.3333333333333333,
+        "recall@10": 0.3333333333333333,
+        "recall@20": 0.3333333333333333,
+        "mrr@10": 0.2
+      },
+      "search_ms": 220.55969999928493
+    }
+  ],
+  "previous": null
+}

@@ -11,6 +11,7 @@ from pydantic import Field, SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 Effort = Literal["low", "medium", "high", "xhigh", "max"]
+SearchMode = Literal["hybrid", "fulltext", "vector"]
 
 
 class Settings(BaseSettings):
@@ -54,7 +55,9 @@ class Settings(BaseSettings):
     # Index: Kontext-Header beim Einbetten (Experiment «mit/ohne Header», plan.md Abschnitt 10).
     index_context_header: bool = True
 
-    # Retrieval (plan.md, Abschnitt 6): Kandidaten je Suchart, RRF-Konstante, Anzahl Treffer.
+    # Retrieval (plan.md, Abschnitt 6): Standard-Suchart (Baseline Task 3.3: vector), Kandidaten
+    # je Suchart, RRF-Konstante, Anzahl Treffer.
+    retrieval_mode: SearchMode = "vector"
     retrieval_candidates: int = Field(default=50, ge=1, le=1000)
     retrieval_rrf_k: int = Field(default=60, ge=1)
     retrieval_top_n: int = Field(default=20, ge=1)

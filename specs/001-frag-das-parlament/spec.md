@@ -105,5 +105,6 @@ Goldset (Endstand MVP): mindestens 65 Fragen, davon 40 auf Deutsch und 10 auf Fr
 - Lokales Embedding-Modell oder API-Modell: per Eval entscheiden (Qualität gegen Kosten). Gemessen in Task 2.2: bge-m3 auf der CPU schafft rund 2 Chunks/s, der volle Korpus braucht rund 14 Stunden. Entschieden: bge-m3 bleibt; einmal voll indexieren, danach inkrementell; Experimente auf einer Session (plan.md, Entscheidungsprotokoll). Offen bleibt der Vergleich mit einem API-Modell als Experiment.
 - Hosting der Demo und Schutz vor Missbrauch (Rate-Limit, Kostendeckel).
 - Mehrturn-Gespräche (Folgefragen) für eine spätere Version?
+- Bessere Volltextsuche für eine hybride Suche: Gewichtung mit IDF bzw. BM25 (z. B. eigene Gewichtung oder eine Postgres-Erweiterung) und gewichtetes RRF. Die Baseline in Task 3.3 zeigt, dass die heutige Volltextsuche (ODER-Abfrage, `ts_rank_cd` ohne IDF) das Retrieval verschlechtert; Standard ist deshalb die Vektorsuche.
 - Seitenzahl im Amtlichen Bulletin (Platzhalter `[PAGE n]` im Votum) als zusätzliche Quellenangabe in einer späteren Version?
 - Deployment unter Linux (Task 6.3): Der Container-User (UID 10001) darf im Bind-Mount `./data/raw` eventuell nicht schreiben. Lösung beim Deployment festlegen (Besitzrechte des Ordners oder benanntes Volume).

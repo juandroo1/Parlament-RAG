@@ -255,6 +255,9 @@ class ModeChoice(StrEnum):
     vector = "vector"
 
 
+MODE_HELP = "Suchart; ohne Angabe gilt RETRIEVAL_MODE (Standard: vector)."
+
+
 class CouncilChoice(StrEnum):
     NR = "NR"
     SR = "SR"
@@ -270,7 +273,7 @@ def build_retriever() -> Retriever:
 @app.command()
 def search(
     query: Annotated[str, typer.Argument(help="Frage oder Suchbegriffe.")],
-    mode: Annotated[ModeChoice, typer.Option(help="Suchart.")] = ModeChoice.hybrid,
+    mode: Annotated[ModeChoice | None, typer.Option(help=MODE_HELP)] = None,
     top: Annotated[int, typer.Option(min=1, max=100, help="Anzahl Treffer.")] = 10,
     council: Annotated[CouncilChoice | None, typer.Option(help="Nur dieser Rat.")] = None,
     date_from: Annotated[
@@ -296,17 +299,18 @@ def search(
         raise typer.BadParameter(exc.errors()[0]["msg"], param_hint="--date-from") from exc
 
     retriever = build_retriever()
+    chosen = mode.value if mode else retriever.config.mode
     model_load_ms = None
-    if mode is not ModeChoice.fulltext:
+    if chosen != "fulltext":
         # Modell vorab laden, damit die gemessene Suchzeit den einmaligen Start nicht enthält.
         start = time.monotonic()
         retriever.embedder.embed_query("Modell laden")
         model_load_ms = (time.monotonic() - start) * 1000
     start = time.monotonic()
-    hits = retriever.search(query, filters, mode=mode.value, top_n=top)
+    hits = retriever.search(query, filters, mode=chosen, top_n=top)
     duration_ms = (time.monotonic() - start) * 1000
     render = results_json if as_json else format_results
-    typer.echo(render(query, mode.value, filters, hits, duration_ms, model_load_ms))
+    typer.echo(render(query, chosen, filters, hits, duration_ms, model_load_ms))
 
 
 class SuiteChoice(StrEnum):
@@ -333,7 +337,7 @@ def eval_command(
     suite: Annotated[
         SuiteChoice, typer.Option(help="smoke: Fragen mit Tag smoke; full: alle Fragen.")
     ] = SuiteChoice.smoke,
-    mode: Annotated[ModeChoice, typer.Option(help="Suchart.")] = ModeChoice.hybrid,
+    mode: Annotated[ModeChoice | None, typer.Option(help=MODE_HELP)] = None,
     compare: Annotated[
         Path | None,
         typer.Option(help="Mit diesem Lauf vergleichen statt mit dem letzten gleicher Art."),
@@ -348,11 +352,17 @@ def eval_command(
     try:
         sha, dirty = git_state()
         items = load_golden(golden)
+    except (EvalError, GoldenSetError, OSError) as exc:
+        console.print(f"[red]{exc}[/red]")
+        raise typer.Exit(1) from exc
+    retriever = build_retriever()
+    chosen = mode.value if mode else retriever.config.mode
+    try:
         previous_path = compare or (
-            find_previous(results_dir, suite.value, mode.value) if results_dir.exists() else None
+            find_previous(results_dir, suite.value, chosen) if results_dir.exists() else None
         )
         previous = load_run(previous_path) if previous_path else None
-    except (EvalError, GoldenSetError, OSError) as exc:
+    except EvalError as exc:
         console.print(f"[red]{exc}[/red]")
         raise typer.Exit(1) from exc
     if dirty:
@@ -362,8 +372,7 @@ def eval_command(
         )
     selection = select_suite(items, suite.value)
 
-    retriever = build_retriever()
-    if mode is not ModeChoice.fulltext:
+    if chosen != "fulltext":
         retriever.embedder.embed_query("Modell laden")  # Ladezeit nicht in der Suchdauer
     config, corpus = describe_eval(retriever)
 
@@ -373,13 +382,13 @@ def eval_command(
             f"MRR@10 {result.metrics['mrr@10']:.2f}  {result.search_ms:.0f} ms"
         )
 
-    report = evaluate_retrieval(selection, retriever, mode.value, progress=show_progress)
+    report = evaluate_retrieval(selection, retriever, chosen, progress=show_progress)
     run = EvalRun(
         created_at=dt.datetime.now().astimezone(),
         git_sha=sha,
         git_dirty=dirty,
         suite=suite.value,
-        mode=mode.value,
+        mode=chosen,
         golden=golden.as_posix(),
         questions_total=len(selection),
         skipped_unanswerable=report.skipped_unanswerable,
@@ -393,7 +402,7 @@ def eval_command(
     path = write_run(run, previous, results_dir)
 
     console.print(
-        f"\n[bold]{suite.value} · {mode.value}[/bold]: {len(report.questions)} Fragen gemessen, "
+        f"\n[bold]{suite.value} · {chosen}[/bold]: {len(report.questions)} Fragen gemessen, "
         f"{report.skipped_unanswerable} unbeantwortbare übersprungen"
     )
     console.print(

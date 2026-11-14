@@ -1,6 +1,7 @@
 """Volltext, Vektor, RRF und Filter gegen `parlrag_test` (Task 2.4; AK-4.1 bis AK-4.3)."""
 
 import datetime as dt
+from typing import Any
 
 import pytest
 from pydantic import ValidationError
@@ -30,7 +31,7 @@ def indexed(empty_db: Engine) -> tuple[Engine, FakeEmbedder]:
     return empty_db, embedder
 
 
-def retriever(indexed: tuple[Engine, FakeEmbedder], **config: int) -> Retriever:
+def retriever(indexed: tuple[Engine, FakeEmbedder], **config: Any) -> Retriever:
     return Retriever(indexed[0], FakeEmbedder(), RetrievalConfig(**config))
 
 
@@ -143,7 +144,7 @@ def test_vector_search_ranks_identical_text_first(indexed: tuple[Engine, FakeEmb
 
 def test_hybrid_puts_hits_from_both_lists_first(indexed: tuple[Engine, FakeEmbedder]) -> None:
     query = embedding_text_of(indexed, MICHEL_CHUNK_START)
-    hits = retriever(indexed).search(query)
+    hits = retriever(indexed).search(query, mode="hybrid")
 
     top = hits[0]
     assert top.text.startswith(MICHEL_CHUNK_START)
@@ -228,3 +229,14 @@ def test_filters_apply_before_the_search(indexed: tuple[Engine, FakeEmbedder]) -
 def test_invalid_date_range_is_rejected() -> None:
     with pytest.raises(ValidationError):
         SearchFilters(date_from=dt.date(2026, 9, 30), date_to=dt.date(2026, 9, 1))
+
+
+def test_default_mode_comes_from_config(indexed: tuple[Engine, FakeEmbedder]) -> None:
+    """Ohne `mode` gilt die Standard-Suchart der Konfiguration (Task 3.3: vector)."""
+    query = "Deklarationspflicht für PFAS"
+    assert RetrievalConfig().mode == "vector"
+    default = retriever(indexed).search(query)
+    assert default == retriever(indexed).search(query, mode="vector")
+    assert all(hit.fulltext_rank is None for hit in default)
+    fulltext = retriever(indexed, mode="fulltext").search(query)
+    assert fulltext and all(hit.vector_rank is None for hit in fulltext)
