@@ -61,6 +61,7 @@ Als Entwickler will ich mit einem Befehl alle Evals ausführen und das Ergebnis 
 
 - AK-6.1: `parlrag eval --suite smoke|full` schreibt die Ergebnisse mit Git-SHA und Konfiguration nach `evals/results/`.
 - AK-6.2: Die Ausgabe zeigt pro Metrik die Differenz zum vorherigen Lauf.
+- AK-6.3: Entwicklung, `parlrag ask` und Evals laufen lokal auch mit einem Claude-Abo über die Claude-Code-CLI, ohne API-Key. Container, API und Demo nutzen nur einen API-Key; andere Personen über ein Abo zu bedienen ist nicht erlaubt.
 
 ### US-7 Neutralität
 Als Nutzerin will ich mich darauf verlassen können, dass das System wiedergibt, was gesagt wurde, und nicht selbst wertet.
