@@ -1,6 +1,6 @@
 # Goldset
 
-`golden.jsonl` enthält die Fragen, an denen die Evals Retrieval und Antworten messen (plan.md, Abschnitt 9). Stand: **Goldset v1** mit 33 Fragen (Task 3.1). Der Ausbau auf 65 Fragen folgt in Task 4.5.
+`golden.jsonl` enthält die Fragen, an denen die Evals Retrieval und Antworten messen (plan.md, Abschnitt 9). Stand: **Goldset v2** mit 65 Fragen, dem Endstand MVP (spec.md, Abschnitt 6): v1 mit 33 Fragen aus Task 3.1, ausgebaut in Task 4.5b.
 
 ## Schema
 
@@ -14,7 +14,7 @@ Eine Zeile pro Frage, geprüft durch `parlrag.evals.GoldenItem`:
 
 | Feld | Bedeutung |
 |---|---|
-| `id` | `q01` bis `q33`, stabil; neue Fragen bekommen neue Nummern |
+| `id` | `q01` bis `q65`, stabil; neue Fragen bekommen neue Nummern (v1: `q01` bis `q33`) |
 | `language` | Sprache der Frage, `de` oder `fr` |
 | `filters` | optional, wie in `parlrag search` bzw. `POST /ask`: `council`, `date_from`, `date_to`, `parl_group` |
 | `expected_source_ids` | erwartete Dokumente als `<source_type>:<source_id>`, also ein Votum (`transcript:<ID>`) oder ein Geschäftstext (`business:<ID>`), nie Chunks. Bei Geschäften gilt die ID für beide Sprachen |
@@ -23,17 +23,17 @@ Eine Zeile pro Frage, geprüft durch `parlrag.evals.GoldenItem`:
 
 ## Tags
 
-| Tag | Bedeutung | Anzahl in v1 |
+| Tag | Bedeutung | Anzahl |
 |---|---|---|
-| `fr` | Frage auf Französisch | 8 (5 beantwortbar, 1 wertend, 2 unbeantwortbar) |
-| `crosslingual` | erwartete Voten in der anderen Sprache als die Frage (US-5) | 5 |
-| `filter` | Frage mit Filter (AK-4.2) | 6 |
-| `unanswerable` | Der Korpus enthält keine Antwort (AK-3.2) | 5 |
-| `wertend` | Frage verlangt eine Bewertung (AK-7.1) | 3 |
-| `teilkorpus` | Quellen in der Herbstsession 2026 (Session 5215), dem Teilkorpus für Experimente | 19 |
-| `smoke` | gehört zur Smoke-Suite (`parlrag eval --suite smoke`) | 15 |
+| `fr` | Frage auf Französisch | 16 (10 beantwortbar, 2 wertend, 4 unbeantwortbar) |
+| `crosslingual` | erwartete Voten in der anderen Sprache als die Frage (US-5) | 10 |
+| `filter` | Frage mit Filter (AK-4.2) | 8 |
+| `unanswerable` | Der Korpus enthält keine Antwort (AK-3.2) | 10 |
+| `wertend` | Frage verlangt eine Bewertung (AK-7.1) | 5 |
+| `teilkorpus` | Quellen in der Herbstsession 2026 (Session 5215), dem Teilkorpus für Experimente | 23 |
+| `smoke` | gehört zur Smoke-Suite (`parlrag eval --suite smoke`); unverändert seit v1, damit Smoke-Läufe vergleichbar bleiben | 15 |
 
-Zusammensetzung: 20 beantwortbare Fragen auf Deutsch, 5 auf Französisch, 5 unbeantwortbare und 3 wertende.
+Zusammensetzung: 40 beantwortbare Fragen auf Deutsch, 10 auf Französisch, 10 unbeantwortbare und 5 wertende. Die Fragen aus v2 verteilen sich über die Sessionen von Dezember 2023 bis Oktober 2026; mehrere beziehen sich nur auf Geschäftstexte.
 
 ## Regeln
 
@@ -45,7 +45,7 @@ Zusammensetzung: 20 beantwortbare Fragen auf Deutsch, 5 auf Französisch, 5 unbe
 
 ## Herkunft
 
-Die Fragen und Quellen hat Claude aus dem echten Korpus vorgeschlagen: Debatten durchsucht, Voten gelesen, Quellen per Volltextsuche auf Vollständigkeit geprüft. Sandro hat am 2026-11-14 alle 33 Fragen samt Quellen anhand einer Review-Datei mit Ausschnitten und Links geprüft und freigegeben (plan.md, Abschnitt 9: «Ein LLM darf Vorschläge machen, entscheidet aber nicht»).
+Die Fragen und Quellen hat Claude aus dem echten Korpus vorgeschlagen: Debatten durchsucht, Voten gelesen, Quellen per Volltextsuche auf Vollständigkeit geprüft. Sandro hat am 2026-11-14 alle 33 Fragen von v1 und danach die 32 neuen Fragen von v2 samt Quellen anhand je einer Review-Datei mit Ausschnitten und Links geprüft und freigegeben (plan.md, Abschnitt 9: «Ein LLM darf Vorschläge machen, entscheidet aber nicht»).
 
 Ein einmaliger Abgleich mit der lokalen Datenbank hat bestätigt:
 
