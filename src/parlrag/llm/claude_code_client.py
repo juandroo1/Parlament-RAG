@@ -220,9 +220,11 @@ def _raise_for_error(data: dict[str, Any], usage: Usage) -> None:
             "Claude-Abo-Anmeldung abgelehnt. `claude` starten und neu anmelden.", usage
         )
     if status == 429:
+        detail = str(data.get("result") or "").strip()[:STDERR_EXCERPT]
         raise LLMError(
-            "Limit des Claude-Abos erreicht (429). Später erneut versuchen oder "
-            "LLM_BACKEND=api mit API-Key verwenden.",
+            "Limit des Claude-Abos erreicht (429"
+            + (f": {detail}" if detail else "")
+            + "). Später erneut versuchen oder LLM_BACKEND=api mit API-Key verwenden.",
             usage,
         )
     if subtype == "error_max_structured_output_retries":

@@ -11,11 +11,14 @@ danach der Judge. Metriken:
 - Antwortsprache: erkannte Sprache der Antwort = Sprache der Frage (AK-1.1).
 - Latenz p50/p95 der ganzen Frage und Kosten pro Frage, Antwort und Judge getrennt.
 
-Ein Fehler bei einer Frage (z. B. Abo-Limit) wird erfasst; der Lauf geht weiter.
+Ein Fehler bei einer Frage wird erfasst; der Lauf geht weiter. Nach mehreren Fehlern in Folge
+(typisch: Limit des Claude-Abos) werden die restlichen Fragen ohne Aufruf als übersprungen
+markiert. Mit `reuse` übernimmt ein Lauf fehlerfreie Antworten eines früheren Laufs mit gleicher
+Konfiguration und holt nur die übrigen nach (`parlrag eval --answers --resume`).
 """
 
 import dataclasses
-from collections.abc import Callable, Sequence
+from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass
 from typing import Any, Protocol
 
@@ -28,6 +31,9 @@ from parlrag.generation.pipeline import AskResult
 from parlrag.llm import LLMError, Usage
 from parlrag.retrieval import SearchFilters, SearchMode
 from parlrag.retrieval.fulltext import detect_query_language
+
+MAX_CONSECUTIVE_ERRORS = 3
+SKIPPED_PREFIX = "Übersprungen nach"
 
 ANSWER_METRICS = (
     "citation_accuracy",
@@ -182,6 +188,38 @@ def _mean_of(values: Sequence[float | None]) -> float | None:
     return mean(present) if present else None
 
 
+def reusable_answers(
+    previous: Sequence[AnswerResult], items: Sequence[GoldenItem]
+) -> dict[str, AnswerResult]:
+    """Fehlerfreie Antworten eines früheren Laufs (ohne Fehler beim Judge), nur für Fragen der
+    aktuellen Auswahl."""
+    ids = {item.id for item in items}
+    return {
+        answer.id: answer
+        for answer in previous
+        if answer.id in ids and answer.ok and answer.judge_error is None
+    }
+
+
+RESUME_KEYS = (
+    "answer_model",
+    "answer_effort",
+    "llm_backend",
+    "judge_model",
+    "judge_effort",
+    "answer_prompt_version",
+    "judge_prompt_version",
+    "answer_context_chunks",
+    "answer_min_similarity",
+)
+
+
+def resume_mismatch(previous: Mapping[str, Any] | None, current: Mapping[str, Any]) -> list[str]:
+    """Abweichende Einstellungen; fortgesetzt wird nur bei gleicher Konfiguration."""
+    previous = previous or {}
+    return [key for key in RESUME_KEYS if previous.get(key) != current.get(key)]
+
+
 def count_answers(answers: Sequence[AnswerResult]) -> dict[str, int]:
     return {
         "questions": len(answers),
@@ -200,11 +238,26 @@ def evaluate_answers(
     mode: SearchMode,
     *,
     progress: Callable[[AnswerResult], None] | None = None,
+    reuse: Mapping[str, AnswerResult] | None = None,
+    max_consecutive_errors: int = MAX_CONSECUTIVE_ERRORS,
 ) -> AnswerReport:
     """Nacheinander (Abo-Limits); auch unbeantwortbare Fragen (Ablehnungsquote)."""
     answers = []
+    consecutive_errors = 0
     for item in items:
-        result = evaluate_answer(item, pipeline, judge, mode)
+        if reuse and item.id in reuse:
+            result = reuse[item.id]
+        elif consecutive_errors >= max_consecutive_errors:
+            result = AnswerResult(
+                id=item.id,
+                language=item.language,
+                tags=item.tags,
+                answerable=item.answerable,
+                error=f"{SKIPPED_PREFIX} {consecutive_errors} Fehlern in Folge (kein Aufruf).",
+            )
+        else:
+            result = evaluate_answer(item, pipeline, judge, mode)
+            consecutive_errors = 0 if result.ok else consecutive_errors + 1
         answers.append(result)
         if progress:
             progress(result)

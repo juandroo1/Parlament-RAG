@@ -17,8 +17,8 @@ from parlrag.retrieval import SearchHit
 from parlrag.retrieval.fulltext import detect_query_language
 
 MAX_TITLE_CHARS = 200
-# Am Ende der Nachricht, weil das Modell sonst bei Quellen in der anderen Sprache leicht
-# in deren Sprache antwortet (beobachtet in Task 4.2).
+# Am Anfang und am Ende der Nachricht, weil das Modell sonst bei Quellen in der anderen Sprache
+# leicht in deren Sprache antwortet (beobachtet in Task 4.2 und im Smoke-Lauf von 4.5a, q04).
 LANGUAGE_INSTRUCTIONS = {
     "de": "Antworte auf Deutsch, auch wenn Quellen auf Französisch sind.",
     "fr": "Antworte auf Französisch, auch wenn Quellen auf Deutsch sind.",
@@ -71,11 +71,14 @@ def format_sources(hits: Sequence[SearchHit]) -> str:
 def build_user_message(
     question: str, hits: Sequence[SearchHit], feedback: str | None = None
 ) -> str:
-    """Quellen, Frage, Anweisung zur Antwortsprache und beim Retry der konkrete Fehler."""
-    parts = ["Quellen:", format_sources(hits), f"Frage: {question.strip()}"]
+    """Anweisung zur Antwortsprache (am Anfang und am Ende), Quellen, Frage und beim Retry der
+    konkrete Fehler."""
     language = detect_query_language(question)
-    if language:
-        parts.append(LANGUAGE_INSTRUCTIONS[language])
+    instruction = LANGUAGE_INSTRUCTIONS[language] if language else None
+    parts = [instruction] if instruction else []
+    parts += ["Quellen:", format_sources(hits), f"Frage: {question.strip()}"]
+    if instruction:
+        parts.append(instruction)
     if feedback:
         parts.append(
             f"Deine vorherige Antwort war ungültig: {feedback} "

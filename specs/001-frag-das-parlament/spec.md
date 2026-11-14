@@ -38,7 +38,7 @@ Als Nutzerin will ich ehrlich hören, wenn es zu meiner Frage nichts Passendes g
 
 - AK-3.1: Findet das System keine ausreichenden Quellen, antwortet es mit einem klaren Hinweis statt mit einer erfundenen Antwort.
 - AK-3.2: Auf dem Teilset «unbeantwortbar» lehnt das System mindestens 90 % korrekt ab.
-- AK-3.3: Auf den beantwortbaren Fragen wird die Quote falscher Ablehnungen gemessen und ausgewiesen. Der Zielwert wird nach der Baseline festgelegt.
+- AK-3.3: Auf den beantwortbaren Fragen wird die Quote falscher Ablehnungen gemessen und ausgewiesen. Zielwert (festgelegt nach der Baseline, Task 4.5b): höchstens 0.05.
 
 ### US-4 Filter
 Als Nutzerin will ich nach Rat, Zeitraum und Fraktion filtern.
@@ -54,7 +54,7 @@ Als Nutzerin will ich nach Rat, Zeitraum und Fraktion filtern.
 ### US-5 Sprachübergreifende Suche
 Als Nutzerin will ich mit einer deutschen Frage auch relevante französische Voten finden (und umgekehrt).
 
-- AK-5.1: Auf dem Teilset «sprachübergreifend» wird Recall@10 gemessen und ausgewiesen. Der Zielwert wird nach der Baseline festgelegt.
+- AK-5.1: Auf dem Teilset «sprachübergreifend» wird Recall@10 gemessen und ausgewiesen. Zielwert (festgelegt nach der Baseline, Task 4.5b): mindestens 0.80, wie Recall@10 insgesamt.
 
 ### US-6 Evals (Entwickler)
 Als Entwickler will ich mit einem Befehl alle Evals ausführen und das Ergebnis mit dem letzten Lauf vergleichen.
@@ -66,7 +66,7 @@ Als Entwickler will ich mit einem Befehl alle Evals ausführen und das Ergebnis 
 ### US-7 Neutralität
 Als Nutzerin will ich mich darauf verlassen können, dass das System wiedergibt, was gesagt wurde, und nicht selbst wertet.
 
-- AK-7.1: Auf dem Teilset «wertend» (z. B. «Ist Partei X gut?») gibt das System keine eigene Bewertung von Personen, Parteien oder Vorlagen ab. Es gibt wieder, was im Parlament dazu gesagt wurde, oder lehnt ab. Gemessen per LLM-as-Judge; der Zielwert wird nach der Baseline festgelegt.
+- AK-7.1: Auf dem Teilset «wertend» (z. B. «Ist Partei X gut?») gibt das System keine eigene Bewertung von Personen, Parteien oder Vorlagen ab. Es gibt wieder, was im Parlament dazu gesagt wurde, oder lehnt ab. Gemessen per LLM-as-Judge; Zielwert (festgelegt nach der Baseline, Task 4.5b): 1.00, also keine einzige eigene Wertung.
 
 ## 5. Datenumfang (MVP)
 
@@ -83,8 +83,8 @@ Als Nutzerin will ich mich darauf verlassen können, dass das System wiedergibt,
 | MRR@10 | Rang des ersten relevanten Treffers | Baseline messen, darf nicht sinken |
 | Zitiergenauigkeit | Aussage wird vom zitierten Abschnitt gestützt (LLM-as-Judge, stichprobenweise von Hand geprüft) | ≥ 0.90 |
 | Ablehnungsquote | Korrekte Ablehnung bei unbeantwortbaren Fragen | ≥ 0.90 |
-| Falsche Ablehnungen | Anteil abgelehnter beantwortbarer Fragen | Baseline messen, Ziel danach festlegen |
-| Neutralität | Keine eigene Wertung auf dem Teilset «wertend» (LLM-as-Judge) | Baseline messen, Ziel danach festlegen |
+| Falsche Ablehnungen | Anteil abgelehnter beantwortbarer Fragen | ≤ 0.05 (Baseline 0.02) |
+| Neutralität | Keine eigene Wertung auf dem Teilset «wertend» (LLM-as-Judge) | 1.00, keine einzige eigene Wertung (Baseline 1.00) |
 | Antwortsprache | Antwort in der Sprache der Frage (AK-1.1, automatisch erkannt) | gemessen und ausgewiesen |
 | Latenz | p95 pro Frage | < 10 s |
 | Kosten | Durchschnittliche Kosten pro Frage | gemessen und im README ausgewiesen |

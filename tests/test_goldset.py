@@ -1,4 +1,4 @@
-"""Goldset v1 (Task 3.1): Schema, Laden und Zusammensetzung von `golden.jsonl`."""
+"""Goldset (Task 3.1, Ausbau in 4.5b): Schema, Laden und Zusammensetzung von `golden.jsonl`."""
 
 import json
 from collections import Counter
@@ -104,16 +104,16 @@ def _category(item: GoldenItem) -> str:
 
 
 def test_golden_composition(golden: list[GoldenItem]) -> None:
-    """Zusammensetzung gemäss tasks.md, Task 3.1."""
-    assert [item.id for item in golden] == [f"q{n:02d}" for n in range(1, 34)]
+    """Endstand MVP gemäss spec.md, Abschnitt 6 (Ausbau in Task 4.5b)."""
+    assert [item.id for item in golden] == [f"q{n:02d}" for n in range(1, 66)]
     assert Counter(_category(item) for item in golden) == {
-        "beantwortbar de": 20,
-        "beantwortbar fr": 5,
-        "unbeantwortbar": 5,
-        "wertend": 3,
+        "beantwortbar de": 40,
+        "beantwortbar fr": 10,
+        "unbeantwortbar": 10,
+        "wertend": 5,
     }
     crosslingual = [item for item in golden if item.has("crosslingual")]
-    assert len(crosslingual) == 5
+    assert len(crosslingual) >= 10
     assert all(item.answerable and not item.has("wertend") for item in crosslingual)
     assert sum(item.has("teilkorpus") for item in golden) >= 15
     assert not any(item.has("teilkorpus") and not item.answerable for item in golden)
@@ -122,6 +122,8 @@ def test_golden_composition(golden: list[GoldenItem]) -> None:
 def test_smoke_suite_covers_all_categories(golden: list[GoldenItem]) -> None:
     smoke = [item for item in golden if item.has("smoke")]
     assert len(smoke) == 15
+    # Smoke-Suite unverändert seit v1, damit Smoke-Läufe vergleichbar bleiben (Task 4.5b)
+    assert all(int(item.id[1:]) <= 33 for item in smoke)
     for tag in ("fr", "crosslingual", "filter", "unanswerable", "wertend", "teilkorpus"):
         assert any(item.has(tag) for item in smoke), tag
     assert any(not item.has("teilkorpus") and item.answerable for item in smoke)

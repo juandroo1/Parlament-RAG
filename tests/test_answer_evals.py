@@ -23,6 +23,8 @@ from parlrag.evals.answers import (
     count_answers,
     evaluate_answer,
     evaluate_answers,
+    resume_mismatch,
+    reusable_answers,
     summarize_answers,
 )
 from parlrag.evals.judge import (
@@ -553,3 +555,95 @@ def test_eval_answers_stops_early_on_configuration_error(
     result = runner.invoke(cli.app, ["eval", "--answers", *cli_env["args"]])
     assert result.exit_code == 1 and "ANTHROPIC_API_KEY fehlt" in result.output
     assert not cli_env["results"].exists()
+
+
+# --- Abo-Limits: früher Abbruch und Fortsetzen (Task 4.5b) -------------------------------
+
+
+def test_consecutive_errors_skip_remaining_questions() -> None:
+    error = LLMError("Limit des Claude-Abos erreicht (429)")
+    pipeline = FakePipeline({item.id: error for item in ITEMS})
+    report = evaluate_answers(
+        ITEMS, pipeline, Judge(FakeJudgeLLM()), "vector", max_consecutive_errors=2
+    )
+
+    assert len(pipeline.calls) == 2  # q03 und q04 ohne Aufruf
+    assert [(a.error or "").startswith("Übersprungen nach 2 Fehlern") for a in report.answers] == [
+        False,
+        False,
+        True,
+        True,
+    ]
+    assert report.counts["errors"] == 4
+
+
+def test_a_success_resets_the_error_counter() -> None:
+    answers: dict[str, Any] = dict(ANSWERS)
+    answers["q01"] = LLMError("Limit (429)")
+    answers["q03"] = LLMError("Limit (429)")
+    pipeline = FakePipeline(answers)
+    evaluate_answers(ITEMS, pipeline, Judge(FakeJudgeLLM()), "vector", max_consecutive_errors=2)
+    assert len(pipeline.calls) == 4
+
+
+def test_reuse_skips_answered_questions() -> None:
+    first = _report()
+    failed = first.answers[1].model_copy(update={"error": "Limit (429)"})
+    judge_failed = first.answers[3].model_copy(update={"judge_error": "kaputt"})
+    previous = [first.answers[0], failed, first.answers[2], judge_failed]
+
+    reuse = reusable_answers(previous, ITEMS)
+    assert set(reuse) == {"q01", "q03"}
+    assert set(reusable_answers(previous, ITEMS[:1])) == {"q01"}  # nur aktuelle Auswahl
+
+    pipeline = FakePipeline()
+    report = evaluate_answers(ITEMS, pipeline, Judge(FakeJudgeLLM()), "vector", reuse=reuse)
+    assert [call["question"] for call in pipeline.calls] == [ITEMS[1].question, ITEMS[3].question]
+    assert report.answers[0] is reuse["q01"] and report.counts["errors"] == 0
+
+
+def test_resume_mismatch() -> None:
+    config = {"answer_model": "claude-haiku-5-5", "answer_prompt_version": "abc"}
+    assert resume_mismatch(config, dict(config)) == []
+    assert resume_mismatch(config, config | {"answer_prompt_version": "def"}) == [
+        "answer_prompt_version"
+    ]
+    assert "answer_model" in resume_mismatch(None, config)
+
+
+def test_eval_resume_takes_over_answers(cli_env: dict[str, Any]) -> None:
+    first = runner.invoke(cli.app, ["eval", "--answers", *cli_env["args"]])
+    assert first.exit_code == 0, first.output
+    (path,) = cli_env["results"].glob("*.json")
+    run = load_run(path)
+    broken = run.model_copy(
+        update={
+            "answers": [
+                run.answers[0].model_copy(update={"error": "Limit (429)"}),
+                *run.answers[1:],
+            ]
+        }
+    )
+    path.write_text(broken.model_dump_json(), encoding="utf-8")
+    cli_env["pipeline"].calls.clear()
+
+    result = runner.invoke(cli.app, ["eval", "--answers", "--resume", str(path), *cli_env["args"]])
+
+    assert result.exit_code == 0, result.output
+    assert "Übernehme 3 fehlerfreie Antworten" in result.output
+    assert [call["question"] for call in cli_env["pipeline"].calls] == [ITEMS[0].question]
+
+
+def test_eval_resume_rejects_other_configuration(cli_env: dict[str, Any]) -> None:
+    runner.invoke(cli.app, ["eval", "--answers", *cli_env["args"]])
+    (path,) = cli_env["results"].glob("*.json")
+    run = load_run(path)
+    other = run.model_copy(
+        update={"answer_config": {**(run.answer_config or {}), "answer_model": "x"}}
+    )
+    path.write_text(other.model_dump_json(), encoding="utf-8")
+
+    result = runner.invoke(cli.app, ["eval", "--answers", "--resume", str(path), *cli_env["args"]])
+    assert result.exit_code == 1 and "answer_model" in result.output
+    no_answers = runner.invoke(cli.app, ["eval", "--resume", str(path), *cli_env["args"]])
+    assert no_answers.exit_code == 1 and "--resume braucht --answers" in no_answers.output
