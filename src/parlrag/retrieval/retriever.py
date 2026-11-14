@@ -9,7 +9,7 @@ import datetime as dt
 import uuid
 from collections.abc import Sequence
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Protocol
 
 from sqlalchemy import Engine, bindparam, text
 
@@ -20,7 +20,14 @@ from parlrag.retrieval.fulltext import search_fulltext
 from parlrag.retrieval.fusion import reciprocal_rank_fusion
 from parlrag.retrieval.vector import search_vector
 
-__all__ = ["RetrievalConfig", "Retriever", "SearchHit", "SearchMode", "best_similarity"]
+__all__ = [
+    "RetrievalConfig",
+    "Retriever",
+    "SearchHit",
+    "SearchMode",
+    "SupportsSearch",
+    "best_similarity",
+]
 
 
 @dataclass(frozen=True)
@@ -74,6 +81,19 @@ class SearchHit:
     def source_key(self) -> str:
         """Dokument-ID im Goldset-Format `<source_type>:<source_id>` (plan.md, Abschnitt 9)."""
         return f"{self.source_type}:{self.source_id}"
+
+
+class SupportsSearch(Protocol):
+    """Was Pipeline und Eval-Runner vom Retriever brauchen (in Tests ersetzbar)."""
+
+    def search(
+        self,
+        query: str,
+        filters: SearchFilters | None = None,
+        *,
+        mode: SearchMode = "hybrid",
+        top_n: int | None = None,
+    ) -> list[SearchHit]: ...
 
 
 _DETAILS_SQL = text("""

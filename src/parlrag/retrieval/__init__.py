@@ -6,6 +6,7 @@ from parlrag.retrieval.retriever import (
     Retriever,
     SearchHit,
     SearchMode,
+    SupportsSearch,
     best_similarity,
 )
 
@@ -15,5 +16,6 @@ __all__ = [
     "SearchFilters",
     "SearchHit",
     "SearchMode",
+    "SupportsSearch",
     "best_similarity",
 ]
