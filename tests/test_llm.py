@@ -177,11 +177,13 @@ def test_unknown_model_has_no_cost(caplog: pytest.LogCaptureFixture) -> None:
 
 
 def test_call_is_logged_with_usage(caplog: pytest.LogCaptureFixture) -> None:
-    with caplog.at_level(logging.INFO, logger="parlrag.llm.anthropic_client"):
+    with caplog.at_level(logging.INFO, logger="parlrag.llm"):
         _generate(_llm(_response(Answer(answer="x", citations=[])))[0])
 
     line = caplog.records[-1].getMessage()
-    assert line.startswith("llm_call model=claude-opus-5-5 stop_reason=end_turn fallback=False")
+    assert line.startswith(
+        "llm_call backend=api model=claude-opus-5-5 stop_reason=end_turn fallback=False"
+    )
     assert "input_tokens=1000 output_tokens=500" in line
     assert "latency_ms=250" in line and "cost_usd=0.015600" in line
 

@@ -1,4 +1,10 @@
-"""LLM: Interface und Anthropic-Implementierung mit Tokens, Latenz und Kosten (Task 4.1)."""
+"""LLM: Interface und zwei Backends mit Tokens, Latenz und Kosten (Tasks 4.1 und 4.2a).
+
+- `api`: Anthropic-API mit API-Key (Standard; Container, API, Demo).
+- `claude-code`: eigenes Claude-Abo über die lokal installierte Claude-Code-CLI (AK-6.3).
+"""
+
+import shutil
 
 import anthropic
 
@@ -13,9 +19,11 @@ from parlrag.llm.base import (
     LLMResult,
     Usage,
 )
+from parlrag.llm.claude_code_client import ClaudeCodeLLM
 
 __all__ = [
     "AnthropicLLM",
+    "ClaudeCodeLLM",
     "LLMClient",
     "LLMConfigError",
     "LLMError",
@@ -28,7 +36,17 @@ __all__ = [
 
 
 def get_llm(settings: Settings) -> LLMClient:
-    """Claude gemäss `ANTHROPIC_MODEL` und `ANTHROPIC_EFFORT`; der API-Key ist Pflicht."""
+    """Claude gemäss `LLM_BACKEND`, `ANTHROPIC_MODEL` und `ANTHROPIC_EFFORT`."""
+    if settings.llm_backend == "claude-code":
+        executable = shutil.which("claude")
+        if executable is None:
+            raise LLMConfigError(
+                "Claude Code CLI (`claude`) nicht gefunden. LLM_BACKEND=claude-code läuft nur "
+                "lokal mit installiertem Claude Code; sonst LLM_BACKEND=api mit API-Key."
+            )
+        return ClaudeCodeLLM(
+            settings.anthropic_model, settings.anthropic_effort, executable=executable
+        )
     # Eine leere Zeile `ANTHROPIC_API_KEY=` aus .env.example ergibt einen leeren String.
     api_key = (
         settings.anthropic_api_key.get_secret_value().strip() if settings.anthropic_api_key else ""

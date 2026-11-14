@@ -122,6 +122,19 @@ uv run mypy src
 uv run uvicorn parlrag.api.main:app --reload   # API lokal
 ```
 
+### Zugang zum LLM
+
+Für die Antworten nutzt die Anwendung Claude. Es gibt zwei Wege, gewählt über `LLM_BACKEND` in `.env`:
+
+| `LLM_BACKEND` | Zugang | Wo | Kosten |
+|---|---|---|---|
+| `api` (Standard) | `ANTHROPIC_API_KEY` von [platform.claude.com](https://platform.claude.com) | überall, auch im Container und für die Demo | nach Verbrauch |
+| `claude-code` | eigenes Claude-Abo über die installierte [Claude-Code-CLI](https://code.claude.com) (`claude` einmal starten und anmelden) | nur lokal mit uv | im Abo enthalten, mit dessen Limits |
+
+`ANTHROPIC_MODEL` und `ANTHROPIC_EFFORT` gelten für beide Wege. Für Versuche von Hand reicht `ANTHROPIC_MODEL=claude-haiku-5-5`.
+
+Das Abo ist nur für die eigene Nutzung gedacht. Anthropic erlaubt nicht, andere Personen über ein Abo zu bedienen oder ein claude.ai-Login in einer eigenen Anwendung anzubieten. Eine öffentliche Demo läuft deshalb immer mit `api`. Beim Abo sind die ausgewiesenen Kosten eine Schätzung von Claude Code und werden nicht verrechnet. Die Latenz enthält zusätzlich den Start der CLI (rund 1,5 s).
+
 ## Datenquelle und Lizenz
 
 - Daten: Open Data der Parlamentsdienste der Bundesversammlung über den OData-Dienst [ws.parlament.ch](https://ws.parlament.ch/odata.svc/) (Amtliches Bulletin, Curia Vista). Die Nutzungsbedingungen für eine öffentliche Demo werden noch geprüft (siehe offene Fragen in der Spec).
