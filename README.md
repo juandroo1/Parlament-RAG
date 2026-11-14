@@ -4,7 +4,7 @@
 
 RAG-Anwendung, die Fragen zu Debatten und Geschäften des Schweizer Bundesparlaments beantwortet, auf Deutsch und Französisch. Grundlage sind das Amtliche Bulletin (Wortprotokolle) und Curia Vista (Geschäfte). Jede Aussage ist mit einer überprüfbaren Quelle auf parlament.ch belegt. Die Qualität wird mit einem reproduzierbaren Eval-Set gemessen.
 
-> **Status:** in Entwicklung. Aktuell stehen der Docker-Stack mit CI, Ingestion, Indexierung und hybride Suche über den ganzen Korpus; Generierung, Evals, API und UI folgen gemäss [`tasks.md`](specs/001-frag-das-parlament/tasks.md).
+> **Status:** in Entwicklung. Aktuell stehen der Docker-Stack mit CI, Ingestion, Indexierung, die Suche über den ganzen Korpus, die Retrieval-Evals und das LLM-Interface (Claude, mit Tokens, Latenz und Kosten pro Aufruf); Antwortgenerierung, API und UI folgen gemäss [`tasks.md`](specs/001-frag-das-parlament/tasks.md).
 
 ## Quickstart mit Docker
 

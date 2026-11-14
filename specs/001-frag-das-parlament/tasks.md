@@ -44,7 +44,7 @@ Tasks:
 
 ## Phase 4 – Generierung
 
-- [ ] 4.1 LLM-Interface und Anthropic-Implementierung mit Erfassung von Tokens, Latenz und Kosten
+- [x] 4.1 LLM-Interface und Anthropic-Implementierung mit Erfassung von Tokens, Latenz und Kosten
 - [ ] 4.2 Antwort-Prompt, strukturierte Ausgabe und Zitatvalidierung (AK-2.3): Modell liefert nur Quellennummern, Server ordnet sie den Chunks zu
 - [ ] 4.3 Logik für «keine ausreichende Grundlage»: Schwellwert (Cosine-Similarity bzw. Reranker-Score, nicht RRF) und Modellsignal, Schwellwert auf dem Goldset kalibrieren
 - [ ] 4.4 CLI `parlrag ask "..."`
