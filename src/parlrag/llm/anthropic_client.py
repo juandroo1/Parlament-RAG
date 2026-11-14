@@ -8,7 +8,6 @@
 - Das SDK wiederholt 408/409/429/5xx und Verbindungsfehler selbst.
 """
 
-import logging
 import time
 from collections.abc import Callable
 from typing import Any
@@ -24,10 +23,9 @@ from parlrag.llm.base import (
     LLMRefusalError,
     LLMResult,
     Usage,
+    log_call,
 )
 from parlrag.llm.pricing import cost_usd
-
-logger = logging.getLogger(__name__)
 
 FALLBACK_BETA = "server-side-fallback-2026-07-01"
 # Modelle mit serverseitigem Fallback; bei anderen (z. B. Haiku 5.5) wäre der Parameter ein Fehler.
@@ -96,7 +94,7 @@ class AnthropicLLM:
 
         usage = _usage(response, latency_ms)
         fallback_used = response.model != self._model
-        _log(usage, response.stop_reason, fallback_used)
+        log_call(usage, response.stop_reason, fallback_used)
 
         if response.stop_reason == "refusal":
             details = response.stop_details
@@ -137,21 +135,3 @@ def _usage(response: Any, latency_ms: float) -> Usage:
     )
     cost = None if any(c is None for c in costs) else sum(c for c in costs if c is not None)
     return Usage(model=response.model, latency_ms=latency_ms, cost_usd=cost, **tokens)
-
-
-def _log(usage: Usage, stop_reason: str | None, fallback_used: bool) -> None:
-    if usage.cost_usd is None:
-        logger.warning("Kein Preis für Modell %s; Kosten unbekannt", usage.model)
-    logger.info(
-        "llm_call model=%s stop_reason=%s fallback=%s input_tokens=%d output_tokens=%d "
-        "cache_write=%d cache_read=%d latency_ms=%.0f cost_usd=%s",
-        usage.model,
-        stop_reason,
-        fallback_used,
-        usage.input_tokens,
-        usage.output_tokens,
-        usage.cache_creation_input_tokens,
-        usage.cache_read_input_tokens,
-        usage.latency_ms,
-        f"{usage.cost_usd:.6f}" if usage.cost_usd is not None else "unbekannt",
-    )

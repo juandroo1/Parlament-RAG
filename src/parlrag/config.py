@@ -12,6 +12,8 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 Effort = Literal["low", "medium", "high", "xhigh", "max"]
 SearchMode = Literal["hybrid", "fulltext", "vector"]
+# api: Anthropic-API mit API-Key; claude-code: Claude-Abo über die Claude-Code-CLI (AK-6.3).
+LLMBackend = Literal["api", "claude-code"]
 
 
 class Settings(BaseSettings):
@@ -31,6 +33,8 @@ class Settings(BaseSettings):
     postgres_host: str = "127.0.0.1"
     postgres_port: int = 5432
 
+    # LLM-Backend: `api` (Standard, API-Key) oder `claude-code` (Claude-Abo, nur lokal mit uv).
+    llm_backend: LLMBackend = "api"
     anthropic_api_key: SecretStr | None = None
     anthropic_model: str = "claude-opus-5-5"
     anthropic_effort: Effort = "high"
