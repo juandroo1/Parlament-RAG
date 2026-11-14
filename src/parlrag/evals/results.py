@@ -20,6 +20,7 @@ from parlrag.evals.runner import (
     SubsetResult,
     Suite,
 )
+from parlrag.evals.threshold import ThresholdReport, threshold_summary
 from parlrag.retrieval import SearchMode
 
 DEFAULT_RESULTS_DIR = Path("evals/results")
@@ -57,6 +58,9 @@ class EvalRun(BaseModel):
     subsets: dict[str, SubsetResult]
     questions: list[QuestionResult]
     previous: str | None = None  # Dateiname des Vergleichslaufs
+    # Ab Task 4.3; fehlen in älteren Ergebnisdateien.
+    similarities: dict[str, float | None] = {}
+    threshold: ThresholdReport | None = None
 
 
 def git_state() -> tuple[str, bool]:
@@ -178,6 +182,20 @@ def subset_rows(run: EvalRun, previous: EvalRun | None) -> list[tuple[str, ...]]
 SUBSET_HEADER = ("Teilset", "n", "Recall@5", "Recall@10", "Recall@20", "MRR@10", "Δ Recall@10")
 
 
+THRESHOLD_HEADER = ("Schwelle", "unbeantwortbar abgefangen", "beantwortbar fälschlich abgewiesen")
+
+
+def threshold_rows(report: ThresholdReport) -> list[tuple[str, str, str]]:
+    return [
+        (
+            f"{row.threshold:.2f}" + (" (aktuell)" if row.threshold == report.threshold else ""),
+            f"{row.unanswerable_refused} / {report.unanswerable}",
+            f"{row.answerable_refused} / {report.answerable}",
+        )
+        for row in report.candidates
+    ]
+
+
 def misses(run: EvalRun) -> list[str]:
     """Fragen mit Recall@10 < 1 und dem Dokument-Rang jeder erwarteten Quelle."""
     lines = []
@@ -228,6 +246,10 @@ def render_markdown(run: EvalRun, previous: EvalRun | None) -> str:
     )
     lines += ["", "## Teilsets", ""]
     lines += _table(SUBSET_HEADER, subset_rows(run, previous))
+    if run.threshold:
+        lines += ["", "## Schwelle für «keine ausreichende Grundlage»", ""]
+        lines += [threshold_summary(run.threshold), ""]
+        lines += _table(THRESHOLD_HEADER, threshold_rows(run.threshold))
     lines += ["", "## Verfehlte Quellen (Recall@10 < 1)", ""]
     lines += [f"- {line}" for line in misses(run)] or ["Keine."]
     return "\n".join(lines) + "\n"

@@ -41,6 +41,9 @@ class Settings(BaseSettings):
 
     # Generierung (plan.md, Abschnitt 7): so viele Chunks gehen als nummerierte Quellen ans LLM.
     answer_context_chunks: int = Field(default=8, ge=1, le=50)
+    # Unter dieser Cosine-Similarity des besten Vektortreffers: «keine ausreichende Grundlage»
+    # ohne LLM-Aufruf (Task 4.3, auf dem Goldset kalibriert).
+    answer_min_similarity: float = Field(default=0.55, ge=0.0, le=1.0)
 
     # OData-Dienst der Parlamentsdienste (plan.md, Abschnitt 3); schonend abfragen.
     odata_base_url: str = "https://ws.parlament.ch/odata.svc/"

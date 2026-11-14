@@ -26,9 +26,11 @@ from parlrag.evals.results import (
     metric_rows,
     misses,
     render_markdown,
+    threshold_rows,
     write_run,
 )
 from parlrag.evals.runner import CHUNKS_PER_QUERY, evaluate_retrieval, select_suite
+from parlrag.evals.threshold import threshold_report, threshold_summary
 from parlrag.retrieval import RetrievalConfig, SearchFilters, SearchHit
 
 ITEMS = [
@@ -159,9 +161,16 @@ def test_evaluate_retrieval_passes_filters_mode_and_depth() -> None:
     retriever = FakeRetriever()
     evaluate_retrieval(GOLDEN, retriever, "fulltext", clock=_clock())
 
+    assert [call["query"] for call in retriever.calls] == [
+        GOLDEN[0].question,
+        GOLDEN[1].question,
+        GOLDEN[3].question,
+        GOLDEN[2].question,  # unbeantwortbar: nur für die Similarity, zuletzt
+    ]
     assert [call["filters"] for call in retriever.calls] == [
         None,
         SearchFilters(council="SR"),
+        None,
         None,
     ]
     assert {call["mode"] for call in retriever.calls} == {"fulltext"}
@@ -354,7 +363,7 @@ def test_eval_cli_smoke_suite_and_mode(eval_env: dict[str, Any]) -> None:
 
     assert result.exit_code == 0, result.output
     retriever = eval_env["retriever"]
-    assert len(retriever.calls) == 2  # smoke: q01, q02 (q03 unbeantwortbar)
+    assert len(retriever.calls) == 3  # smoke: q01, q02 und q03 (nur Similarity)
     assert {call["mode"] for call in retriever.calls} == {"fulltext"}
     assert retriever.embedder.calls == 0  # Volltext lädt kein Modell
     run = load_run(next(eval_env["results"].glob("*.json")))
@@ -403,3 +412,73 @@ def test_eval_cli_reports_invalid_golden_set(eval_env: dict[str, Any], tmp_path:
 
     assert result.exit_code == 1
     assert "Zeile 1" in result.output
+
+
+# --- Schwelle für «keine ausreichende Grundlage» (Task 4.3) ------------------------------
+
+
+def test_similarities_include_unanswerable_questions() -> None:
+    hits = {**HITS, "q03": ["transcript:99"]}
+    report = evaluate_retrieval(GOLDEN, FakeRetriever(hits), "vector", clock=_clock())
+
+    assert report.similarities == {"q01": 0.5, "q02": 0.5, "q03": 0.5, "q04": 0.5}
+    assert report.questions[0].best_similarity == 0.5
+    assert [q.id for q in report.questions] == ["q01", "q02", "q04"]  # Recall ohne q03
+
+
+def test_threshold_report() -> None:
+    similarities = {"q01": 0.70, "q02": 0.58, "q03": 0.52, "q04": None}
+    report = threshold_report(GOLDEN, similarities, 0.55, candidates=(0.50, 0.55, 0.60))
+
+    assert report is not None
+    assert (report.unanswerable, report.answerable) == (1, 2)  # q04 ohne Similarity fehlt
+    assert (report.unanswerable_refused, report.answerable_refused) == (1, 0)
+    assert [
+        (r.threshold, r.unanswerable_refused, r.answerable_refused) for r in report.candidates
+    ] == [
+        (0.50, 0, 0),
+        (0.55, 1, 0),
+        (0.60, 1, 1),
+    ]
+    assert threshold_summary(report) == (
+        "Schwelle 0.55: fängt 1 von 1 unbeantwortbaren Fragen ohne LLM ab, "
+        "weist 0 von 2 beantwortbaren fälschlich ab."
+    )
+    assert threshold_rows(report)[1] == ("0.55 (aktuell)", "1 / 1", "0 / 2")
+
+
+def test_threshold_report_without_similarities() -> None:
+    assert threshold_report(GOLDEN, {"q01": None}, 0.55) is None
+
+
+def test_old_result_files_without_threshold_still_load(tmp_path: Path) -> None:
+    run = _run()
+    data = json.loads(run.model_dump_json())
+    del data["similarities"], data["threshold"]
+    path = tmp_path / "alt.json"
+    path.write_text(json.dumps(data), encoding="utf-8")
+
+    old = load_run(path)
+    assert old.similarities == {} and old.threshold is None
+    assert "Schwelle" not in render_markdown(old, None)
+
+
+def test_eval_cli_reports_threshold(
+    eval_env: dict[str, Any], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr(
+        cli,
+        "describe_eval",
+        lambda r: ({"answer_min_similarity": 0.55}, {"documents": 3, "chunks": 5}),
+    )
+    result = runner.invoke(cli.app, ["eval", "--suite", "full", *eval_env["args"]])
+
+    assert result.exit_code == 0, result.output
+    assert "Schwelle 0.55: fängt 0 von 0" in " ".join(result.output.split())
+    run = load_run(next(eval_env["results"].glob("*.json")))
+    assert run.threshold is not None and run.threshold.threshold == 0.55
+    assert run.similarities["q03"] is None  # Fake liefert für q03 keine Treffer
+    assert (run.threshold.unanswerable, run.threshold.answerable) == (0, 3)
+    markdown = next(eval_env["results"].glob("*.md")).read_text(encoding="utf-8")
+    assert "## Schwelle für «keine ausreichende Grundlage»" in markdown
+    assert "| 0.55 (aktuell) | 0 / 0 | 3 / 3 |" in markdown  # Fake-Similarity 0.5
