@@ -4,7 +4,8 @@ import datetime as dt
 import logging
 import time
 from enum import StrEnum
-from typing import Annotated, cast
+from pathlib import Path
+from typing import Annotated, Any, cast
 
 import typer
 from pydantic import ValidationError
@@ -15,6 +16,28 @@ from sqlalchemy.orm import sessionmaker
 from parlrag.config import Settings
 from parlrag.db.session import get_engine
 from parlrag.embeddings import get_embedder
+from parlrag.evals import DEFAULT_GOLDEN_PATH, GoldenSetError, load_golden
+from parlrag.evals.results import (
+    DEFAULT_RESULTS_DIR,
+    SUBSET_HEADER,
+    EvalError,
+    EvalRun,
+    comparison_warning,
+    find_previous,
+    git_state,
+    load_run,
+    metric_rows,
+    misses,
+    subset_rows,
+    write_run,
+)
+from parlrag.evals.runner import (
+    CHUNKS_PER_QUERY,
+    QuestionResult,
+    corpus_snapshot,
+    evaluate_retrieval,
+    select_suite,
+)
 from parlrag.index.indexer import IndexConfig, IndexStats, index_documents, log_progress
 from parlrag.ingest.mapping import LANGUAGES, Language
 from parlrag.ingest.odata import ODataClient
@@ -284,3 +307,110 @@ def search(
     duration_ms = (time.monotonic() - start) * 1000
     render = results_json if as_json else format_results
     typer.echo(render(query, mode.value, filters, hits, duration_ms, model_load_ms))
+
+
+class SuiteChoice(StrEnum):
+    smoke = "smoke"
+    full = "full"
+
+
+def describe_eval(retriever: Retriever) -> tuple[dict[str, Any], dict[str, Any]]:
+    """Konfiguration und Korpus-Stand für die Ergebnisdatei (in Tests ersetzbar)."""
+    settings = Settings()
+    config: dict[str, Any] = {
+        "chunks_per_query": CHUNKS_PER_QUERY,
+        "retrieval_candidates": retriever.config.candidates,
+        "retrieval_rrf_k": retriever.config.rrf_k,
+        "embedding_model": settings.embedding_model,
+        "embedding_max_seq_length": settings.embedding_max_seq_length,
+        "index_signature": IndexConfig.from_settings(settings).signature,
+    }
+    return config, corpus_snapshot(retriever.engine)
+
+
+@app.command("eval")
+def eval_command(
+    suite: Annotated[
+        SuiteChoice, typer.Option(help="smoke: Fragen mit Tag smoke; full: alle Fragen.")
+    ] = SuiteChoice.smoke,
+    mode: Annotated[ModeChoice, typer.Option(help="Suchart.")] = ModeChoice.hybrid,
+    compare: Annotated[
+        Path | None,
+        typer.Option(help="Mit diesem Lauf vergleichen statt mit dem letzten gleicher Art."),
+    ] = None,
+    golden: Annotated[Path, typer.Option(help="Goldset (JSONL).")] = DEFAULT_GOLDEN_PATH,
+    results_dir: Annotated[
+        Path, typer.Option(help="Verzeichnis der Ergebnisdateien.")
+    ] = DEFAULT_RESULTS_DIR,
+) -> None:
+    """Retrieval-Evals auf dem Goldset; nur lokal mit uv (Git-SHA in der Ergebnisdatei)."""
+    console = Console()
+    try:
+        sha, dirty = git_state()
+        items = load_golden(golden)
+        previous_path = compare or (
+            find_previous(results_dir, suite.value, mode.value) if results_dir.exists() else None
+        )
+        previous = load_run(previous_path) if previous_path else None
+    except (EvalError, GoldenSetError, OSError) as exc:
+        console.print(f"[red]{exc}[/red]")
+        raise typer.Exit(1) from exc
+    if dirty:
+        console.print(
+            "[yellow]Achtung: ungecommittete Änderungen; der Lauf ist nicht genau einem Commit "
+            "zuzuordnen.[/yellow]"
+        )
+    selection = select_suite(items, suite.value)
+
+    retriever = build_retriever()
+    if mode is not ModeChoice.fulltext:
+        retriever.embedder.embed_query("Modell laden")  # Ladezeit nicht in der Suchdauer
+    config, corpus = describe_eval(retriever)
+
+    def show_progress(result: QuestionResult) -> None:
+        console.print(
+            f"{result.id}  Recall@10 {result.metrics['recall@10']:.2f}  "
+            f"MRR@10 {result.metrics['mrr@10']:.2f}  {result.search_ms:.0f} ms"
+        )
+
+    report = evaluate_retrieval(selection, retriever, mode.value, progress=show_progress)
+    run = EvalRun(
+        created_at=dt.datetime.now().astimezone(),
+        git_sha=sha,
+        git_dirty=dirty,
+        suite=suite.value,
+        mode=mode.value,
+        golden=golden.as_posix(),
+        questions_total=len(selection),
+        skipped_unanswerable=report.skipped_unanswerable,
+        config=config,
+        corpus=corpus,
+        metrics=report.metrics,
+        subsets=report.subsets,
+        questions=report.questions,
+        previous=previous_path.name if previous_path else None,
+    )
+    path = write_run(run, previous, results_dir)
+
+    console.print(
+        f"\n[bold]{suite.value} · {mode.value}[/bold]: {len(report.questions)} Fragen gemessen, "
+        f"{report.skipped_unanswerable} unbeantwortbare übersprungen"
+    )
+    console.print(
+        f"Vergleich mit {previous_path.name}" if previous_path else "Kein Vorlauf zum Vergleich."
+    )
+    if warning := comparison_warning(run, previous):
+        console.print(f"[yellow]{warning}[/yellow]")
+    metrics_table = Table("Metrik", "Wert", "Vorlauf", "Δ", title="Metriken")
+    for row in metric_rows(run.metrics, previous.metrics if previous else None):
+        metrics_table.add_row(*row)
+    console.print(metrics_table)
+    subsets_table = Table(*SUBSET_HEADER, title="Teilsets")
+    for subset_row in subset_rows(run, previous):
+        subsets_table.add_row(*subset_row)
+    console.print(subsets_table)
+    missed = misses(run)
+    console.print(f"Verfehlte Quellen (Recall@10 < 1): {len(missed)}")
+    for line in missed:
+        console.print(f"  {line}", highlight=False)
+    console.print(f"Ergebnis: {path} und {path.with_suffix('.md').name}")
