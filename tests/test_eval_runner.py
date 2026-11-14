@@ -16,7 +16,6 @@ from typer.testing import CliRunner
 from fakes import FakeEmbedder
 from parlrag import cli
 from parlrag.evals import GoldenItem
-from parlrag.evals import results as results_module
 from parlrag.evals.results import (
     EvalError,
     EvalRun,
@@ -283,7 +282,7 @@ def test_git_state_outside_repository(monkeypatch: pytest.MonkeyPatch) -> None:
     def no_git(*args: Any, **kwargs: Any) -> None:
         raise FileNotFoundError("git")
 
-    monkeypatch.setattr(results_module.subprocess, "run", no_git)
+    monkeypatch.setattr(subprocess, "run", no_git)
     with pytest.raises(EvalError, match="nur lokal mit uv"):
         git_state()
 
@@ -295,7 +294,7 @@ def test_git_state_reports_sha_and_dirty(monkeypatch: pytest.MonkeyPatch) -> Non
         assert ":(top,exclude)evals/results" in args or args[1] == "rev-parse"
         return subprocess.CompletedProcess(args, 0, stdout=outputs[args[1]])
 
-    monkeypatch.setattr(results_module.subprocess, "run", fake_run)
+    monkeypatch.setattr(subprocess, "run", fake_run)
     assert git_state() == ("abc123", True)
 
 
