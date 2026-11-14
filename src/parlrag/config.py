@@ -39,6 +39,9 @@ class Settings(BaseSettings):
     anthropic_model: str = "claude-opus-5-5"
     anthropic_effort: Effort = "high"
 
+    # Generierung (plan.md, Abschnitt 7): so viele Chunks gehen als nummerierte Quellen ans LLM.
+    answer_context_chunks: int = Field(default=8, ge=1, le=50)
+
     # OData-Dienst der Parlamentsdienste (plan.md, Abschnitt 3); schonend abfragen.
     odata_base_url: str = "https://ws.parlament.ch/odata.svc/"
     odata_min_interval_seconds: float = Field(default=1.0, ge=0)
