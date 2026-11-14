@@ -1,4 +1,4 @@
-"""Ausgabe von Suchtreffern für `parlrag search` (Text und JSON)."""
+"""Ausgabe von Suchtreffern für `parlrag search` (Text und JSON); Metadaten auch für `ask`."""
 
 import dataclasses
 import json
@@ -23,15 +23,8 @@ def snippet(text: str, limit: int = SNIPPET_CHARS) -> str:
     return f"«{flat[: limit - 1].rsplit(' ', 1)[0]} …»"
 
 
-def format_hit(hit: SearchHit) -> list[str]:
-    """Vier Zeilen: Rang und Scores, Metadaten, Ausschnitt, Link."""
-    scores = [f"score {hit.score:.4f}"]
-    if hit.fulltext_rank is not None:
-        scores.append(f"Volltext #{hit.fulltext_rank}")
-    if hit.vector_rank is not None:
-        scores.append(f"Vektor #{hit.vector_rank} ({hit.vector_similarity or 0:.2f})")
-    head = f"{hit.rank:>2}. {hit.source_key} [{hit.language}]  " + " · ".join(scores)
-
+def hit_metadata(hit: SearchHit) -> str:
+    """Redner (Fraktion, Kanton) bzw. Bundesrat, Rat, Datum, Geschäft (AK-2.1)."""
     if hit.source_type == "transcript":
         speaker = hit.speaker_name or "unbekannt"
         if hit.parl_group:
@@ -54,7 +47,18 @@ def format_hit(hit: SearchHit) -> list[str]:
         if hit.debate_dates:
             dates = ", ".join(_date(day) for day in hit.debate_dates)
             parts.append(f"Debatten {dates} ({', '.join(hit.debate_councils)})")
-    return [head, "    " + " · ".join(parts), "    " + snippet(hit.text), "    " + hit.url]
+    return " · ".join(parts)
+
+
+def format_hit(hit: SearchHit) -> list[str]:
+    """Vier Zeilen: Rang und Scores, Metadaten, Ausschnitt, Link."""
+    scores = [f"score {hit.score:.4f}"]
+    if hit.fulltext_rank is not None:
+        scores.append(f"Volltext #{hit.fulltext_rank}")
+    if hit.vector_rank is not None:
+        scores.append(f"Vektor #{hit.vector_rank} ({hit.vector_similarity or 0:.2f})")
+    head = f"{hit.rank:>2}. {hit.source_key} [{hit.language}]  " + " · ".join(scores)
+    return [head, "    " + hit_metadata(hit), "    " + snippet(hit.text), "    " + hit.url]
 
 
 def format_results(

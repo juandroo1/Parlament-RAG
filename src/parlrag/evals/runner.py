@@ -8,7 +8,7 @@ Antwort-Metriken (Task 4.5) mit.
 import time
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass
-from typing import Any, Literal, Protocol
+from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict
 from sqlalchemy import Engine, text
@@ -22,7 +22,7 @@ from parlrag.evals.metrics import (
     reciprocal_rank,
 )
 from parlrag.ingest.mapping import Language
-from parlrag.retrieval import SearchFilters, SearchHit, SearchMode, best_similarity
+from parlrag.retrieval import SearchMode, SupportsSearch, best_similarity
 
 Suite = Literal["smoke", "full"]
 
@@ -44,17 +44,6 @@ SUBSETS: dict[str, Callable[[GoldenItem], bool]] = {
     "teilkorpus": lambda item: item.has("teilkorpus"),
     "wertend": lambda item: item.has("wertend"),
 }
-
-
-class SupportsSearch(Protocol):
-    def search(
-        self,
-        query: str,
-        filters: SearchFilters | None = None,
-        *,
-        mode: SearchMode = "hybrid",
-        top_n: int | None = None,
-    ) -> list[SearchHit]: ...
 
 
 class QuestionResult(BaseModel):
