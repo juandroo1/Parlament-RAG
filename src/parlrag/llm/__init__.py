@@ -18,6 +18,7 @@ from parlrag.llm.base import (
     LLMRefusalError,
     LLMResult,
     Usage,
+    sum_usage,
 )
 from parlrag.llm.claude_code_client import ClaudeCodeLLM
 
@@ -32,6 +33,7 @@ __all__ = [
     "LLMResult",
     "Usage",
     "get_llm",
+    "sum_usage",
 ]
 
 

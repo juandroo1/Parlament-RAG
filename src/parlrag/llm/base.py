@@ -4,6 +4,7 @@ Die Logik ruft das LLM nur über `LLMClient` auf (CLAUDE.md), nie direkt über e
 """
 
 import logging
+from collections.abc import Sequence
 from dataclasses import dataclass
 from typing import Protocol
 
@@ -93,4 +94,21 @@ def log_call(usage: Usage, stop_reason: str | None, fallback_used: bool) -> None
         usage.cache_read_input_tokens,
         usage.latency_ms,
         f"{usage.cost_usd:.6f}" if usage.cost_usd is not None else "unbekannt",
+    )
+
+
+def sum_usage(usages: Sequence[Usage]) -> Usage | None:
+    """Summe mehrerer Aufrufe (z. B. Retry); Kosten None, sobald ein Aufruf keine hat."""
+    if not usages:
+        return None
+    costs = [usage.cost_usd for usage in usages]
+    return Usage(
+        model=usages[-1].model,
+        input_tokens=sum(usage.input_tokens for usage in usages),
+        output_tokens=sum(usage.output_tokens for usage in usages),
+        cache_creation_input_tokens=sum(usage.cache_creation_input_tokens for usage in usages),
+        cache_read_input_tokens=sum(usage.cache_read_input_tokens for usage in usages),
+        latency_ms=sum(usage.latency_ms for usage in usages),
+        cost_usd=None if any(cost is None for cost in costs) else sum(c for c in costs if c),
+        backend=usages[-1].backend,
     )
