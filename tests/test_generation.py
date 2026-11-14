@@ -289,7 +289,10 @@ def test_source_headers() -> None:
 def test_user_message_numbers_sources_without_ids() -> None:
     message = build_user_message("Pourquoi le Conseil fédéral parle-t-il de l'hiver ?", HITS)
 
-    assert message.startswith("Quellen:\n\n[1] Nationalrat · 30.09.2026")
+    assert message.startswith(  # Anweisung zur Sprache am Anfang und am Ende
+        "Antworte auf Französisch, auch wenn Quellen auf Deutsch sind.\n\nQuellen:\n\n"
+        "[1] Nationalrat · 30.09.2026"
+    )
     assert "\n\n[2] Objet 25.3906" in message and "\n\n[3] Ständerat" in message
     assert "Wir brauchen den Strom vor allem im Winter." in message
     assert message.rstrip().endswith(
@@ -305,6 +308,7 @@ def test_user_message_without_detectable_language() -> None:
     assert "Antworte auf" not in build_user_message("PFAS?", HITS)
     german = build_user_message("Was sagte der Bundesrat zum Winterstrom?", HITS)
     assert german.rstrip().endswith("Antworte auf Deutsch, auch wenn Quellen auf Französisch sind.")
+    assert german.startswith("Antworte auf Deutsch")
 
 
 def test_answer_prompt_contains_core_rules() -> None:
