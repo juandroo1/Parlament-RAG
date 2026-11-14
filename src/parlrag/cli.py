@@ -41,12 +41,15 @@ from parlrag.evals.runner import (
     select_suite,
 )
 from parlrag.evals.threshold import threshold_report, threshold_summary
+from parlrag.generation.formatting import answer_json, format_answer
+from parlrag.generation.pipeline import build_pipeline
 from parlrag.index.indexer import IndexConfig, IndexStats, index_documents, log_progress
 from parlrag.ingest.mapping import LANGUAGES, Language
 from parlrag.ingest.odata import ODataClient
 from parlrag.ingest.pipeline import IngestStats, run_ingest
 from parlrag.ingest.source import ODataSource
-from parlrag.retrieval import RetrievalConfig, Retriever, SearchFilters
+from parlrag.llm import LLMError
+from parlrag.retrieval import RetrievalConfig, Retriever, SearchFilters, SearchMode
 from parlrag.retrieval.formatting import format_results, results_json
 from parlrag.stats import CorpusStats, compute_stats
 
@@ -273,6 +276,23 @@ def build_retriever() -> Retriever:
     return Retriever(get_engine(), get_embedder(settings), RetrievalConfig.from_settings(settings))
 
 
+def _filters(
+    council: "CouncilChoice | None",
+    date_from: dt.datetime | None,
+    date_to: dt.datetime | None,
+    parl_group: str | None,
+) -> SearchFilters:
+    try:
+        return SearchFilters(
+            council=council.value if council else None,
+            date_from=date_from.date() if date_from else None,
+            date_to=date_to.date() if date_to else None,
+            parl_group=parl_group,
+        )
+    except ValidationError as exc:
+        raise typer.BadParameter(exc.errors()[0]["msg"], param_hint="--date-from") from exc
+
+
 @app.command()
 def search(
     query: Annotated[str, typer.Argument(help="Frage oder Suchbegriffe.")],
@@ -291,16 +311,7 @@ def search(
     as_json: Annotated[bool, typer.Option("--json", help="Ausgabe als JSON.")] = False,
 ) -> None:
     """Nur Retrieval: Treffer mit Scores, Metadaten, Ausschnitt und Link (zum Prüfen)."""
-    try:
-        filters = SearchFilters(
-            council=council.value if council else None,
-            date_from=date_from.date() if date_from else None,
-            date_to=date_to.date() if date_to else None,
-            parl_group=parl_group,
-        )
-    except ValidationError as exc:
-        raise typer.BadParameter(exc.errors()[0]["msg"], param_hint="--date-from") from exc
-
+    filters = _filters(council, date_from, date_to, parl_group)
     retriever = build_retriever()
     chosen = mode.value if mode else retriever.config.mode
     model_load_ms = None
@@ -443,3 +454,34 @@ def eval_command(
     for line in missed:
         console.print(f"  {line}", highlight=False)
     console.print(f"Ergebnis: {path} und {path.with_suffix('.md').name}")
+
+
+@app.command()
+def ask(
+    question: Annotated[str, typer.Argument(help="Frage auf Deutsch oder Französisch.")],
+    mode: Annotated[ModeChoice | None, typer.Option(help=MODE_HELP)] = None,
+    council: Annotated[CouncilChoice | None, typer.Option(help="Nur dieser Rat.")] = None,
+    date_from: Annotated[
+        dt.datetime | None, typer.Option(formats=["%Y-%m-%d"], help="Ab Datum (inklusive).")
+    ] = None,
+    date_to: Annotated[
+        dt.datetime | None, typer.Option(formats=["%Y-%m-%d"], help="Bis Datum (inklusive).")
+    ] = None,
+    parl_group: Annotated[
+        str | None, typer.Option(help="Nur Voten dieser Fraktion, z. B. RL, S, V, M-E, G, GL.")
+    ] = None,
+    as_json: Annotated[bool, typer.Option("--json", help="Ausgabe als JSON.")] = False,
+) -> None:
+    """Antwort mit Quellen aus den Debatten und Geschäften (LLM gemäss LLM_BACKEND)."""
+    filters = _filters(council, date_from, date_to, parl_group)
+    console = Console(stderr=True)
+    try:
+        pipeline = build_pipeline()
+        chosen: SearchMode | None = mode.value if mode else None
+        model_load_ms = pipeline.warm_up(chosen)
+        result = pipeline.ask(question, filters, mode=chosen)
+    except LLMError as exc:
+        console.print(f"[red]{exc}[/red]")
+        raise typer.Exit(1) from exc
+    render = answer_json if as_json else format_answer
+    typer.echo(render(result, model_load_ms))
