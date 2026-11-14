@@ -39,7 +39,7 @@ Tasks:
 ## Phase 3 – Evals zuerst
 
 - [x] 3.1 Goldset v1: 33 Fragen von Hand schreiben, davon 5 unbeantwortbar, 5 französisch, 5 sprachübergreifend, 3 wertend; mindestens 15 Fragen zielen auf den Teilkorpus (Herbstsession 2026) und tragen den Tag `teilkorpus`; erwartete Quellen als Dokument-IDs (`<source_type>:<source_id>`) bestimmen
-- [ ] 3.2 Eval-Runner für Retrieval-Metriken (Recall@k, MRR@10) über deduplizierte Dokumente, Ergebnisdateien, Vergleich mit dem letzten Lauf
+- [x] 3.2 Eval-Runner für Retrieval-Metriken (Recall@k, MRR@10) über deduplizierte Dokumente, Ergebnisdateien, Vergleich mit dem letzten Lauf
 - [ ] 3.3 Baseline: nur Volltext vs. nur Vektor vs. Hybrid messen und den Entscheid ins Entscheidungsprotokoll schreiben
 
 ## Phase 4 – Generierung
