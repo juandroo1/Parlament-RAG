@@ -20,6 +20,7 @@ from parlrag.evals import DEFAULT_GOLDEN_PATH, GoldenSetError, load_golden
 from parlrag.evals.results import (
     DEFAULT_RESULTS_DIR,
     SUBSET_HEADER,
+    THRESHOLD_HEADER,
     EvalError,
     EvalRun,
     comparison_warning,
@@ -29,6 +30,7 @@ from parlrag.evals.results import (
     metric_rows,
     misses,
     subset_rows,
+    threshold_rows,
     write_run,
 )
 from parlrag.evals.runner import (
@@ -38,6 +40,7 @@ from parlrag.evals.runner import (
     evaluate_retrieval,
     select_suite,
 )
+from parlrag.evals.threshold import threshold_report, threshold_summary
 from parlrag.index.indexer import IndexConfig, IndexStats, index_documents, log_progress
 from parlrag.ingest.mapping import LANGUAGES, Language
 from parlrag.ingest.odata import ODataClient
@@ -328,6 +331,7 @@ def describe_eval(retriever: Retriever) -> tuple[dict[str, Any], dict[str, Any]]
         "embedding_model": settings.embedding_model,
         "embedding_max_seq_length": settings.embedding_max_seq_length,
         "index_signature": IndexConfig.from_settings(settings).signature,
+        "answer_min_similarity": settings.answer_min_similarity,
     }
     return config, corpus_snapshot(retriever.engine)
 
@@ -383,6 +387,12 @@ def eval_command(
         )
 
     report = evaluate_retrieval(selection, retriever, chosen, progress=show_progress)
+    min_similarity = config.get("answer_min_similarity")
+    threshold = (
+        threshold_report(selection, report.similarities, float(min_similarity))
+        if min_similarity is not None
+        else None
+    )
     run = EvalRun(
         created_at=dt.datetime.now().astimezone(),
         git_sha=sha,
@@ -398,6 +408,8 @@ def eval_command(
         subsets=report.subsets,
         questions=report.questions,
         previous=previous_path.name if previous_path else None,
+        similarities=report.similarities,
+        threshold=threshold,
     )
     path = write_run(run, previous, results_dir)
 
@@ -418,6 +430,14 @@ def eval_command(
     for subset_row in subset_rows(run, previous):
         subsets_table.add_row(*subset_row)
     console.print(subsets_table)
+    if threshold:
+        console.print(threshold_summary(threshold))
+        threshold_table = Table(
+            *THRESHOLD_HEADER, title="Schwelle für «keine ausreichende Grundlage»"
+        )
+        for threshold_row in threshold_rows(threshold):
+            threshold_table.add_row(*threshold_row)
+        console.print(threshold_table)
     missed = misses(run)
     console.print(f"Verfehlte Quellen (Recall@10 < 1): {len(missed)}")
     for line in missed:

@@ -22,7 +22,7 @@ from parlrag.evals.metrics import (
     reciprocal_rank,
 )
 from parlrag.ingest.mapping import Language
-from parlrag.retrieval import SearchFilters, SearchHit, SearchMode
+from parlrag.retrieval import SearchFilters, SearchHit, SearchMode, best_similarity
 
 Suite = Literal["smoke", "full"]
 
@@ -70,6 +70,7 @@ class QuestionResult(BaseModel):
     top_documents: tuple[str, ...]
     metrics: dict[str, float]
     search_ms: float
+    best_similarity: float | None = None
 
 
 class SubsetResult(BaseModel):
@@ -85,6 +86,8 @@ class RetrievalReport:
     skipped_unanswerable: int
     metrics: dict[str, float]
     subsets: dict[str, SubsetResult]
+    # Beste Cosine-Similarity aller Fragen, auch der unbeantwortbaren (Kalibrierung, Task 4.3).
+    similarities: dict[str, float | None]
 
 
 def select_suite(items: Sequence[GoldenItem], suite: Suite) -> list[GoldenItem]:
@@ -115,6 +118,7 @@ def evaluate_question(
         top_documents=tuple(ranked[:TOP_DOCUMENTS_SHOWN]),
         metrics=metrics,
         search_ms=search_ms,
+        best_similarity=best_similarity(hits),
     )
 
 
@@ -144,6 +148,11 @@ def evaluate_retrieval(
         results.append(result)
         if progress:
             progress(result)
+    similarities: dict[str, float | None] = {r.id: r.best_similarity for r in results}
+    for item in items:
+        if not item.answerable:  # nur für die Schwelle; zählt nicht zu Recall und Suchdauer
+            hits = retriever.search(item.question, item.filters, mode=mode, top_n=CHUNKS_PER_QUERY)
+            similarities[item.id] = best_similarity(hits)
     by_id = {r.id: r for r in results}
     subsets = {}
     for name, belongs in SUBSETS.items():
@@ -155,6 +164,7 @@ def evaluate_retrieval(
         skipped_unanswerable=len(items) - len(answerable),
         metrics=summarize(results),
         subsets=subsets,
+        similarities={item.id: similarities[item.id] for item in items},
     )
 
 
