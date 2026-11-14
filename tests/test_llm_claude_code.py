@@ -284,3 +284,14 @@ def test_api_backend_is_default() -> None:
     assert _settings().llm_backend == "api"
     with pytest.raises(LLMConfigError, match="ANTHROPIC_API_KEY"):
         get_llm(_settings())  # ohne Key: weiterhin klare Meldung
+
+
+def test_get_llm_model_and_effort_can_be_overridden(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Der Judge der Evals nutzt dasselbe Backend mit eigenem Modell (JUDGE_MODEL)."""
+    monkeypatch.setattr("shutil.which", lambda name: "C:/bin/claude.exe")
+    settings = _settings(llm_backend="claude-code", anthropic_model=MODEL, anthropic_effort="low")
+    judge = get_llm(settings, model="claude-sonnet-5-5", effort="medium")
+
+    assert isinstance(judge, ClaudeCodeLLM)
+    assert (judge.model, judge.effort) == ("claude-sonnet-5-5", "medium")
+    assert _settings().judge_model == "claude-sonnet-5-5" and _settings().judge_effort == "medium"

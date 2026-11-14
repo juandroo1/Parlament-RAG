@@ -8,7 +8,7 @@ import shutil
 
 import anthropic
 
-from parlrag.config import Settings
+from parlrag.config import Effort, Settings
 from parlrag.llm.anthropic_client import DEFAULT_TIMEOUT_SECONDS, AnthropicLLM
 from parlrag.llm.base import (
     LLMClient,
@@ -37,8 +37,15 @@ __all__ = [
 ]
 
 
-def get_llm(settings: Settings) -> LLMClient:
-    """Claude gemäss `LLM_BACKEND`, `ANTHROPIC_MODEL` und `ANTHROPIC_EFFORT`."""
+def get_llm(
+    settings: Settings, *, model: str | None = None, effort: Effort | None = None
+) -> LLMClient:
+    """Claude gemäss `LLM_BACKEND`, `ANTHROPIC_MODEL` und `ANTHROPIC_EFFORT`.
+
+    `model` und `effort` überschreiben die Einstellungen, z. B. für den Judge der Evals.
+    """
+    model = model or settings.anthropic_model
+    effort = effort or settings.anthropic_effort
     if settings.llm_backend == "claude-code":
         executable = shutil.which("claude")
         if executable is None:
@@ -46,9 +53,7 @@ def get_llm(settings: Settings) -> LLMClient:
                 "Claude Code CLI (`claude`) nicht gefunden. LLM_BACKEND=claude-code läuft nur "
                 "lokal mit installiertem Claude Code; sonst LLM_BACKEND=api mit API-Key."
             )
-        return ClaudeCodeLLM(
-            settings.anthropic_model, settings.anthropic_effort, executable=executable
-        )
+        return ClaudeCodeLLM(model, effort, executable=executable)
     # Eine leere Zeile `ANTHROPIC_API_KEY=` aus .env.example ergibt einen leeren String.
     api_key = (
         settings.anthropic_api_key.get_secret_value().strip() if settings.anthropic_api_key else ""
@@ -58,4 +63,4 @@ def get_llm(settings: Settings) -> LLMClient:
             "ANTHROPIC_API_KEY fehlt. Den Key in .env eintragen (Vorlage: .env.example)."
         )
     client = anthropic.Anthropic(api_key=api_key, timeout=DEFAULT_TIMEOUT_SECONDS)
-    return AnthropicLLM(client, settings.anthropic_model, settings.anthropic_effort)
+    return AnthropicLLM(client, model, effort)

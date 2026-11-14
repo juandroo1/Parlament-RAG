@@ -85,14 +85,18 @@ class AskPipeline:
         )
 
 
-def build_pipeline(settings: Settings | None = None) -> AskPipeline:
+def build_pipeline(
+    settings: Settings | None = None, *, retriever: SupportsSearch | None = None
+) -> AskPipeline:
     """Aus den Einstellungen; das LLM zuerst, damit ein fehlender Key oder eine fehlende
-    Claude-CLI gemeldet wird, bevor das Embedding-Modell lädt."""
+    Claude-CLI gemeldet wird, bevor das Embedding-Modell lädt. Ein übergebener Retriever
+    wird geteilt (Eval-Runner: das Embedding-Modell nur einmal laden)."""
     settings = settings or Settings()
     llm = get_llm(settings)
-    retriever = Retriever(
-        get_engine(), get_embedder(settings), RetrievalConfig.from_settings(settings)
-    )
+    if retriever is None:
+        retriever = Retriever(
+            get_engine(), get_embedder(settings), RetrievalConfig.from_settings(settings)
+        )
     generator = AnswerGenerator(
         llm,
         context_chunks=settings.answer_context_chunks,
