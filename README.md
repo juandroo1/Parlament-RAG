@@ -84,6 +84,16 @@ Antworten des OData-Dienstes werden roh in `./data/raw/` zwischengespeichert (ni
 
 Die Ports sind nur lokal erreichbar: API auf `127.0.0.1:8000`, Datenbank auf `127.0.0.1:5432`. Läuft auf dem Rechner bereits ein anderes Postgres auf Port 5432, in `.env` z. B. `POSTGRES_PORT=5433` setzen.
 
+### Fragen stellen
+
+```bash
+docker compose run --rm app parlrag ask "Was sagte Bundesrat Rösti zum Kühlwasser der Kernkraftwerke?"
+docker compose run --rm app parlrag ask "Qu'a dit le Conseil fédéral sur la 13e rente AVS ?" --council SR
+uv run parlrag ask "Frage" --json        # lokal, z. B. mit LLM_BACKEND=claude-code (siehe «Zugang zum LLM»)
+```
+
+Die Antwort kommt in der Sprache der Frage. Jede Aussage ist mit [n] belegt, darunter stehen die zitierten Quellen mit Redner, Fraktion, Rat, Datum, Geschäftsnummer, Ausschnitt und Link auf parlament.ch. Die Filter sind dieselben wie bei `search`. Reichen die Quellen nicht, erscheint statt einer Antwort ein klarer Hinweis samt Grund (keine Treffer, Similarity unter `ANSWER_MIN_SIMILARITY` oder Einschätzung des Modells). Die letzten Zeilen zeigen Modell, Tokens, Kosten und die Zeiten für Suche und LLM. Im Container braucht `ask` einen `ANTHROPIC_API_KEY`.
+
 ## Evals
 
 Das Goldset [`evals/datasets/golden.jsonl`](evals/datasets/golden.jsonl) enthält 33 Fragen mit den erwarteten Quellen (Goldset v1): 20 beantwortbare auf Deutsch, 5 auf Französisch, 5 unbeantwortbare und 3 wertende, davon 5 sprachübergreifend und 19 auf den Teilkorpus Herbstsession 2026. Claude hat sie aus dem Korpus vorgeschlagen, Sandro hat jede Frage geprüft. Schema, Tags und Regeln stehen in [`evals/datasets/README.md`](evals/datasets/README.md). Die Evals laufen nur lokal mit uv, nicht im Container. So steht der Git-SHA zur Verfügung. Die Datenbank läuft dabei im Container:
