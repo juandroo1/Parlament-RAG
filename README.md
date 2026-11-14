@@ -86,7 +86,15 @@ Die Ports sind nur lokal erreichbar: API auf `127.0.0.1:8000`, Datenbank auf `12
 
 ## Evals
 
-Das Goldset [`evals/datasets/golden.jsonl`](evals/datasets/golden.jsonl) enthält 33 Fragen mit den erwarteten Quellen (Goldset v1): 20 beantwortbare auf Deutsch, 5 auf Französisch, 5 unbeantwortbare und 3 wertende, davon 5 sprachübergreifend und 19 auf den Teilkorpus Herbstsession 2026. Claude hat sie aus dem Korpus vorgeschlagen, Sandro hat jede Frage geprüft. Schema, Tags und Regeln stehen in [`evals/datasets/README.md`](evals/datasets/README.md). Der Eval-Runner folgt in Task 3.2.
+Das Goldset [`evals/datasets/golden.jsonl`](evals/datasets/golden.jsonl) enthält 33 Fragen mit den erwarteten Quellen (Goldset v1): 20 beantwortbare auf Deutsch, 5 auf Französisch, 5 unbeantwortbare und 3 wertende, davon 5 sprachübergreifend und 19 auf den Teilkorpus Herbstsession 2026. Claude hat sie aus dem Korpus vorgeschlagen, Sandro hat jede Frage geprüft. Schema, Tags und Regeln stehen in [`evals/datasets/README.md`](evals/datasets/README.md). Die Evals laufen nur lokal mit uv, nicht im Container. So steht der Git-SHA zur Verfügung. Die Datenbank läuft dabei im Container:
+
+```bash
+uv run parlrag eval --suite smoke                  # 15 Fragen, Suchart hybrid
+uv run parlrag eval --suite full --mode fulltext   # alle Fragen, nur Volltext
+uv run parlrag eval --suite full --compare evals/results/<lauf>.json
+```
+
+Gemessen werden Recall@5, @10 und @20 sowie MRR@10, auf Dokumenten statt Chunks. Dazu kommt die Suchdauer p50/p95, jeweils insgesamt und pro Teilset (`de`, `fr`, `crosslingual`, `filter`, `teilkorpus`, `wertend`). Jeder Lauf schreibt `evals/results/<datum>_<sha>_<suite>-<modus>.json` mit Konfiguration und Korpus-Stand, dazu eine Markdown-Zusammenfassung. Die Ausgabe zeigt pro Metrik die Differenz zum letzten Lauf mit derselben Suite und demselben Modus und listet die Fragen, deren erwartete Quellen nicht unter den Top 10 liegen. Die Ergebnisse werden committet und bilden die Historie. Antwort-Metriken (Zitiergenauigkeit, Ablehnungen, Neutralität) folgen in Task 4.5.
 
 ## Lokale Entwicklung mit uv
 
