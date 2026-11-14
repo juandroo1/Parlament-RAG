@@ -76,7 +76,7 @@ docker compose run --rm app parlrag search "PFAS" --parl-group RL --date-from 20
 docker compose run --rm app parlrag search "PFAS" --json
 ```
 
-Kombiniert Volltext- und Vektorsuche mit Reciprocal Rank Fusion (`--mode hybrid`, Standard) oder nutzt nur eine davon (`fulltext`, `vector`). Filter wirken vor der Suche. Jeder Treffer zeigt die Dokument-ID im Goldset-Format (`transcript:418982`), die Scores, Redner und Fraktion bzw. Geschäftsnummer, Rat, Datum, einen Ausschnitt und den Link auf parlament.ch.
+Standard ist die Vektorsuche (`--mode vector`, einstellbar über `RETRIEVAL_MODE` in `.env`); sie hat in der Baseline am besten abgeschnitten (siehe «Experimente»). `fulltext` nutzt nur die Volltextsuche, `hybrid` kombiniert beide mit Reciprocal Rank Fusion. Filter wirken vor der Suche. Jeder Treffer zeigt die Dokument-ID im Goldset-Format (`transcript:418982`), die Scores, Redner und Fraktion bzw. Geschäftsnummer, Rat, Datum, einen Ausschnitt und den Link auf parlament.ch.
 
 Das Embedding-Modell [BAAI/bge-m3](https://huggingface.co/BAAI/bge-m3) (MIT-Lizenz) läuft lokal auf der CPU. Es wird beim ersten Gebrauch heruntergeladen (rund 4 GB im Docker-Volume `hf-cache`) und nicht ins Image gebacken. Beim Einbetten braucht der Container rund 4 GB Arbeitsspeicher.
 
@@ -89,12 +89,24 @@ Die Ports sind nur lokal erreichbar: API auf `127.0.0.1:8000`, Datenbank auf `12
 Das Goldset [`evals/datasets/golden.jsonl`](evals/datasets/golden.jsonl) enthält 33 Fragen mit den erwarteten Quellen (Goldset v1): 20 beantwortbare auf Deutsch, 5 auf Französisch, 5 unbeantwortbare und 3 wertende, davon 5 sprachübergreifend und 19 auf den Teilkorpus Herbstsession 2026. Claude hat sie aus dem Korpus vorgeschlagen, Sandro hat jede Frage geprüft. Schema, Tags und Regeln stehen in [`evals/datasets/README.md`](evals/datasets/README.md). Die Evals laufen nur lokal mit uv, nicht im Container. So steht der Git-SHA zur Verfügung. Die Datenbank läuft dabei im Container:
 
 ```bash
-uv run parlrag eval --suite smoke                  # 15 Fragen, Suchart hybrid
+uv run parlrag eval --suite smoke                  # 15 Fragen, Standard-Suchart (vector)
 uv run parlrag eval --suite full --mode fulltext   # alle Fragen, nur Volltext
 uv run parlrag eval --suite full --compare evals/results/<lauf>.json
 ```
 
 Gemessen werden Recall@5, @10 und @20 sowie MRR@10, auf Dokumenten statt Chunks. Dazu kommt die Suchdauer p50/p95, jeweils insgesamt und pro Teilset (`de`, `fr`, `crosslingual`, `filter`, `teilkorpus`, `wertend`). Jeder Lauf schreibt `evals/results/<datum>_<sha>_<suite>-<modus>.json` mit Konfiguration und Korpus-Stand, dazu eine Markdown-Zusammenfassung. Die Ausgabe zeigt pro Metrik die Differenz zum letzten Lauf mit derselben Suite und demselben Modus und listet die Fragen, deren erwartete Quellen nicht unter den Top 10 liegen. Die Ergebnisse werden committet und bilden die Historie. Antwort-Metriken (Zitiergenauigkeit, Ablehnungen, Neutralität) folgen in Task 4.5.
+
+### Experimente
+
+Gemessen auf dem Goldset v1 (`full`, 28 beantwortbare Fragen) gegen den eingefrorenen Korpus. Die Details stehen in `evals/results/`, die Entscheide im [Entscheidungsprotokoll](specs/001-frag-das-parlament/plan.md#12-entscheidungsprotokoll).
+
+| Experiment | Variante | Recall@10 | MRR@10 | Recall@10 sprachübergreifend | Suche p95 |
+|---|---|---|---|---|---|
+| Suchverfahren | nur Volltext | 0.399 | 0.270 | 0.000 | 1771 ms |
+| | **nur Vektor (Standard)** | **0.780** | **0.541** | **0.600** | **536 ms** |
+| | Hybrid (RRF) | 0.637 | 0.424 | 0.000 | 1246 ms |
+
+Die Volltextsuche rankt ohne IDF, deshalb dominieren häufige Wörter wie «Bundesrat». Über RRF verdrängen diese Treffer gute Vektortreffer, besonders die in der anderen Sprache. Das Ziel Recall@10 ≥ 0.80 ist noch knapp verfehlt; als Nächstes wird ein Reranker auf den Vektortreffern gemessen (Task 6.1).
 
 ## Lokale Entwicklung mit uv
 
