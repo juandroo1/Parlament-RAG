@@ -17,7 +17,13 @@ from parlrag.config import Settings
 from parlrag.db.session import get_engine
 from parlrag.embeddings import get_embedder
 from parlrag.evals import DEFAULT_GOLDEN_PATH, GoldenSetError, load_golden
-from parlrag.evals.answers import AnswerResult, SupportsAsk, evaluate_answers
+from parlrag.evals.answers import (
+    AnswerResult,
+    SupportsAsk,
+    evaluate_answers,
+    resume_mismatch,
+    reusable_answers,
+)
 from parlrag.evals.judge import Judge
 from parlrag.evals.results import (
     ANSWER_HEADER,
@@ -395,6 +401,13 @@ def eval_command(
             help="Auch Antworten erzeugen und per Judge bewerten (LLM-Aufrufe, kostet).",
         ),
     ] = False,
+    resume: Annotated[
+        Path | None,
+        typer.Option(
+            help="Mit --answers: fehlerfreie Antworten dieses Laufs übernehmen, nur den Rest "
+            "nachholen (gleiche Konfiguration nötig)."
+        ),
+    ] = None,
 ) -> None:
     """Evals auf dem Goldset; nur lokal mit uv (Git-SHA in der Ergebnisdatei).
 
@@ -417,6 +430,24 @@ def eval_command(
             console.print(f"[red]{exc}[/red]")
             raise typer.Exit(1) from exc
     answer_model = answer_parts[2]["answer_model"] if answer_parts else None
+    reuse: dict[str, AnswerResult] = {}
+    if resume:
+        try:
+            resumed = load_run(resume)
+        except EvalError as exc:
+            console.print(f"[red]{exc}[/red]")
+            raise typer.Exit(1) from exc
+        mismatch = resume_mismatch(resumed.answer_config, answer_parts[2]) if answer_parts else []
+        if not answer_parts or mismatch:
+            reason = (
+                "--resume braucht --answers"
+                if not answer_parts
+                else "andere Konfiguration als im fortgesetzten Lauf: " + ", ".join(mismatch)
+            )
+            console.print(f"[red]{reason}[/red]")
+            raise typer.Exit(1)
+        reuse = reusable_answers(resumed.answers, load_golden(golden))
+        console.print(f"Übernehme {len(reuse)} fehlerfreie Antworten aus {resume.name}.")
     try:
         previous_path = compare or (
             find_previous(results_dir, suite.value, chosen, answer_model)
@@ -453,7 +484,9 @@ def eval_command(
             console.print(answer_progress(answer), highlight=False)
 
         console.print(f"\nAntworten ({answer_model}) und Judge ({judge.model}):")
-        answer_report = evaluate_answers(selection, pipeline, judge, chosen, progress=show_answer)
+        answer_report = evaluate_answers(
+            selection, pipeline, judge, chosen, progress=show_answer, reuse=reuse
+        )
     min_similarity = config.get("answer_min_similarity")
     threshold = (
         threshold_report(selection, report.similarities, float(min_similarity))

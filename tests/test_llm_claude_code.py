@@ -295,3 +295,14 @@ def test_get_llm_model_and_effort_can_be_overridden(monkeypatch: pytest.MonkeyPa
     assert isinstance(judge, ClaudeCodeLLM)
     assert (judge.model, judge.effort) == ("claude-sonnet-5-5", "medium")
     assert _settings().judge_model == "claude-sonnet-5-5" and _settings().judge_effort == "medium"
+
+
+def test_subscription_limit_message_includes_reset_time() -> None:
+    limit = _result(
+        is_error=True,
+        subtype="success",
+        api_error_status=429,
+        result="You've hit your 5-hour limit · resets 4:30pm (Europe/Zurich)",
+    )
+    with pytest.raises(LLMError, match=r"429: You've hit your 5-hour limit · resets 4:30pm"):
+        _generate(_llm(FakeRunner(limit)))
