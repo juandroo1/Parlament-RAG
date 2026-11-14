@@ -47,7 +47,7 @@ Tasks:
 - [x] 4.1 LLM-Interface und Anthropic-Implementierung mit Erfassung von Tokens, Latenz und Kosten
 - [x] 4.2a Claude-Abo als LLM-Backend für die lokale Entwicklung (AK-6.3): `LLM_BACKEND=claude-code` ruft die Claude-Code-CLI auf (`claude -p` mit strukturierter Ausgabe), hinter demselben `LLMClient`-Interface; Standard bleibt `api`
 - [x] 4.2 Antwort-Prompt, strukturierte Ausgabe und Zitatvalidierung (AK-2.3): Modell liefert nur Quellennummern, Server ordnet sie den Chunks zu
-- [ ] 4.3 Logik für «keine ausreichende Grundlage»: Schwellwert (Cosine-Similarity bzw. Reranker-Score, nicht RRF) und Modellsignal, Schwellwert auf dem Goldset kalibrieren
+- [x] 4.3 Logik für «keine ausreichende Grundlage»: Schwellwert (Cosine-Similarity bzw. Reranker-Score, nicht RRF) und Modellsignal, Schwellwert auf dem Goldset kalibrieren
 - [ ] 4.4 CLI `parlrag ask "..."`
 - [ ] 4.5 Judge-Prompt und Antwort-Metriken im Eval-Runner (Zitiergenauigkeit, Faithfulness, Ablehnungsquote, falsche Ablehnungen, Neutralität, Antwortsprache, Latenz p95, Kosten); Goldset auf 65 Fragen ausbauen
 
