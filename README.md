@@ -78,7 +78,7 @@ docker compose run --rm app parlrag search "PFAS" --parl-group RL --date-from 20
 docker compose run --rm app parlrag search "PFAS" --json
 ```
 
-Standard ist die Vektorsuche (`--mode vector`, einstellbar über `RETRIEVAL_MODE` in `.env`); sie hat in der Baseline am besten abgeschnitten (siehe «Experimente»). `fulltext` nutzt nur die Volltextsuche, `hybrid` kombiniert beide mit Reciprocal Rank Fusion. Filter wirken vor der Suche. Jeder Treffer zeigt die Dokument-ID im Goldset-Format (`transcript:418982`), die Scores, Redner und Fraktion bzw. Geschäftsnummer, Rat, Datum, einen Ausschnitt und den Link auf parlament.ch.
+Standard ist die Vektorsuche (`--mode vector`, einstellbar über `RETRIEVAL_MODE` in `.env`); sie hat in der Baseline am besten abgeschnitten (siehe «Experimente»). `fulltext` nutzt nur die Volltextsuche, `hybrid` kombiniert beide mit Reciprocal Rank Fusion. Ein Reranker lässt sich mit `RETRIEVAL_RERANK=true` zuschalten, ist aber auf der CPU zu langsam und deshalb standardmässig aus (siehe «Experimente»). Filter wirken vor der Suche. Jeder Treffer zeigt die Dokument-ID im Goldset-Format (`transcript:418982`), die Scores, Redner und Fraktion bzw. Geschäftsnummer, Rat, Datum, einen Ausschnitt und den Link auf parlament.ch.
 
 Das Embedding-Modell [BAAI/bge-m3](https://huggingface.co/BAAI/bge-m3) (MIT-Lizenz) läuft lokal auf der CPU. Es wird beim ersten Gebrauch heruntergeladen (rund 4 GB im Docker-Volume `hf-cache`) und nicht ins Image gebacken. Beim Einbetten braucht der Container rund 4 GB Arbeitsspeicher.
 
@@ -116,7 +116,7 @@ uv run parlrag eval --suite full --mode fulltext   # alle Fragen, nur Volltext
 uv run parlrag eval --suite full --compare evals/results/<lauf>.json
 ```
 
-Gemessen werden Recall@5, @10 und @20 sowie MRR@10, auf Dokumenten statt Chunks. Dazu kommt die Suchdauer p50/p95, jeweils insgesamt und pro Teilset (`de`, `fr`, `crosslingual`, `filter`, `teilkorpus`, `wertend`). Jeder Lauf schreibt `evals/results/<datum>_<sha>_<suite>-<modus>.json` mit Konfiguration und Korpus-Stand, dazu eine Markdown-Zusammenfassung. Die Ausgabe zeigt pro Metrik die Differenz zum letzten Lauf mit derselben Suite und demselben Modus und listet die Fragen, deren erwartete Quellen nicht unter den Top 10 liegen. Dazu kommt die Wirkung der Schwelle für «keine ausreichende Grundlage» (`ANSWER_MIN_SIMILARITY`): wie viele unbeantwortbare Fragen sie ohne LLM abfängt und wie viele beantwortbare sie fälschlich abweist. Die Ergebnisse werden committet und bilden die Historie. Mit `--answers` erzeugt der Lauf zusätzlich für jede Frage eine Antwort (wie `parlrag ask`) und lässt sie von einem Judge-Modell (`JUDGE_MODEL`, Standard Sonnet 5.5) bewerten. Ausgewiesen werden Zitiergenauigkeit, Faithfulness, Ablehnungsquote bei unbeantwortbaren Fragen, falsche Ablehnungen, Neutralität bei wertenden Fragen, Antwortsprache, Antwortzeit p50/p95 und Kosten pro Frage. Das kostet LLM-Aufrufe: rund zwei pro Frage.
+Gemessen werden Recall@5, @10 und @20 sowie MRR@10, auf Dokumenten statt Chunks. Dazu kommt die Suchdauer p50/p95, jeweils insgesamt und pro Teilset (`de`, `fr`, `crosslingual`, `filter`, `teilkorpus`, `wertend`). Jeder Lauf schreibt `evals/results/<datum>_<sha>_<suite>-<modus>.json` (mit Reranker `…-<modus>-rerank.json`) mit Konfiguration und Korpus-Stand, dazu eine Markdown-Zusammenfassung. Die Ausgabe zeigt pro Metrik die Differenz zum letzten Lauf mit derselben Suite und demselben Modus und listet die Fragen, deren erwartete Quellen nicht unter den Top 10 liegen. Dazu kommt die Wirkung der Schwelle für «keine ausreichende Grundlage» (`ANSWER_MIN_SIMILARITY`): wie viele unbeantwortbare Fragen sie ohne LLM abfängt und wie viele beantwortbare sie fälschlich abweist. Die Ergebnisse werden committet und bilden die Historie. Mit `--answers` erzeugt der Lauf zusätzlich für jede Frage eine Antwort (wie `parlrag ask`) und lässt sie von einem Judge-Modell (`JUDGE_MODEL`, Standard Sonnet 5.5) bewerten. Ausgewiesen werden Zitiergenauigkeit, Faithfulness, Ablehnungsquote bei unbeantwortbaren Fragen, falsche Ablehnungen, Neutralität bei wertenden Fragen, Antwortsprache, Antwortzeit p50/p95 und Kosten pro Frage. Das kostet LLM-Aufrufe: rund zwei pro Frage.
 
 ```bash
 uv run parlrag eval --suite smoke --answers
@@ -144,7 +144,7 @@ Gemessen am 14.11.2026 auf dem Goldset v2 (65 Fragen) gegen den eingefrorenen Ko
 
 ### Experimente
 
-Gemessen auf dem Goldset v1 (`full`, 28 beantwortbare Fragen) gegen den eingefrorenen Korpus. Die Details stehen in `evals/results/`, die Entscheide im [Entscheidungsprotokoll](specs/001-frag-das-parlament/plan.md#12-entscheidungsprotokoll).
+**Suchverfahren** (Task 3.3), gemessen auf dem Goldset v1 (`full`, 28 beantwortbare Fragen) gegen den eingefrorenen Korpus. Die Details stehen in `evals/results/`, die Entscheide im [Entscheidungsprotokoll](specs/001-frag-das-parlament/plan.md#12-entscheidungsprotokoll).
 
 | Experiment | Variante | Recall@10 | MRR@10 | Recall@10 sprachübergreifend | Suche p95 |
 |---|---|---|---|---|---|
@@ -152,7 +152,17 @@ Gemessen auf dem Goldset v1 (`full`, 28 beantwortbare Fragen) gegen den eingefro
 | | **nur Vektor (Standard)** | **0.780** | **0.541** | **0.600** | **536 ms** |
 | | Hybrid (RRF) | 0.637 | 0.424 | 0.000 | 1246 ms |
 
-Die Volltextsuche rankt ohne IDF, deshalb dominieren häufige Wörter wie «Bundesrat». Über RRF verdrängen diese Treffer gute Vektortreffer, besonders die in der anderen Sprache. Das Ziel Recall@10 ≥ 0.80 ist noch knapp verfehlt; als Nächstes wird ein Reranker auf den Vektortreffern gemessen (Task 6.1).
+Die Volltextsuche rankt ohne IDF, deshalb dominieren häufige Wörter wie «Bundesrat». Über RRF verdrängen diese Treffer gute Vektortreffer, besonders die in der anderen Sprache.
+
+**Reranker** (Task 6.1a), gemessen am 15.11.2026 auf dem Goldset v2 (`full`, 55 beantwortbare Fragen). Der Cross-Encoder [BAAI/bge-reranker-v2-m3](https://huggingface.co/BAAI/bge-reranker-v2-m3) sortiert die besten Vektortreffer neu, lokal auf der CPU:
+
+| Variante | Recall@10 | MRR@10 | Recall@10 sprachübergreifend | Recall@10 wertend | Suche p95 |
+|---|---|---|---|---|---|
+| **nur Vektor (Standard)** | **0.774** | **0.609** | **0.700** | **0.367** | **1.0 s** |
+| + Reranker, 30 Kandidaten, 512 Tokens | 0.826 | 0.596 | 0.800 | 0.200 | 28.9 s |
+| + Reranker, 15 Kandidaten, 256 Tokens | 0.786 | 0.579 | 0.700 | 0.333 | 12.4 s |
+
+Mit 30 Kandidaten erreicht der Reranker beide Recall-Ziele (≥ 0.80), braucht auf der CPU aber rund 0,9 s pro Kandidat. Die Suche allein überschreitet damit das Ziel p95 < 10 s für die ganze Antwort. Die günstigere Variante ist immer noch zu langsam und bringt kaum Gewinn. Der Reranker bleibt deshalb ausgeschaltet (`RETRIEVAL_RERANK=false`). Für Experimente lässt er sich in `.env` einschalten, mit `RERANK_CANDIDATES` und `RERANKER_MAX_LENGTH`. Beim ersten Gebrauch lädt er rund 2,2 GB ins Volume `hf-cache` und braucht zusätzlich rund 2,3 GB Arbeitsspeicher.
 
 ## Lokale Entwicklung mit uv
 
