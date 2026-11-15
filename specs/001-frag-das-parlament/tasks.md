@@ -55,7 +55,7 @@ Tasks:
 ## Phase 5 – API und UI
 
 - [x] 5.1 FastAPI um `POST /ask` erweitern, Request-Logging mit Usage
-- [ ] 5.2 React-UI: Frage, Filter, Antwort mit klickbaren Quellen, Hinweis auf Datenquelle und Lizenz
+- [x] 5.2 React-UI: Frage, Filter, Antwort mit klickbaren Quellen, Hinweis auf Datenquelle und Lizenz
 - [ ] 5.3 Service `web` in Compose: React-Build über nginx, `/api` als Proxy auf `app`. Der ganze Stack startet mit `docker compose up -d --build`; Smoke-Test in der CI erweitern
 
 ## Phase 6 – Optimierung und Portfolio
