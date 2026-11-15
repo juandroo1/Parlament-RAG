@@ -99,6 +99,12 @@ jobs:
           body="$(curl --fail --silent --show-error http://127.0.0.1:8000/health)"
           echo "$body"
           test "$body" = '{"status":"ok","database":"ok"}'
+      - name: Check web UI and /api proxy
+        run: |
+          curl --fail --silent --show-error http://127.0.0.1:8080/ | grep -q "<title>Frag das Parlament</title>"
+          body="$(curl --fail --silent --show-error http://127.0.0.1:8080/api/health)"
+          echo "$body"
+          test "$body" = '{"status":"ok","database":"ok"}'
       - name: Show logs on failure
         if: failure()
         run: docker compose logs

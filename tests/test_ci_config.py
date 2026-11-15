@@ -65,6 +65,8 @@ def test_docker_smoke_test_builds_waits_checks_and_cleans_up(workflow: dict[Any,
     assert "docker compose build" in commands
     assert re.search(r"docker compose up -d --wait\b", joined)
     assert "http://127.0.0.1:8000/health" in joined
+    assert "http://127.0.0.1:8080/" in joined  # Web-UI (Task 5.3)
+    assert "http://127.0.0.1:8080/api/health" in joined  # Proxy auf die API
     teardown = next(step for step in job["steps"] if step.get("run") == "docker compose down -v")
     assert teardown["if"] == "always()"
 
