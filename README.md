@@ -4,7 +4,7 @@
 
 RAG-Anwendung, die Fragen zu Debatten und Geschäften des Schweizer Bundesparlaments beantwortet, auf Deutsch und Französisch. Grundlage sind das Amtliche Bulletin (Wortprotokolle) und Curia Vista (Geschäfte). Jede Aussage ist mit einer überprüfbaren Quelle auf parlament.ch belegt. Die Qualität wird mit einem reproduzierbaren Eval-Set gemessen.
 
-> **Status:** in Entwicklung. Aktuell stehen der Docker-Stack mit CI, Ingestion, Indexierung, die Suche über den ganzen Korpus, die Retrieval-Evals die Antwortgenerierung mit Quellen (`parlrag ask`, `POST /ask`) und die Evals für Retrieval und Antworten; das UI folgt gemäss [`tasks.md`](specs/001-frag-das-parlament/tasks.md).
+> **Status:** in Entwicklung. Aktuell stehen der Docker-Stack mit CI, Ingestion, Indexierung, die Suche über den ganzen Korpus, die Retrieval-Evals die Antwortgenerierung mit Quellen (`parlrag ask`, `POST /ask`) die Evals für Retrieval und Antworten sowie die Web-UI für die Entwicklung; der Service `web` im Container folgt gemäss [`tasks.md`](specs/001-frag-das-parlament/tasks.md).
 
 ## Quickstart mit Docker
 
@@ -178,6 +178,20 @@ Für die Antworten nutzt die Anwendung Claude. Es gibt zwei Wege, gewählt über
 `ANTHROPIC_MODEL` und `ANTHROPIC_EFFORT` gelten für beide Wege. Für Versuche von Hand reicht `ANTHROPIC_MODEL=claude-haiku-5-5`.
 
 Das Abo ist nur für die eigene Nutzung gedacht. Anthropic erlaubt nicht, andere Personen über ein Abo zu bedienen oder ein claude.ai-Login in einer eigenen Anwendung anzubieten. Eine öffentliche Demo läuft deshalb immer mit `api`. Beim Abo sind die ausgewiesenen Kosten eine Schätzung von Claude Code und werden nicht verrechnet. Die Latenz enthält zusätzlich den Start der CLI (rund 1,5 s).
+
+### Web-UI (Entwicklung)
+
+Voraussetzung: [Node.js](https://nodejs.org/) 24. Die API muss laufen (Container oder `uv run uvicorn parlrag.api.main:app`).
+
+```bash
+cd web
+npm install
+npm run dev          # http://127.0.0.1:5173, leitet /api an http://127.0.0.1:8000 weiter
+npm test             # Vitest
+npm run build        # Typprüfung und Build nach web/dist
+```
+
+Eine andere API-Adresse setzt `API_TARGET`, z. B. `API_TARGET=http://127.0.0.1:8011 npm run dev`. Die Oberfläche zeigt Frage, Filter (Rat, Zeitraum, Fraktion), die Antwort mit klickbaren Belegen [n] und die Quellen mit Redner, Rat, Datum, Geschäftsnummer, Ausschnitt und Link auf parlament.ch. Im Container liefert ab Task 5.3 der Service `web` die gebaute App über nginx aus.
 
 ## Datenquelle und Lizenz
 
