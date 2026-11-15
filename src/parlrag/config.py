@@ -79,6 +79,7 @@ class Settings(BaseSettings):
     retrieval_rerank: bool = False
     reranker_model: str = "BAAI/bge-reranker-v2-m3"
     rerank_candidates: int = Field(default=30, ge=1, le=100)
+    reranker_max_length: int = Field(default=512, ge=64, le=8192)
 
     @property
     def database_url(self) -> str:

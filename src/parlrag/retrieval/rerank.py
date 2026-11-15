@@ -68,4 +68,8 @@ def get_reranker(settings: Settings) -> Reranker | None:
     """Reranker gemäss `RETRIEVAL_RERANK` und `RERANKER_MODEL`; None, wenn ausgeschaltet."""
     if not settings.retrieval_rerank:
         return None
-    return CrossEncoderReranker(settings.reranker_model, device=settings.embedding_device)
+    return CrossEncoderReranker(
+        settings.reranker_model,
+        device=settings.embedding_device,
+        max_length=settings.reranker_max_length,
+    )

@@ -379,6 +379,7 @@ def describe_eval(retriever: Retriever) -> tuple[dict[str, Any], dict[str, Any]]
     if (reranker := _reranker(retriever)) is not None:
         config["reranker_model"] = reranker.model_name
         config["rerank_candidates"] = retriever.config.rerank_candidates
+        config["reranker_max_length"] = getattr(reranker, "max_length", None)
     return config, corpus_snapshot(retriever.engine)
 
 

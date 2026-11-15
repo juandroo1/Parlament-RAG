@@ -126,9 +126,13 @@ def test_reranker_is_off_by_default() -> None:
 
 
 def test_reranker_from_settings() -> None:
-    reranker = get_reranker(_settings(retrieval_rerank=True, reranker_model="x/y"))
+    reranker = get_reranker(
+        _settings(retrieval_rerank=True, reranker_model="x/y", reranker_max_length=256)
+    )
     assert isinstance(reranker, CrossEncoderReranker)
     assert reranker.model_name == "x/y" and not reranker.model_loaded
+    assert reranker.max_length == 256
+    assert _settings().reranker_max_length == 512
 
 
 def test_pipeline_warm_up_loads_the_reranker() -> None:
