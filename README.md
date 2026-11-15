@@ -4,7 +4,7 @@
 
 RAG-Anwendung, die Fragen zu Debatten und Geschäften des Schweizer Bundesparlaments beantwortet, auf Deutsch und Französisch. Grundlage sind das Amtliche Bulletin (Wortprotokolle) und Curia Vista (Geschäfte). Jede Aussage ist mit einer überprüfbaren Quelle auf parlament.ch belegt. Die Qualität wird mit einem reproduzierbaren Eval-Set gemessen.
 
-> **Status:** in Entwicklung. Aktuell stehen der Docker-Stack mit CI, Ingestion, Indexierung, die Suche über den ganzen Korpus, die Retrieval-Evals und das LLM-Interface (Claude, mit Tokens, Latenz und Kosten pro Aufruf); Antwortgenerierung, API und UI folgen gemäss [`tasks.md`](specs/001-frag-das-parlament/tasks.md).
+> **Status:** in Entwicklung. Aktuell stehen der Docker-Stack mit CI, Ingestion, Indexierung, die Suche über den ganzen Korpus, die Retrieval-Evals die Antwortgenerierung mit Quellen (`parlrag ask`, `POST /ask`) und die Evals für Retrieval und Antworten; das UI folgt gemäss [`tasks.md`](specs/001-frag-das-parlament/tasks.md).
 
 ## Quickstart mit Docker
 
@@ -93,6 +93,16 @@ uv run parlrag ask "Frage" --json        # lokal, z. B. mit LLM_BACKEND=claude-c
 ```
 
 Die Antwort kommt in der Sprache der Frage. Jede Aussage ist mit [n] belegt, darunter stehen die zitierten Quellen mit Redner, Fraktion, Rat, Datum, Geschäftsnummer, Ausschnitt und Link auf parlament.ch. Die Filter sind dieselben wie bei `search`. Reichen die Quellen nicht, erscheint statt einer Antwort ein klarer Hinweis samt Grund (keine Treffer, Similarity unter `ANSWER_MIN_SIMILARITY` oder Einschätzung des Modells). Die letzten Zeilen zeigen Modell, Tokens, Kosten und die Zeiten für Suche und LLM. Im Container braucht `ask` einen `ANTHROPIC_API_KEY`.
+
+### API
+
+Die API läuft im Container auf `127.0.0.1:8000`. Die Dokumentation der Schnittstelle liegt unter `http://127.0.0.1:8000/docs`.
+
+```bash
+curl -X POST http://127.0.0.1:8000/ask -H "Content-Type: application/json"   -d '{"question": "Was sagte Bundesrat Rösti zum Kühlwasser der Kernkraftwerke?", "filters": {"council": "NR"}}'
+```
+
+Die Antwort enthält `answer` mit den Belegen [n], `sources` (pro Nummer Dokument-ID, Redner, Fraktion, Kanton, Rat, Datum, Geschäftsnummern, Abschnitt, Ausschnitt und Link), `insufficient_context` mit Grund und `usage` (Modell, Input- und Output-Tokens, Kosten in USD, Dauer der Anfrage). Die Filter sind dieselben wie bei `search`. Fehlt der API-Key oder ist das LLM nicht erreichbar, antwortet die API mit 503 und einer Meldung, bei einer ungültigen Antwort des Modells mit 502, bei einer Ablehnung durch das Modell mit 422. Jede Antwort trägt den Header `X-Request-ID`. Pro Anfrage schreibt die API eine Logzeile `ask_request` mit Tokens, Kosten und Dauer, ohne den Wortlaut der Frage. Die erste Anfrage nach dem Start dauert rund 7 s länger, weil dann das Embedding-Modell lädt.
 
 ## Evals
 
