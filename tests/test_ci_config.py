@@ -78,3 +78,10 @@ def test_actions_are_pinned_to_commit_shas(workflow: dict[Any, Any]) -> None:
 
 def test_no_evals_in_ci() -> None:
     assert "parlrag eval" not in WORKFLOW.read_text(encoding="utf-8")
+
+
+def test_web_job_typechecks_tests_and_builds(workflow: dict[Any, Any]) -> None:
+    """React-UI (Task 5.2): reproduzierbare Installation, Typprüfung, Tests und Build."""
+    job = workflow["jobs"]["web"]
+    assert job["defaults"]["run"]["working-directory"] == "web"
+    assert _run_commands(job) == ["npm ci", "npm run typecheck", "npm test", "npm run build"]
