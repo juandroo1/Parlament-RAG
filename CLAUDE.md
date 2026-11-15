@@ -26,7 +26,7 @@ Docker ist die Referenzumgebung. Was dort nicht läuft, gilt als nicht fertig.
 
 ```bash
 cp .env.example .env                                   # einmalig, Werte eintragen
-docker compose up -d --build                           # ganzer Stack (db, app, ab Phase 5 web)
+docker compose up -d --build                           # ganzer Stack (db, app, web; UI unter http://127.0.0.1:8080)
 docker compose ps                                      # Status inkl. Healthchecks
 docker compose logs -f app                             # Logs
 docker compose run --rm app parlrag ingest --since 2023-12-01
@@ -58,7 +58,7 @@ uv run parlrag eval --suite full                       # alle Evals
 - Services in `docker-compose.yml`:
   - `db`: Image `pgvector/pgvector:pg16`, Healthcheck mit `pg_isready`, Volume `pgdata`.
   - `app`: ein Image für API und CLI. Startet erst, wenn `db` healthy ist (`depends_on` mit `condition: service_healthy`). Führt beim Start `alembic upgrade head` aus und startet danach uvicorn. Healthcheck auf `GET /health`.
-  - `web` (ab Phase 5): baut die React-App und liefert sie über nginx aus, `/api` wird an `app` weitergeleitet.
+  - `web`: baut die React-App und liefert sie über nginx (Non-Root, Port 8080) aus, `/api` wird an `app` weitergeleitet. Startet erst, wenn `app` healthy ist; Healthcheck auf `/healthz`.
 - Dockerfile: Multi-Stage-Build auf `python:3.12-slim` mit uv. `uv sync --frozen --no-dev` im Runtime-Stage, Ausführung als Non-Root-User, ohne Build-Tools im finalen Image.
 - Konfiguration nur über `.env` (`env_file`). Keine Secrets im Image und keine in `docker-compose.yml`.
 - Volumes: `pgdata` für die Datenbank, `hf-cache` für das Embedding-Modell (wird nicht ins Image gebacken), Bind-Mount `./data/raw` für den Rohdaten-Cache.

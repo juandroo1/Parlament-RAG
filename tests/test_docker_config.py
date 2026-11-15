@@ -25,7 +25,7 @@ def services(compose: dict[str, Any]) -> dict[str, Any]:
 
 
 def test_expected_services_exist(services: dict[str, Any]) -> None:
-    assert {"db", "app"} <= services.keys()
+    assert {"db", "app", "web"} <= services.keys()
     assert services["db"]["image"].startswith("pgvector/pgvector:pg16")
 
 
@@ -116,3 +116,41 @@ def test_entrypoint_runs_migrations_before_command() -> None:
 def test_dockerignore_contains_required_entries(entry: str) -> None:
     lines = (ROOT / ".dockerignore").read_text(encoding="utf-8").splitlines()
     assert entry in lines
+
+
+# --- Service web (Task 5.3) ---------------------------------------------------------------
+
+WEB = ROOT / "web"
+
+
+def test_web_waits_for_healthy_app_and_sees_no_secrets(services: dict[str, Any]) -> None:
+    web = services["web"]
+    assert web["build"] == "./web"
+    assert web["depends_on"]["app"]["condition"] == "service_healthy"
+    assert web["ports"] == ["127.0.0.1:8080:8080"]
+    assert "env_file" not in web and "environment" not in web
+    assert "/healthz" in " ".join(web["healthcheck"]["test"])
+
+
+def test_web_image_builds_with_node_and_runs_unprivileged_nginx() -> None:
+    dockerfile = (WEB / "Dockerfile").read_text(encoding="utf-8")
+    stages = re.findall(r"^FROM (\S+) AS (\w+)", dockerfile, re.MULTILINE)
+    assert [stage for _, stage in stages] == ["build", "runtime"]
+    assert stages[0][0].startswith("node:24")
+    assert stages[1][0].startswith("nginxinc/nginx-unprivileged:")  # Non-Root, Port 8080
+    runtime = dockerfile.split("AS runtime", 1)[1]
+    assert "npm" not in runtime and "node" not in runtime.lower().replace("nginx", "")
+    assert "npm ci" in dockerfile and "npm run build" in dockerfile
+
+
+def test_nginx_proxies_api_to_app_and_serves_spa() -> None:
+    conf = (WEB / "nginx.conf").read_text(encoding="utf-8")
+    assert re.search(r"location /api/ \{[^}]*proxy_pass http://app:8000/;", conf)
+    assert "proxy_read_timeout 180s;" in conf
+    assert "try_files $uri $uri/ /index.html;" in conf
+    assert "location = /healthz" in conf and "listen 8080;" in conf
+
+
+def test_web_dockerignore_excludes_build_artifacts() -> None:
+    entries = (WEB / ".dockerignore").read_text(encoding="utf-8").split()
+    assert {"node_modules", "dist"} <= set(entries)

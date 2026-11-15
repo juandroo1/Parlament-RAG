@@ -4,7 +4,7 @@
 
 RAG-Anwendung, die Fragen zu Debatten und Geschäften des Schweizer Bundesparlaments beantwortet, auf Deutsch und Französisch. Grundlage sind das Amtliche Bulletin (Wortprotokolle) und Curia Vista (Geschäfte). Jede Aussage ist mit einer überprüfbaren Quelle auf parlament.ch belegt. Die Qualität wird mit einem reproduzierbaren Eval-Set gemessen.
 
-> **Status:** in Entwicklung. Aktuell stehen der Docker-Stack mit CI, Ingestion, Indexierung, die Suche über den ganzen Korpus, die Retrieval-Evals die Antwortgenerierung mit Quellen (`parlrag ask`, `POST /ask`) die Evals für Retrieval und Antworten sowie die Web-UI für die Entwicklung; der Service `web` im Container folgt gemäss [`tasks.md`](specs/001-frag-das-parlament/tasks.md).
+> **Status:** in Entwicklung. Aktuell stehen der Docker-Stack mit CI, Ingestion, Indexierung, die Suche über den ganzen Korpus, die Retrieval-Evals die Antwortgenerierung mit Quellen (`parlrag ask`, `POST /ask`) die Evals für Retrieval und Antworten sowie die Web-UI (im Container unter http://127.0.0.1:8080); offen sind gemäss [`tasks.md`](specs/001-frag-das-parlament/tasks.md).
 
 ## Quickstart mit Docker
 
@@ -14,11 +14,13 @@ Voraussetzungen: Docker mit Docker Compose und Git.
 git clone https://github.com/juandroo1/Parlament-RAG.git
 cd Parlament-RAG
 cp .env.example .env              # Werte eintragen
-docker compose up -d --build      # Datenbank (Postgres + pgvector) und API starten
-docker compose ps                 # beide Services sollten "healthy" sein
+docker compose up -d --build      # Datenbank (Postgres + pgvector), API und Web-UI starten
+docker compose ps                 # alle drei Services sollten "healthy" sein
 curl http://127.0.0.1:8000/health # {"status":"ok","database":"ok"}
 docker compose down               # stoppen (Daten bleiben im Volume)
 ```
+
+Die Web-UI läuft danach unter **http://127.0.0.1:8080** (Service `web`: nginx liefert die React-App aus und leitet `/api` an die API weiter). Für Antworten braucht die API im Container einen `ANTHROPIC_API_KEY`; ohne Key zeigt die UI eine klare Meldung. Wer stattdessen das eigene Claude-Abo nutzen will, startet die API lokal mit `LLM_BACKEND=claude-code` (siehe «Zugang zum LLM» und «Web-UI (Entwicklung)»).
 
 Beim Start von `app` (und bei jedem `docker compose run --rm app ...`) bringt ein Entrypoint das Datenbankschema per Alembic auf den neuesten Stand.
 
@@ -191,7 +193,7 @@ npm test             # Vitest
 npm run build        # Typprüfung und Build nach web/dist
 ```
 
-Eine andere API-Adresse setzt `API_TARGET`, z. B. `API_TARGET=http://127.0.0.1:8011 npm run dev`. Die Oberfläche zeigt Frage, Filter (Rat, Zeitraum, Fraktion), die Antwort mit klickbaren Belegen [n] und die Quellen mit Redner, Rat, Datum, Geschäftsnummer, Ausschnitt und Link auf parlament.ch. Im Container liefert ab Task 5.3 der Service `web` die gebaute App über nginx aus.
+Eine andere API-Adresse setzt `API_TARGET`, z. B. `API_TARGET=http://127.0.0.1:8011 npm run dev`. Die Oberfläche zeigt Frage, Filter (Rat, Zeitraum, Fraktion), die Antwort mit klickbaren Belegen [n] und die Quellen mit Redner, Rat, Datum, Geschäftsnummer, Ausschnitt und Link auf parlament.ch. Im Container liefert der Service `web` die gebaute App über nginx aus (http://127.0.0.1:8080).
 
 ## Datenquelle und Lizenz
 
