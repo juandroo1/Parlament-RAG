@@ -20,6 +20,7 @@ from parlrag.retrieval import (
     SearchHit,
     SearchMode,
     SupportsSearch,
+    get_reranker,
 )
 
 
@@ -57,10 +58,16 @@ class AskPipeline:
         """Lädt das Embedding-Modell vorab (Dauer in ms), damit die gemessene Suchzeit den
         einmaligen Start nicht enthält; None ohne Vektorsuche."""
         embedder = getattr(self.retriever, "embedder", None)
-        if (mode or self.default_mode) == "fulltext" or embedder is None:
+        if (mode or self.default_mode) == "fulltext":
+            embedder = None
+        reranker = getattr(self.retriever, "reranker", None)
+        if embedder is None and reranker is None:
             return None
         start = self.clock()
-        embedder.embed_query("Modell laden")
+        if embedder is not None:
+            embedder.embed_query("Modell laden")
+        if reranker is not None:
+            reranker.score("Modell laden", ["Modell laden"])
         return (self.clock() - start) * 1000
 
     def ask(
@@ -95,7 +102,10 @@ def build_pipeline(
     llm = get_llm(settings)
     if retriever is None:
         retriever = Retriever(
-            get_engine(), get_embedder(settings), RetrievalConfig.from_settings(settings)
+            get_engine(),
+            get_embedder(settings),
+            RetrievalConfig.from_settings(settings),
+            get_reranker(settings),
         )
     generator = AnswerGenerator(
         llm,

@@ -1,6 +1,7 @@
 """Retrieval: Volltext, Vektor, Reciprocal Rank Fusion und Filter (plan.md, Abschnitt 6)."""
 
 from parlrag.retrieval.filters import SearchFilters
+from parlrag.retrieval.rerank import CrossEncoderReranker, Reranker, get_reranker
 from parlrag.retrieval.retriever import (
     RetrievalConfig,
     Retriever,
@@ -11,6 +12,8 @@ from parlrag.retrieval.retriever import (
 )
 
 __all__ = [
+    "CrossEncoderReranker",
+    "Reranker",
     "RetrievalConfig",
     "Retriever",
     "SearchFilters",
@@ -18,4 +21,5 @@ __all__ = [
     "SearchMode",
     "SupportsSearch",
     "best_similarity",
+    "get_reranker",
 ]

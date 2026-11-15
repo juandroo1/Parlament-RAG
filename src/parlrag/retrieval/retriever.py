@@ -5,6 +5,7 @@ Modi: `vector` (Standard gemäss Baseline in Task 3.3, einstellbar über `RETRIE
 Modi vergleichbar sind. `fulltext` lädt kein Embedding-Modell.
 """
 
+import dataclasses
 import datetime as dt
 import uuid
 from collections.abc import Sequence
@@ -18,6 +19,7 @@ from parlrag.embeddings import Embedder
 from parlrag.retrieval.filters import SearchFilters
 from parlrag.retrieval.fulltext import search_fulltext
 from parlrag.retrieval.fusion import reciprocal_rank_fusion
+from parlrag.retrieval.rerank import Reranker
 from parlrag.retrieval.vector import search_vector
 
 __all__ = [
@@ -36,6 +38,7 @@ class RetrievalConfig:
     rrf_k: int = 60
     top_n: int = 20
     mode: SearchMode = "vector"
+    rerank_candidates: int = 30
 
     @classmethod
     def from_settings(cls, settings: Settings) -> "RetrievalConfig":
@@ -44,6 +47,7 @@ class RetrievalConfig:
             rrf_k=settings.retrieval_rrf_k,
             top_n=settings.retrieval_top_n,
             mode=settings.retrieval_mode,
+            rerank_candidates=settings.rerank_candidates,
         )
 
 
@@ -76,6 +80,7 @@ class SearchHit:
     business_numbers: tuple[str, ...]
     url: str
     speaker_function: str | None = None  # z. B. «BR-F» für Bundesratsmitglieder
+    rerank_score: float | None = None  # nur mit Reranker (Task 6.1a)
 
     @property
     def source_key(self) -> str:
@@ -108,11 +113,16 @@ WHERE c.id IN :ids
 
 class Retriever:
     def __init__(
-        self, engine: Engine, embedder: Embedder, config: RetrievalConfig | None = None
+        self,
+        engine: Engine,
+        embedder: Embedder,
+        config: RetrievalConfig | None = None,
+        reranker: Reranker | None = None,
     ) -> None:
         self.engine = engine
         self.embedder = embedder
         self.config = config or RetrievalConfig()
+        self.reranker = reranker
 
     def search(
         self,
@@ -151,7 +161,7 @@ class Retriever:
 
         fulltext_info = {cid: (rank, score) for rank, (cid, score) in enumerate(fulltext, 1)}
         vector_info = {cid: (rank, sim) for rank, (cid, sim) in enumerate(vector, 1)}
-        return [
+        hits = [
             _hit(
                 details[chunk_id],
                 score,
@@ -161,6 +171,28 @@ class Retriever:
             )
             for rank, (chunk_id, score) in enumerate(fused, start=1)
         ]
+        if self.reranker is not None:
+            hits = rerank(query, hits, self.reranker, self.config.rerank_candidates)
+        return hits
+
+
+def rerank_passage(hit: SearchHit) -> str:
+    """Was der Reranker zu einem Treffer sieht: Redner, Titel, Abschnitt und Text."""
+    parts = [hit.speaker_name, hit.title, hit.section, hit.text]
+    return "\n".join(part for part in parts if part)
+
+
+def rerank(
+    query: str, hits: Sequence[SearchHit], reranker: Reranker, candidates: int
+) -> list[SearchHit]:
+    """Die besten `candidates` Treffer neu sortieren; der Rest folgt unverändert dahinter."""
+    head, tail = list(hits[:candidates]), list(hits[candidates:])
+    scores = reranker.score(query, [rerank_passage(hit) for hit in head])
+    order = sorted(range(len(head)), key=lambda index: -scores[index])
+    reordered = [dataclasses.replace(head[index], rerank_score=scores[index]) for index in order]
+    return [
+        dataclasses.replace(hit, rank=rank) for rank, hit in enumerate([*reordered, *tail], start=1)
+    ]
 
 
 def _hit(

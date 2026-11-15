@@ -75,6 +75,10 @@ class Settings(BaseSettings):
     retrieval_candidates: int = Field(default=50, ge=1, le=1000)
     retrieval_rrf_k: int = Field(default=60, ge=1)
     retrieval_top_n: int = Field(default=20, ge=1)
+    # Reranker (Task 6.1a): sortiert die besten Treffer mit einem Cross-Encoder neu.
+    retrieval_rerank: bool = False
+    reranker_model: str = "BAAI/bge-reranker-v2-m3"
+    rerank_candidates: int = Field(default=30, ge=1, le=100)
 
     @property
     def database_url(self) -> str:

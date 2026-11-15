@@ -240,3 +240,28 @@ def test_default_mode_comes_from_config(indexed: tuple[Engine, FakeEmbedder]) ->
     assert all(hit.fulltext_rank is None for hit in default)
     fulltext = retriever(indexed, mode="fulltext").search(query)
     assert fulltext and all(hit.vector_rank is None for hit in fulltext)
+
+
+class ReverseReranker:
+    """Bewertet spätere Treffer höher: kehrt die Reihenfolge der Kandidaten um."""
+
+    model_name = "fake/reverse"
+
+    def score(self, query: str, passages: Any) -> list[float]:
+        return [float(index) for index in range(len(passages))]
+
+
+def test_reranker_reorders_candidates(indexed: tuple[Engine, FakeEmbedder]) -> None:
+    """Task 6.1a: Der Reranker sortiert die Kandidaten neu, der Rest bleibt dahinter."""
+    query = "PFAS Grenzwerte Kantone"
+    plain = retriever(indexed).search(query, mode="vector")
+    reranked = Retriever(
+        indexed[0], FakeEmbedder(), RetrievalConfig(rerank_candidates=3), ReverseReranker()
+    ).search(query, mode="vector")
+
+    assert len(plain) > 3
+    assert [hit.chunk_id for hit in reranked[:3]] == [hit.chunk_id for hit in plain[:3]][::-1]
+    assert [hit.chunk_id for hit in reranked[3:]] == [hit.chunk_id for hit in plain[3:]]
+    assert [hit.rerank_score for hit in reranked[:3]] == [2.0, 1.0, 0.0]
+    assert reranked[3].rerank_score is None
+    assert [hit.rank for hit in reranked] == list(range(1, len(reranked) + 1))
