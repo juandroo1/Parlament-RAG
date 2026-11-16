@@ -2,10 +2,11 @@
 
 import datetime as dt
 import logging
+import re
 import time
 from enum import StrEnum
 from pathlib import Path
-from typing import Annotated, Any, cast
+from typing import Annotated, Any, cast, get_args
 
 import typer
 from pydantic import ValidationError
@@ -24,6 +25,7 @@ from parlrag.evals.answers import (
     resume_mismatch,
     reusable_answers,
 )
+from parlrag.evals.dataset import Tag
 from parlrag.evals.judge import Judge
 from parlrag.evals.results import (
     ANSWER_HEADER,
@@ -41,6 +43,7 @@ from parlrag.evals.results import (
     load_run,
     metric_rows,
     misses,
+    run_title,
     subset_rows,
     threshold_rows,
     write_run,
@@ -363,6 +366,16 @@ class SuiteChoice(StrEnum):
     full = "full"
 
 
+TagChoice = StrEnum("TagChoice", {tag: tag for tag in get_args(Tag)})  # type: ignore[misc]
+LABEL_PATTERN = re.compile(r"[a-z0-9][a-z0-9-]{0,29}")
+
+
+def _check_label(value: str | None) -> str | None:
+    if value is not None and not LABEL_PATTERN.fullmatch(value):
+        raise typer.BadParameter("nur Kleinbuchstaben, Ziffern und -, höchstens 30 Zeichen")
+    return value
+
+
 def describe_eval(retriever: Retriever) -> tuple[dict[str, Any], dict[str, Any]]:
     """Konfiguration und Korpus-Stand für die Ergebnisdatei (in Tests ersetzbar)."""
     settings = Settings()
@@ -373,6 +386,7 @@ def describe_eval(retriever: Retriever) -> tuple[dict[str, Any], dict[str, Any]]
         "embedding_model": settings.embedding_model,
         "embedding_max_seq_length": settings.embedding_max_seq_length,
         "index_signature": IndexConfig.from_settings(settings).signature,
+        "database": settings.postgres_db,
         "answer_min_similarity": settings.answer_min_similarity,
         "retrieval_rerank": _reranker(retriever) is not None,
     }
@@ -432,6 +446,17 @@ def eval_command(
             "nachholen (gleiche Konfiguration nötig)."
         ),
     ] = None,
+    tag: Annotated[
+        TagChoice | None,
+        typer.Option(help="Nur Fragen mit diesem Tag, z. B. teilkorpus für Experimente."),
+    ] = None,
+    label: Annotated[
+        str | None,
+        typer.Option(
+            help="Name der Variante im Dateinamen, z. B. c300 (Kleinbuchstaben, Ziffern, -).",
+            callback=_check_label,
+        ),
+    ] = None,
 ) -> None:
     """Evals auf dem Goldset; nur lokal mit uv (Git-SHA in der Ergebnisdatei).
 
@@ -455,6 +480,7 @@ def eval_command(
             raise typer.Exit(1) from exc
     answer_model = answer_parts[2]["answer_model"] if answer_parts else None
     reranked = _reranker(retriever) is not None
+    tag_value = cast(Tag, tag.value) if tag else None
     reuse: dict[str, AnswerResult] = {}
     if resume:
         try:
@@ -475,7 +501,15 @@ def eval_command(
         console.print(f"Übernehme {len(reuse)} fehlerfreie Antworten aus {resume.name}.")
     try:
         previous_path = compare or (
-            find_previous(results_dir, suite.value, chosen, answer_model, rerank=reranked)
+            find_previous(
+                results_dir,
+                suite.value,
+                chosen,
+                answer_model,
+                rerank=reranked,
+                tag=tag_value,
+                label=label,
+            )
             if results_dir.exists()
             else None
         )
@@ -488,7 +522,10 @@ def eval_command(
             "[yellow]Achtung: ungecommittete Änderungen; der Lauf ist nicht genau einem Commit "
             "zuzuordnen.[/yellow]"
         )
-    selection = select_suite(items, suite.value)
+    selection = select_suite(items, suite.value, tag_value)
+    if not selection:
+        console.print(f"[red]Keine Fragen in der Suite {suite.value} mit Tag {tag_value}.[/red]")
+        raise typer.Exit(1)
 
     if chosen != "fulltext":
         retriever.embedder.embed_query("Modell laden")  # Ladezeit nicht in der Suchdauer
@@ -527,6 +564,8 @@ def eval_command(
         suite=suite.value,
         mode=chosen,
         rerank=reranked,
+        tag=tag_value,
+        label=label,
         golden=golden.as_posix(),
         questions_total=len(selection),
         skipped_unanswerable=report.skipped_unanswerable,
@@ -545,7 +584,7 @@ def eval_command(
     path = write_run(run, previous, results_dir)
 
     console.print(
-        f"\n[bold]{suite.value} · {chosen}{' + Reranker' if reranked else ''}[/bold]: "
+        f"\n[bold]{run_title(run)}[/bold]: "
         f"{len(report.questions)} Fragen gemessen, "
         f"{report.skipped_unanswerable} unbeantwortbare übersprungen"
     )

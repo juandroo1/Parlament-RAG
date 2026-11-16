@@ -13,7 +13,7 @@ from typing import Any, Literal
 from pydantic import BaseModel, ConfigDict
 from sqlalchemy import Engine, text
 
-from parlrag.evals.dataset import GoldenItem
+from parlrag.evals.dataset import GoldenItem, Tag
 from parlrag.evals.metrics import (
     dedupe_documents,
     mean,
@@ -79,9 +79,16 @@ class RetrievalReport:
     similarities: dict[str, float | None]
 
 
-def select_suite(items: Sequence[GoldenItem], suite: Suite) -> list[GoldenItem]:
-    """`smoke`: Fragen mit Tag `smoke`; `full`: alle Fragen."""
-    return [item for item in items if suite == "full" or item.has("smoke")]
+def select_suite(
+    items: Sequence[GoldenItem], suite: Suite, tag: Tag | None = None
+) -> list[GoldenItem]:
+    """`smoke`: Fragen mit Tag `smoke`; `full`: alle Fragen; mit `tag` nur Fragen mit diesem Tag
+    (z. B. `teilkorpus` für Experimente auf dem Teilkorpus, Task 6.1b)."""
+    return [
+        item
+        for item in items
+        if (suite == "full" or item.has("smoke")) and (tag is None or item.has(tag))
+    ]
 
 
 def evaluate_question(
