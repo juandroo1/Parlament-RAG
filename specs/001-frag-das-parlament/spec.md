@@ -105,6 +105,7 @@ Goldset (Endstand MVP): mindestens 65 Fragen, davon 40 auf Deutsch und 10 auf Fr
 - Lizenz und Nutzungsbedingungen der Daten für eine öffentliche Demo verifizieren.
 - Lokales Embedding-Modell oder API-Modell: per Eval entscheiden (Qualität gegen Kosten). Gemessen in Task 2.2: bge-m3 auf der CPU schafft rund 2 Chunks/s, der volle Korpus braucht rund 14 Stunden. Entschieden: bge-m3 bleibt; einmal voll indexieren, danach inkrementell; Experimente auf einer Session (plan.md, Entscheidungsprotokoll). Offen bleibt der Vergleich mit einem API-Modell als Experiment.
 - Hosting der Demo und Schutz vor Missbrauch (Rate-Limit, Kostendeckel).
+- Reranker mit GPU oder als API-Dienst? Der Cross-Encoder bge-reranker-v2-m3 hebt Recall@10 auf 0.826 (sprachübergreifend 0.800), braucht auf der CPU aber rund 28 s pro Suche und bleibt deshalb ausgeschaltet (Task 6.1a, plan.md, Entscheidungsprotokoll).
 - Mehrturn-Gespräche (Folgefragen) für eine spätere Version?
 - Bessere Volltextsuche für eine hybride Suche: Gewichtung mit IDF bzw. BM25 (z. B. eigene Gewichtung oder eine Postgres-Erweiterung) und gewichtetes RRF. Die Baseline in Task 3.3 zeigt, dass die heutige Volltextsuche (ODER-Abfrage, `ts_rank_cd` ohne IDF) das Retrieval verschlechtert; Standard ist deshalb die Vektorsuche.
 - Oberfläche auch auf Französisch (Umschalter DE/FR)? Die Web-UI (Task 5.2) ist auf Deutsch; Fragen und Antworten funktionieren in beiden Sprachen.

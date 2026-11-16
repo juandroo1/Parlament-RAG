@@ -63,6 +63,7 @@ class EvalRun(BaseModel):
     git_dirty: bool
     suite: Suite
     mode: SearchMode
+    rerank: bool = False  # Vektortreffer mit Reranker neu sortiert (Task 6.1a)
     golden: str
     questions_total: int
     skipped_unanswerable: int
@@ -106,6 +107,7 @@ def _git(*args: str) -> str:
 
 def run_stem(run: EvalRun) -> str:
     stem = f"{run.created_at:%Y-%m-%d}_{run.git_sha[:7]}_{run.suite}-{run.mode}"
+    stem += "-rerank" if run.rerank else ""
     return stem + ("-answers" if run.answer_config else "")
 
 
@@ -117,7 +119,12 @@ def load_run(path: Path) -> EvalRun:
 
 
 def find_previous(
-    results_dir: Path, suite: Suite, mode: SearchMode, answer_model: str | None = None
+    results_dir: Path,
+    suite: Suite,
+    mode: SearchMode,
+    answer_model: str | None = None,
+    *,
+    rerank: bool = False,
 ) -> Path | None:
     """Letzter Lauf mit derselben Suite, demselben Modus und demselben Antwortmodell (None:
     Lauf ohne Antworten), nach Zeitpunkt."""
@@ -127,6 +134,7 @@ def find_previous(
         if (run := load_run(path)).suite == suite
         and run.mode == mode
         and run.answer_model == answer_model
+        and run.rerank == rerank
     ]
     return max(candidates)[1] if candidates else None
 
@@ -340,7 +348,8 @@ def _table(header: Sequence[str], rows: Sequence[Sequence[str]]) -> list[str]:
 def render_markdown(run: EvalRun, previous: EvalRun | None) -> str:
     measured = len(run.questions)
     lines = [
-        f"# Eval-Lauf {run.created_at:%Y-%m-%d %H:%M} · {run.suite} · {run.mode}",
+        f"# Eval-Lauf {run.created_at:%Y-%m-%d %H:%M} · {run.suite} · {run.mode}"
+        + (" + Reranker" if run.rerank else ""),
         "",
         f"- Commit: `{run.git_sha[:7]}`"
         + (" (mit ungecommitteten Änderungen)" if run.git_dirty else ""),

@@ -61,7 +61,14 @@ from parlrag.ingest.odata import ODataClient
 from parlrag.ingest.pipeline import IngestStats, run_ingest
 from parlrag.ingest.source import ODataSource
 from parlrag.llm import LLMError, get_llm
-from parlrag.retrieval import RetrievalConfig, Retriever, SearchFilters, SearchMode
+from parlrag.retrieval import (
+    Reranker,
+    RetrievalConfig,
+    Retriever,
+    SearchFilters,
+    SearchMode,
+    get_reranker,
+)
 from parlrag.retrieval.formatting import format_results, results_json
 from parlrag.stats import CorpusStats, compute_stats
 
@@ -282,10 +289,20 @@ class CouncilChoice(StrEnum):
     V = "V"
 
 
+def _reranker(retriever: Any) -> Reranker | None:
+    """Reranker des Retrievers, falls vorhanden (Fakes in Tests haben keinen)."""
+    return getattr(retriever, "reranker", None)
+
+
 def build_retriever() -> Retriever:
     """Verdrahtet Datenbank, Embedder und Konfiguration (in Tests ersetzbar)."""
     settings = Settings()
-    return Retriever(get_engine(), get_embedder(settings), RetrievalConfig.from_settings(settings))
+    return Retriever(
+        get_engine(),
+        get_embedder(settings),
+        RetrievalConfig.from_settings(settings),
+        get_reranker(settings),
+    )
 
 
 def _filters(
@@ -331,6 +348,8 @@ def search(
         # Modell vorab laden, damit die gemessene Suchzeit den einmaligen Start nicht enthält.
         start = time.monotonic()
         retriever.embedder.embed_query("Modell laden")
+        if (reranker := _reranker(retriever)) is not None:
+            reranker.score("Modell laden", ["Modell laden"])
         model_load_ms = (time.monotonic() - start) * 1000
     start = time.monotonic()
     hits = retriever.search(query, filters, mode=chosen, top_n=top)
@@ -355,7 +374,12 @@ def describe_eval(retriever: Retriever) -> tuple[dict[str, Any], dict[str, Any]]
         "embedding_max_seq_length": settings.embedding_max_seq_length,
         "index_signature": IndexConfig.from_settings(settings).signature,
         "answer_min_similarity": settings.answer_min_similarity,
+        "retrieval_rerank": _reranker(retriever) is not None,
     }
+    if (reranker := _reranker(retriever)) is not None:
+        config["reranker_model"] = reranker.model_name
+        config["rerank_candidates"] = retriever.config.rerank_candidates
+        config["reranker_max_length"] = getattr(reranker, "max_length", None)
     return config, corpus_snapshot(retriever.engine)
 
 
@@ -430,6 +454,7 @@ def eval_command(
             console.print(f"[red]{exc}[/red]")
             raise typer.Exit(1) from exc
     answer_model = answer_parts[2]["answer_model"] if answer_parts else None
+    reranked = _reranker(retriever) is not None
     reuse: dict[str, AnswerResult] = {}
     if resume:
         try:
@@ -450,7 +475,7 @@ def eval_command(
         console.print(f"Übernehme {len(reuse)} fehlerfreie Antworten aus {resume.name}.")
     try:
         previous_path = compare or (
-            find_previous(results_dir, suite.value, chosen, answer_model)
+            find_previous(results_dir, suite.value, chosen, answer_model, rerank=reranked)
             if results_dir.exists()
             else None
         )
@@ -467,6 +492,8 @@ def eval_command(
 
     if chosen != "fulltext":
         retriever.embedder.embed_query("Modell laden")  # Ladezeit nicht in der Suchdauer
+    if (reranker := _reranker(retriever)) is not None:
+        reranker.score("Modell laden", ["Modell laden"])
     config, corpus = describe_eval(retriever)
 
     def show_progress(result: QuestionResult) -> None:
@@ -499,6 +526,7 @@ def eval_command(
         git_dirty=dirty,
         suite=suite.value,
         mode=chosen,
+        rerank=reranked,
         golden=golden.as_posix(),
         questions_total=len(selection),
         skipped_unanswerable=report.skipped_unanswerable,
@@ -517,7 +545,8 @@ def eval_command(
     path = write_run(run, previous, results_dir)
 
     console.print(
-        f"\n[bold]{suite.value} · {chosen}[/bold]: {len(report.questions)} Fragen gemessen, "
+        f"\n[bold]{suite.value} · {chosen}{' + Reranker' if reranked else ''}[/bold]: "
+        f"{len(report.questions)} Fragen gemessen, "
         f"{report.skipped_unanswerable} unbeantwortbare übersprungen"
     )
     console.print(
