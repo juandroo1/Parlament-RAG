@@ -1,0 +1,67 @@
+# Produktion der öffentlichen Demo (Task 6.3a), als Override zu docker-compose.yml:
+#
+#   docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+#
+# - Nur Caddy ist öffentlich (80/443, HTTPS über Let's Encrypt); db, app und web haben keine
+#   Ports mehr auf dem Host und sind nur im Compose-Netz erreichbar.
+# - Antworten mit Claude Haiku 5.5 über den API-Key (nie über ein Abo, AK-6.3), mit Kostendeckel
+#   pro Monat und Rate-Limit pro Besucher.
+# - Secrets (ANTHROPIC_API_KEY, POSTGRES_PASSWORD) stehen nur in der .env auf dem Server.
+# Anleitung: docs/deployment.md
+
+services:
+  db:
+    ports: !reset []
+    restart: unless-stopped
+
+  app:
+    ports: !reset []
+    restart: unless-stopped
+    environment:
+      LLM_BACKEND: api
+      ANTHROPIC_MODEL: claude-haiku-5-5
+      ANTHROPIC_EFFORT: low
+      RETRIEVAL_RERANK: "false"
+      # Fest statt aus .env: Eine aus .env.example kopierte 0 darf den Deckel nicht ausschalten.
+      DEMO_MONTHLY_BUDGET_USD: "5"
+      RATE_LIMIT_PER_HOUR: "10"
+      # Caddy setzt X-Forwarded-For auf die echte IP der Besucherin (deploy/Caddyfile).
+      TRUST_PROXY_HEADERS: "true"
+    volumes: !override
+      # Benanntes Volume statt Bind-Mount: kein Rechteproblem mit UID 10001 unter Linux. Die Demo
+      # braucht den Rohdaten-Cache nicht, die Daten kommen per Dump (scripts/db_transfer.sh).
+      - raw-cache:/app/data/raw
+      - hf-cache:/home/app/.cache/huggingface
+    mem_limit: 6g
+
+  web:
+    ports: !reset []
+    restart: unless-stopped
+
+  caddy:
+    image: caddy:2.10-alpine
+    restart: unless-stopped
+    depends_on:
+      web:
+        condition: service_healthy
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    environment:
+      DEMO_DOMAIN: ${DEMO_DOMAIN:?DEMO_DOMAIN fehlt in .env (z. B. demo.example.ch)}
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:2019/config/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+volumes:
+  raw-cache:
+  caddy-data:
+  caddy-config:

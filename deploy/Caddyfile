@@ -1,0 +1,21 @@
+# Reverse-Proxy der öffentlichen Demo (Task 6.3a): HTTPS über Let's Encrypt für DEMO_DOMAIN,
+# alles an den Service web (nginx), der /api an app weiterleitet.
+# Caddy schreibt standardmässig keine Zugriffslogs; IP-Adressen werden so nicht gespeichert.
+
+{$DEMO_DOMAIN} {
+	encode zstd gzip
+
+	request_body {
+		max_size 16KB
+	}
+
+	reverse_proxy web:8080 {
+		# Echte IP der Besucherin für das Rate-Limit; ein mitgeschickter Header wird überschrieben.
+		header_up X-Forwarded-For {remote_host}
+	}
+
+	header {
+		Strict-Transport-Security "max-age=31536000"
+		-Server
+	}
+}

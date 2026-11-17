@@ -67,6 +67,9 @@ def test_docker_smoke_test_builds_waits_checks_and_cleans_up(workflow: dict[Any,
     assert "http://127.0.0.1:8000/health" in joined
     assert "http://127.0.0.1:8080/" in joined  # Web-UI (Task 5.3)
     assert "http://127.0.0.1:8080/api/health" in joined  # Proxy auf die API
+    # Produktions-Override der Demo (Task 6.3a) muss gültig sein.
+    prod_check = "docker compose -f docker-compose.yml -f docker-compose.prod.yml config --quiet"
+    assert prod_check in joined
     teardown = next(step for step in job["steps"] if step.get("run") == "docker compose down -v")
     assert teardown["if"] == "always()"
 

@@ -154,3 +154,75 @@ def test_nginx_proxies_api_to_app_and_serves_spa() -> None:
 def test_web_dockerignore_excludes_build_artifacts() -> None:
     entries = (WEB / ".dockerignore").read_text(encoding="utf-8").split()
     assert {"node_modules", "dist"} <= set(entries)
+
+
+# --- Produktion der Demo (Task 6.3a) -------------------------------------------------------
+
+
+class ComposeLoader(yaml.SafeLoader):
+    """Kennt die Compose-Tags !reset und !override (Wert bleibt, Tag wird vermerkt)."""
+
+
+def _tagged(loader: yaml.SafeLoader, node: yaml.Node) -> Any:
+    if isinstance(node, yaml.SequenceNode):
+        return {"tag": node.tag, "value": loader.construct_sequence(node)}
+    return {"tag": node.tag, "value": loader.construct_object(node)}
+
+
+for _tag in ("!reset", "!override"):
+    ComposeLoader.add_constructor(_tag, _tagged)
+
+
+@pytest.fixture(scope="module")
+def prod() -> dict[str, Any]:
+    data = yaml.load(  # SafeLoader mit zwei zusätzlichen Tags
+        (ROOT / "docker-compose.prod.yml").read_text(encoding="utf-8"), Loader=ComposeLoader
+    )
+    assert isinstance(data, dict)
+    services: dict[str, Any] = data["services"]
+    return services
+
+
+def test_prod_only_caddy_is_public(prod: dict[str, Any]) -> None:
+    for name in ("db", "app", "web"):
+        assert prod[name]["ports"] == {"tag": "!reset", "value": []}, name
+    assert prod["caddy"]["ports"] == ["80:80", "443:443", "443:443/udp"]
+    for name, service in prod.items():
+        assert service["restart"] == "unless-stopped", name
+
+
+def test_prod_uses_haiku_over_api_key_with_limits(prod: dict[str, Any]) -> None:
+    environment = prod["app"]["environment"]
+    assert environment["LLM_BACKEND"] == "api"  # nie das Abo (AK-6.3)
+    assert environment["ANTHROPIC_MODEL"] == "claude-haiku-5-5"
+    # Feste Werte: eine aus .env.example kopierte 0 darf die Grenzen nicht ausschalten.
+    assert float(environment["DEMO_MONTHLY_BUDGET_USD"]) > 0
+    assert int(environment["RATE_LIMIT_PER_HOUR"]) > 0
+    assert environment["TRUST_PROXY_HEADERS"] == "true"
+    for name, service in prod.items():
+        for key in service.get("environment", {}):
+            assert not re.search(r"PASSWORD|API_KEY|SECRET|TOKEN", key), f"{name}.{key}"
+
+
+def test_prod_raw_cache_is_a_named_volume(prod: dict[str, Any]) -> None:
+    volumes = prod["app"]["volumes"]
+    assert volumes["tag"] == "!override"
+    assert "raw-cache:/app/data/raw" in volumes["value"]
+    assert not any(volume.startswith("./data") for volume in volumes["value"])
+
+
+def test_prod_caddy_is_pinned_healthy_and_waits_for_web(prod: dict[str, Any]) -> None:
+    caddy = prod["caddy"]
+    assert re.fullmatch(r"caddy:2\.\d+-alpine", caddy["image"])
+    assert caddy["depends_on"]["web"]["condition"] == "service_healthy"
+    assert "healthcheck" in caddy
+    assert "./deploy/Caddyfile:/etc/caddy/Caddyfile:ro" in caddy["volumes"]
+    assert caddy["environment"]["DEMO_DOMAIN"].startswith("${DEMO_DOMAIN:?")
+
+
+def test_caddyfile_sets_real_client_ip_and_keeps_no_access_log() -> None:
+    caddyfile = (ROOT / "deploy" / "Caddyfile").read_text(encoding="utf-8")
+    assert "{$DEMO_DOMAIN}" in caddyfile
+    assert "reverse_proxy web:8080" in caddyfile
+    assert "header_up X-Forwarded-For {remote_host}" in caddyfile
+    assert not re.search(r"^\s*log", caddyfile, re.MULTILINE)  # keine Zugriffslogs mit IPs
