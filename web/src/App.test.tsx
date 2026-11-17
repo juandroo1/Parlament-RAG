@@ -138,7 +138,10 @@ describe("App", () => {
 
   it("nennt Datenquelle und Lizenz", () => {
     render(<App />);
-    expect(screen.getByText(/Open Data der Parlamentsdienste/)).toBeInTheDocument();
+    // Nutzungsbedingungen der Parlamentsdienste: Quelle, Datum des Downloads, nicht amtlich.
+    expect(screen.getByText(/Parlamentsdienste der Bundesversammlung, Bern/)).toBeInTheDocument();
+    expect(screen.getByText(/heruntergeladen am 12\.\s+und 13\. November 2026/)).toBeInTheDocument();
+    expect(screen.getByText(/Keine amtliche Veröffentlichung/)).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "MIT-Lizenz" })).toBeInTheDocument();
     expect(screen.getByText(/bewertet keine Personen, Parteien oder Vorlagen/)).toBeInTheDocument();
   });

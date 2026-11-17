@@ -14,6 +14,7 @@ from sqlalchemy import (
     CheckConstraint,
     Computed,
     Date,
+    Double,
     ForeignKey,
     Index,
     Integer,
@@ -131,3 +132,13 @@ class Chunk(Base):
             postgresql_ops={"embedding": "vector_cosine_ops"},
         ),
     )
+
+
+class ApiUsage(Base):
+    """Kosten und Anfragen der API pro Tag (UTC) für den Kostendeckel der Demo (Task 6.3a)."""
+
+    __tablename__ = "api_usage"
+
+    day: Mapped[dt.date] = mapped_column(Date, primary_key=True)
+    requests: Mapped[int] = mapped_column(Integer, server_default=sql_text("0"))
+    cost_usd: Mapped[float] = mapped_column(Double, server_default=sql_text("0"))

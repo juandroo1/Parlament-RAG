@@ -5,6 +5,9 @@ wiederverwendet; das Embedding-Modell lädt dadurch erst dann, `/health` hängt 
 
 Pro Anfrage eine Logzeile mit Usage, ohne den Wortlaut der Frage (Datenschutz bei einer
 öffentlichen Demo): Länge, erkannte Sprache und aktive Filter genügen zur Diagnose.
+
+In der Demo (Task 6.3a) prüfen Kostendeckel und Rate-Limit jede Anfrage vor der Pipeline
+(`parlrag.api.limits`); sind sie ausgeschaltet, ändert sich nichts.
 """
 
 import logging
@@ -14,9 +17,20 @@ from collections.abc import Callable
 from functools import lru_cache
 from typing import Annotated, Any
 
-from fastapi import APIRouter, Depends, HTTPException, Response, status
+from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
+from sqlalchemy.exc import SQLAlchemyError
 
+from parlrag.api.limits import (
+    CostGuard,
+    DemoLimits,
+    LimitExceeded,
+    PostgresUsageStore,
+    RateLimiter,
+    client_ip,
+)
 from parlrag.api.schemas import AskRequest, AskResponse, to_response
+from parlrag.config import Settings
+from parlrag.db.session import get_engine
 from parlrag.generation.pipeline import AskPipeline, build_pipeline
 from parlrag.llm import LLMConfigError, LLMError, LLMOutputError, LLMRefusalError
 from parlrag.retrieval.fulltext import detect_query_language
@@ -37,6 +51,24 @@ def pipeline_provider() -> Callable[[], AskPipeline]:
     """Dependency: liefert die Fabrik, damit Konfigurationsfehler im Endpunkt geloggt werden
     (in Tests ersetzbar)."""
     return get_pipeline
+
+
+@lru_cache(maxsize=1)
+def get_limits() -> DemoLimits:
+    """Grenzen der Demo aus der Konfiguration; ohne Werte ausgeschaltet (keine Datenbank nötig)."""
+    settings = Settings()
+    cost = (
+        CostGuard(PostgresUsageStore(get_engine()), settings.demo_monthly_budget_usd)
+        if settings.demo_monthly_budget_usd > 0
+        else None
+    )
+    rate = RateLimiter(settings.rate_limit_per_hour) if settings.rate_limit_per_hour > 0 else None
+    return DemoLimits(cost=cost, rate=rate, trust_proxy_headers=settings.trust_proxy_headers)
+
+
+def limits_provider() -> DemoLimits:
+    """Dependency (in Tests ersetzbar)."""
+    return get_limits()
 
 
 def _error_status(error: LLMError) -> tuple[int, str]:
@@ -66,11 +98,15 @@ def _log(request_id: str, request: AskRequest, http_status: int, **fields: Any) 
 def ask(
     request: AskRequest,
     response: Response,
+    http_request: Request,
     provide: Annotated[Callable[[], AskPipeline], Depends(pipeline_provider)],
+    limits: Annotated[DemoLimits, Depends(limits_provider)],
 ) -> AskResponse:
     """Antwort mit nummerierten Quellen; reichen die Quellen nicht, ein klarer Hinweis."""
     request_id = uuid.uuid4().hex[:12]
     start = time.perf_counter()
+    if limits.active:
+        _admit(limits, http_request, request, request_id)
     try:
         result = provide().ask(request.question, request.filters)
     except LLMError as exc:
@@ -90,6 +126,11 @@ def ask(
     latency_ms = (time.perf_counter() - start) * 1000
     body = to_response(result, latency_ms)
     usage = body.usage
+    if limits.active:
+        try:
+            limits.record(usage.cost_usd)
+        except SQLAlchemyError:
+            logger.exception("api_usage konnte nicht gespeichert werden")
     _log(
         request_id,
         request,
@@ -106,3 +147,29 @@ def ask(
     )
     response.headers[REQUEST_ID_HEADER] = request_id
     return body
+
+
+def _admit(limits: DemoLimits, http_request: Request, request: AskRequest, request_id: str) -> None:
+    """Grenzen der Demo prüfen; bei Überschreitung 429 mit `Retry-After`."""
+    ip = client_ip(
+        http_request.headers.get("x-forwarded-for"),
+        http_request.client.host if http_request.client else None,
+        limits.trust_proxy_headers,
+    )
+    try:
+        limits.admit(ip)
+    except LimitExceeded as exc:
+        _log(request_id, request, status.HTTP_429_TOO_MANY_REQUESTS, limit=exc.kind)
+        raise HTTPException(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            detail=exc.message,
+            headers={REQUEST_ID_HEADER: request_id, "Retry-After": str(exc.retry_after)},
+        ) from exc
+    except SQLAlchemyError as exc:  # Ohne Zähler keine Kostenkontrolle: lieber ablehnen.
+        logger.exception("api_usage nicht lesbar")
+        _log(request_id, request, status.HTTP_503_SERVICE_UNAVAILABLE, limit="store")
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Die Demo ist vorübergehend nicht verfügbar.",
+            headers={REQUEST_ID_HEADER: request_id},
+        ) from exc

@@ -90,6 +90,10 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Create .env from template
         run: cp .env.example .env
+      - name: Validate production override
+        run: docker compose -f docker-compose.yml -f docker-compose.prod.yml config --quiet
+        env:
+          DEMO_DOMAIN: demo.example.ch
       - name: Build
         run: docker compose build
       - name: Start stack and wait for healthchecks

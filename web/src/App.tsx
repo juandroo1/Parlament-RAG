@@ -59,17 +59,22 @@ export default function App() {
       <footer className="border-t border-slate-200 dark:border-slate-800">
         <div className="mx-auto max-w-3xl space-y-2 px-4 py-6 text-sm text-slate-600 dark:text-slate-400">
           <p>
-            <strong>Datenquelle:</strong> Open Data der Parlamentsdienste der Bundesversammlung über
-            den OData-Dienst{" "}
+            <strong>Quelle:</strong> Parlamentsdienste der Bundesversammlung, Bern. Open Data über
+            den Webservice{" "}
             <a className="underline" href="https://ws.parlament.ch/odata.svc/" target="_blank" rel="noreferrer">
               ws.parlament.ch
             </a>{" "}
-            (Amtliches Bulletin und Curia Vista), Stand 2. Oktober 2026.
+            (Amtliches Bulletin und Curia Vista), Sessionen bis 2. Oktober 2026, heruntergeladen am 12.
+            und 13. November 2026.
           </p>
           <p>
-            Die Antworten erzeugt ein KI-Modell aus den gefundenen Abschnitten. Massgebend sind die
-            verlinkten Originalstellen auf parlament.ch. Das System gibt wieder, was gesagt wurde,
-            und bewertet keine Personen, Parteien oder Vorlagen.
+            <strong>Keine amtliche Veröffentlichung:</strong> ein privates Projekt, nicht von den
+            Parlamentsdiensten. Die Antworten erzeugt ein KI-Modell aus den gefundenen Abschnitten.
+            Massgebend sind die verlinkten Originalstellen auf parlament.ch. Das System gibt wieder,
+            was gesagt wurde, und bewertet keine Personen, Parteien oder Vorlagen.
+          </p>
+          <p>
+            Die öffentliche Demo hat ein begrenztes Tagesbudget und eine Grenze von Fragen pro Stunde.
           </p>
           <p>
             Code unter{" "}

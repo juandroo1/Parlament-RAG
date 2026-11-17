@@ -20,6 +20,7 @@ RAG-Anwendung, die Fragen zu Debatten und Geschäften des Schweizer Bundesparlam
 - [Bedienung](#bedienung)
 - [Evals](#evals)
 - [Lokale Entwicklung mit uv](#lokale-entwicklung-mit-uv)
+- [Öffentliche Demo betreiben](#öffentliche-demo-betreiben)
 - [Datenquelle und Lizenz](#datenquelle-und-lizenz)
 - [Arbeitsweise](#arbeitsweise)
 
@@ -201,7 +202,7 @@ Fragen ohne ausreichende Grundlage unter der Schwelle kosten nichts, weil sie da
 - **Nur Deutsch und Französisch.** Italienische Voten und rätoromanische Texte fehlen. Die Oberfläche ist auf Deutsch.
 - **Volltextsuche ohne IDF.** Eine hybride Suche bräuchte BM25 oder eine eigene Gewichtung.
 - **Keine Folgefragen.** Jede Frage wird für sich beantwortet.
-- **Nutzungsbedingungen der Daten** für eine öffentliche Demo sind noch nicht abschliessend geprüft.
+- **Datenschnittstelle wird abgelöst.** Die Parlamentsdienste ersetzen ws.parlament.ch bis spätestens Ende 2028 durch den neuen Open Data Webservice ws.parl.ch (mit API-Key); der Ingest muss bis dahin umgestellt werden.
 - **Rechenzeit.** Ohne GPU dauern Indexierung und Experimente mit neuen Varianten Stunden.
 
 Offene Ideen für spätere Versionen stehen in der [Spec unter «Offene Fragen»](specs/001-frag-das-parlament/spec.md).
@@ -335,6 +336,15 @@ docker compose run --rm -e POSTGRES_DB=parlrag_exp_c300 -e CHUNK_TARGET_TOKENS=3
 POSTGRES_DB=parlrag_exp_c300 CHUNK_TARGET_TOKENS=300 uv run parlrag eval --suite full --tag teilkorpus --label c300
 ```
 
+## Öffentliche Demo betreiben
+
+Die Demo läuft mit denselben Compose-Dateien wie lokal, ergänzt um [`docker-compose.prod.yml`](docker-compose.prod.yml). Caddy ist der einzige öffentliche Service und sorgt für HTTPS; die Antworten kommen von Claude Haiku 5.5 über einen API-Key. Zwei Grenzen schützen vor Missbrauch und Kosten:
+
+- **Kostendeckel:** 5 USD pro Kalendermonat, verteilt auf die Tage. Jeden Tag steht der Rest des Monatsbudgets geteilt durch die verbleibenden Tage zur Verfügung, am Monatsanfang also rund 100 Fragen. Ist das Tagesbudget aufgebraucht, antwortet die API bis Mitternacht (UTC) mit 429 und einem Hinweis. Die Ausgaben stehen in der Tabelle `api_usage`.
+- **Rate-Limit:** 10 Fragen pro Stunde und IP-Adresse. Die Adressen bleiben nur im Arbeitsspeicher.
+
+Lokal sind beide Grenzen aus (`DEMO_MONTHLY_BUDGET_USD=0`, `RATE_LIMIT_PER_HOUR=0`). Die Datenbank kommt als Dump auf den Server (`scripts/db_transfer.sh`, rund 600 MB), statt dort 17 Stunden neu zu indexieren. Server, Konfiguration, Datenübertragung und Betrieb beschreibt [`docs/deployment.md`](docs/deployment.md).
+
 ## Lokale Entwicklung mit uv
 
 Voraussetzung: [uv](https://docs.astral.sh/uv/). Python 3.12 installiert uv bei Bedarf selbst. Die Datenbank läuft auch dann im Container.
@@ -380,7 +390,7 @@ Eine andere API-Adresse setzt `API_TARGET`, z. B. `API_TARGET=http://127.0.0.1:8
 
 ## Datenquelle und Lizenz
 
-- Daten: Open Data der Parlamentsdienste der Bundesversammlung über den OData-Dienst [ws.parlament.ch](https://ws.parlament.ch/odata.svc/) (Amtliches Bulletin, Curia Vista). Die Nutzungsbedingungen für eine öffentliche Demo werden noch geprüft (siehe offene Fragen in der Spec).
+- Daten: Quelle Parlamentsdienste der Bundesversammlung, Bern. Open Data über den Webservice [ws.parlament.ch](https://ws.parlament.ch/odata.svc/) (Amtliches Bulletin, Curia Vista), Sessionen bis 2. Oktober 2026, heruntergeladen am 12. und 13. November 2026. Es gelten die [Nutzungsbedingungen der Parlamentsdienste](https://www.parlament.ch/de/%C3%BCber-das-parlament/fakten-und-zahlen/open-data-web-services): Quelle nennen, keinen Eindruck einer amtlichen Veröffentlichung erwecken, die Daten inhaltlich nicht verändern und das Datum des Downloads angeben. Dieses Projekt ist keine amtliche Veröffentlichung.
 - Embedding-Modell: [BAAI/bge-m3](https://huggingface.co/BAAI/bge-m3), MIT-Lizenz.
 - Code: [MIT-Lizenz](LICENSE).
 
