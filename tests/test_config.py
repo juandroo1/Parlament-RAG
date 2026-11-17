@@ -29,8 +29,8 @@ def _env_example_keys() -> set[str]:
 def test_defaults() -> None:
     settings = Settings(_env_file=None)
 
-    assert settings.anthropic_model == "claude-opus-5-5"
-    assert settings.anthropic_effort == "high"
+    assert settings.anthropic_model == "claude-sonnet-5-5"
+    assert settings.anthropic_effort == "medium"
     assert settings.anthropic_api_key is None
     assert settings.retrieval_mode == "vector"
     assert settings.postgres_host == "127.0.0.1"

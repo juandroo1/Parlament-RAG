@@ -1,7 +1,7 @@
 """Anthropic-Implementierung des LLM-Interfaces (plan.md, Abschnitte 2 und 7).
 
 - Strukturierte Ausgabe über `messages.parse` mit einem Pydantic-Schema.
-- Claude Opus 5.5 denkt immer (adaptiv); gesteuert wird nur über den Effort.
+- Die Modelle der 5.5-Familie denken adaptiv; gesteuert wird nur über den Effort.
 - Serverseitiger Fallback bei Ablehnungen (`fallbacks: "default"`): Lehnt das Modell ab,
   antwortet im selben Aufruf ein anderes Modell. Kosten werden pro beteiligtem Modell gerechnet.
   Nur für Modelle, die ihn unterstützen (z. B. nicht Haiku 5.5).

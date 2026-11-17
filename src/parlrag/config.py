@@ -36,8 +36,9 @@ class Settings(BaseSettings):
     # LLM-Backend: `api` (Standard, API-Key) oder `claude-code` (Claude-Abo, nur lokal mit uv).
     llm_backend: LLMBackend = "api"
     anthropic_api_key: SecretStr | None = None
-    anthropic_model: str = "claude-opus-5-5"
-    anthropic_effort: Effort = "high"
+    # Standard nach dem Modellvergleich (Task 6.1c): Sonnet 5.5 mit Effort medium.
+    anthropic_model: str = "claude-sonnet-5-5"
+    anthropic_effort: Effort = "medium"
 
     # Judge der Antwort-Evals (Task 4.5a): bewertet Zitate, Faithfulness und Neutralität.
     judge_model: str = "claude-sonnet-5-5"
