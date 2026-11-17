@@ -138,7 +138,7 @@ Gemessen am 14.11.2026 auf dem Goldset v2 (65 Fragen) gegen den eingefrorenen Ko
 | Antwortsprache | 0.985 (64 von 65) | gemessen |
 | Antwortzeit p95 | 12.7 s, inklusive Start der Claude-CLI | < 10 s |
 
-**Kosten pro Frage:** Über das Abo schätzt Claude Code rund 0.0017 USD pro Antwort (Haiku) und 0.039 USD pro Urteil des Judge; verrechnet wird das nicht. Mit API-Key und denselben Token-Mengen (im Mittel 9'100 Input- und 1'300 Output-Tokens pro Antwort) wären es rund 0.0016 USD mit Haiku 5.5, 0.031 USD mit Sonnet 5.5 und 0.062 USD mit Opus 5.5, dem Standardmodell; ein Urteil des Judge (Sonnet) kostet rund 0.028 USD. Opus schreibt bei Effort `high` voraussichtlich mehr Output-Tokens als Haiku, die Zahl für Opus ist deshalb eine Untergrenze. Die Antwortzeit über das Abo enthält rund 1,5 s für den Start der CLI; AK-1.3 wird mit einem API-Key beurteilt.
+**Kosten pro Frage:** Über das Abo schätzt Claude Code rund 0.0017 USD pro Antwort (Haiku) und 0.039 USD pro Urteil des Judge; verrechnet wird das nicht. Mit API-Key und denselben Token-Mengen (im Mittel 9'100 Input- und 1'300 Output-Tokens pro Antwort) wären es rund 0.0016 USD mit Haiku 5.5, 0.031 USD mit Sonnet 5.5 (seit Task 6.1c Standard) und 0.062 USD mit Opus 5.5; ein Urteil des Judge (Sonnet) kostet rund 0.028 USD. Gemessene Werte pro Modell stehen unter «Experimente». Die Antwortzeit über das Abo enthält rund 1,5 s für den Start der CLI; AK-1.3 wird mit einem API-Key beurteilt.
 
 **Prüfung des Judge:** 51 Urteile zu 7 Antworten (≈ 10 %) wurden gegen den Wortlaut der Quellen geprüft; 47 bestätigt, Übereinstimmung 92 % (`evals/results/2026-11-14_a201a9c_judge-check.md`). Die Prüfung hat Claude Opus 5.5 vorgenommen und Sandro freigegeben; eine unabhängige Prüfung jedes Urteils von Hand steht noch aus. Der Judge war eher zu nachsichtig bei Sinnverschiebungen, die beiden Antwort-Metriken sind deshalb eher leicht überschätzt.
 
@@ -163,6 +163,19 @@ Die Volltextsuche rankt ohne IDF, deshalb dominieren häufige Wörter wie «Bund
 | + Reranker, 15 Kandidaten, 256 Tokens | 0.786 | 0.579 | 0.700 | 0.333 | 12.4 s |
 
 Mit 30 Kandidaten erreicht der Reranker beide Recall-Ziele (≥ 0.80), braucht auf der CPU aber rund 0,9 s pro Kandidat. Die Suche allein überschreitet damit das Ziel p95 < 10 s für die ganze Antwort. Die günstigere Variante ist immer noch zu langsam und bringt kaum Gewinn. Der Reranker bleibt deshalb ausgeschaltet (`RETRIEVAL_RERANK=false`). Für Experimente lässt er sich in `.env` einschalten, mit `RERANK_CANDIDATES` und `RERANKER_MAX_LENGTH`. Beim ersten Gebrauch lädt er rund 2,2 GB ins Volume `hf-cache` und braucht zusätzlich rund 2,3 GB Arbeitsspeicher.
+
+**Antwort-Modell** (Task 6.1c), gemessen am 17.11.2026 auf der Smoke-Suite (15 Fragen, davon 13 beantwortet und 2 korrekt abgelehnt) über das Claude-Abo. Judge ist bei allen Läufen Claude Sonnet 5.5 (`medium`).
+
+| Modell (Effort) | Zitiergenauigkeit | Faithfulness | Antwortzeit p50 | Antwortzeit p95 | Kosten pro Antwort mit API-Key |
+|---|---|---|---|---|---|
+| Opus 5.5 (`high`, bisher Standard) | 0.983 | 1.000 | 10.5 s | 19.7 s | 0.055 USD |
+| Opus 5.5 (`low`) | 0.976 | 0.985 | 7.7 s | 10.2 s | 0.048 USD |
+| **Sonnet 5.5 (`medium`, neu Standard)** | **0.990** | **0.995** | **6.4 s** | **12.5 s** | **0.025 USD** |
+| Haiku 5.5 (`low`) | 0.963 | 0.974 | 6.9 s | 14.6 s | 0.0016 USD |
+
+Ablehnungsquote, falsche Ablehnungen, Neutralität und Antwortsprache sind bei allen vier Modellen fehlerfrei (1.00 bzw. 0.00). Die Qualität liegt nah beisammen; mit 13 Antworten sind Unterschiede von wenigen Hundertsteln Rauschen. Sonnet bewertet als Judge auch die eigenen Antworten, ein Vorteil durch Selbstbevorzugung ist nicht auszuschliessen. Deutlich sind die Unterschiede bei Antwortzeit und Kosten: Opus `high` braucht im Median über 10 s und kostet doppelt so viel wie Sonnet. Neuer Standard ist deshalb **Sonnet 5.5 mit Effort `medium`** (`ANTHROPIC_MODEL`, `ANTHROPIC_EFFORT`). Haiku ist rund 15-mal günstiger und eine Option für eine öffentliche Demo mit Kostendeckel (Task 6.3).
+
+Die Kosten sind aus den Tokens mit den Listenpreisen gerechnet, ohne Prompt-Caching, so wie das API-Backend heute abrechnet. Die Schätzungen von Claude Code in den Ergebnisdateien sind nicht vergleichbar: Der Lauf mit Opus `high` las die Prompts aus dem Cache, den der Lauf mit Opus `low` kurz zuvor geschrieben hatte. Die Antwortzeiten über das Abo enthalten rund 1,5 s für den Start der CLI; p95 aus 15 Fragen schwankt stark. Ob AK-1.3 (p95 < 10 s) hält, lässt sich erst mit einem API-Key beurteilen.
 
 **Index-Varianten** (Task 6.1b), gemessen am 17.11.2026 auf dem Teilkorpus Herbstsession 2026 (4'133 Dokumente) mit den 23 Fragen des Teilsets `teilkorpus`. Jede Variante liegt in einer eigenen Experiment-Datenbank; die Hauptdatenbank bleibt unverändert.
 
