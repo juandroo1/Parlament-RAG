@@ -64,4 +64,5 @@ Tasks:
 - [x] 6.1b Experimente Kontext-Header und Chunkgrösse (300/500/800) in einer eigenen Experiment-Datenbank mit dem Teilkorpus (Herbstsession 2026) messen und dokumentieren; API-Embedding-Modell mit Begründung nicht durchgeführt
 - [x] 6.1c Experiment LLM: Opus 5.5 `high` und `low`, Sonnet 5.5, Haiku 5.5 auf der Smoke-Suite mit Antworten messen und dokumentieren
 - [x] 6.2 README: Architekturdiagramm, Ergebnistabelle, Designentscheide, Kosten und Latenz, bekannte Grenzen, Hinweis auf den SDD-Workflow
-- [ ] 6.3 Demo mit denselben Compose-Dateien deployen (Override-Datei für Produktion, Rate-Limit, Kostendeckel), Link im README und im Lebenslauf
+- [x] 6.3a Demo-Betrieb vorbereiten: Override-Datei für Produktion mit Caddy (HTTPS), Kostendeckel pro Monat auf die Tage verteilt, Rate-Limit pro IP, Übertragung der Datenbank, Anleitung, Nutzungsbedingungen der Daten
+- [ ] 6.3b Demo deployen (Server, API-Key mit Ausgabenlimit, Domain), prüfen, Link im README und im Lebenslauf
