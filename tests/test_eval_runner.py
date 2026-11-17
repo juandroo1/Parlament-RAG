@@ -471,14 +471,61 @@ def test_eval_cli_reports_threshold(
         "describe_eval",
         lambda r: ({"answer_min_similarity": 0.55}, {"documents": 3, "chunks": 5}),
     )
+    retriever = FakeRetriever({**HITS, "q03": ["transcript:99"]})
+    monkeypatch.setattr(cli, "build_retriever", lambda: retriever)
     result = runner.invoke(cli.app, ["eval", "--suite", "full", *eval_env["args"]])
 
     assert result.exit_code == 0, result.output
-    assert "Schwelle 0.55: fängt 0 von 0" in " ".join(result.output.split())
+    assert "Schwelle 0.55: fängt 1 von 1" in " ".join(result.output.split())
     run = load_run(next(eval_env["results"].glob("*.json")))
     assert run.threshold is not None and run.threshold.threshold == 0.55
-    assert run.similarities["q03"] is None  # Fake liefert für q03 keine Treffer
-    assert (run.threshold.unanswerable, run.threshold.answerable) == (0, 3)
+    assert run.similarities["q03"] == 0.5
+    assert (run.threshold.unanswerable, run.threshold.answerable) == (1, 3)
     markdown = next(eval_env["results"].glob("*.md")).read_text(encoding="utf-8")
     assert "## Schwelle für «keine ausreichende Grundlage»" in markdown
-    assert "| 0.55 (aktuell) | 0 / 0 | 3 / 3 |" in markdown  # Fake-Similarity 0.5
+    assert "| 0.55 (aktuell) | 1 / 1 | 3 / 3 |" in markdown  # Fake-Similarity 0.5
+
+
+def test_threshold_report_without_unanswerable_questions() -> None:
+    similarities = {"q01": 0.70, "q02": 0.58, "q03": None}  # q03 ohne Treffer
+    assert threshold_report(GOLDEN, similarities, 0.55) is None
+
+
+def test_select_suite_with_tag() -> None:
+    assert [item.id for item in select_suite(GOLDEN, "full", "teilkorpus")] == ["q01"]
+    assert [item.id for item in select_suite(GOLDEN, "smoke", "fr")] == ["q02"]
+    assert select_suite(GOLDEN, "smoke", "wertend") == []
+
+
+def test_eval_cli_with_tag_and_label(eval_env: dict[str, Any]) -> None:
+    args = ["eval", "--suite", "full", "--tag", "teilkorpus", *eval_env["args"]]
+    first = runner.invoke(cli.app, [*args, "--label", "c300"])
+    assert first.exit_code == 0, first.output
+    assert "full (teilkorpus) · vector · c300" in first.output
+    assert len(eval_env["retriever"].calls) == 1  # nur q01
+
+    other = runner.invoke(cli.app, [*args, "--label", "c800"])
+    assert "Kein Vorlauf" in other.output  # anderes Label, anderer Vorlauf
+    again = runner.invoke(cli.app, [*args, "--label", "c300"])
+    assert "Vergleich mit" in again.output and "c300.json" in again.output
+
+    names = sorted(path.name[11:] for path in eval_env["results"].glob("*.json"))
+    assert names == [
+        "abc1234_full-teilkorpus-vector-c300-2.json",
+        "abc1234_full-teilkorpus-vector-c300.json",
+        "abc1234_full-teilkorpus-vector-c800.json",
+    ]
+    run = load_run(next(eval_env["results"].glob("*c800.json")))
+    assert (run.tag, run.label, run.questions_total) == ("teilkorpus", "c800", 1)
+    markdown = next(eval_env["results"].glob("*c800.md")).read_text(encoding="utf-8")
+    assert "full (teilkorpus) · vector · c800" in markdown.splitlines()[0]
+
+
+def test_eval_cli_rejects_invalid_label_and_empty_selection(eval_env: dict[str, Any]) -> None:
+    invalid = runner.invoke(cli.app, ["eval", "--label", "Chunk 300", *eval_env["args"]])
+    assert invalid.exit_code == 2
+
+    empty = runner.invoke(cli.app, ["eval", "--tag", "wertend", *eval_env["args"]])
+    assert empty.exit_code == 1
+    assert "Keine Fragen" in empty.output
+    assert not eval_env["results"].exists()

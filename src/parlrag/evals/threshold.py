@@ -51,10 +51,11 @@ def threshold_report(
     threshold: float,
     candidates: Sequence[float] = CANDIDATES,
 ) -> ThresholdReport | None:
-    """None, wenn keine Frage eine Similarity hat (z. B. Suchart `fulltext`)."""
+    """None, wenn keine Frage eine Similarity hat (z. B. Suchart `fulltext`) oder keine
+    unbeantwortbare Frage dabei ist (z. B. `--tag teilkorpus`): Dann gibt es nichts abzuwägen."""
     measured = {key: value for key, value in similarities.items() if value is not None}
     scoped = [item for item in items if item.id in measured]
-    if not scoped:
+    if not scoped or all(item.answerable for item in scoped):
         return None
     current = _row(threshold, scoped, measured)
     return ThresholdReport(

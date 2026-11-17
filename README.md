@@ -164,6 +164,28 @@ Die Volltextsuche rankt ohne IDF, deshalb dominieren häufige Wörter wie «Bund
 
 Mit 30 Kandidaten erreicht der Reranker beide Recall-Ziele (≥ 0.80), braucht auf der CPU aber rund 0,9 s pro Kandidat. Die Suche allein überschreitet damit das Ziel p95 < 10 s für die ganze Antwort. Die günstigere Variante ist immer noch zu langsam und bringt kaum Gewinn. Der Reranker bleibt deshalb ausgeschaltet (`RETRIEVAL_RERANK=false`). Für Experimente lässt er sich in `.env` einschalten, mit `RERANK_CANDIDATES` und `RERANKER_MAX_LENGTH`. Beim ersten Gebrauch lädt er rund 2,2 GB ins Volume `hf-cache` und braucht zusätzlich rund 2,3 GB Arbeitsspeicher.
 
+**Index-Varianten** (Task 6.1b), gemessen am 17.11.2026 auf dem Teilkorpus Herbstsession 2026 (4'133 Dokumente) mit den 23 Fragen des Teilsets `teilkorpus`. Jede Variante liegt in einer eigenen Experiment-Datenbank; die Hauptdatenbank bleibt unverändert.
+
+| Variante | Chunks | Recall@5 | Recall@10 | Recall@20 | MRR@10 | Recall@10 sprachübergreifend (n = 4) |
+|---|---|---|---|---|---|---|
+| **~500 Tokens mit Kontext-Header (Standard)** | **10'477** | **0.667** | **0.833** | **0.920** | **0.582** | **0.500** |
+| ~500 Tokens ohne Kontext-Header | 10'477 | 0.623 | 0.717 | 0.826 | 0.547 | 0.250 |
+| ~300 Tokens mit Kontext-Header | 13'527 | 0.688 | 0.732 | 0.906 | 0.515 | 0.250 |
+| ~800 Tokens mit Kontext-Header | 8'928 | 0.638 | 0.725 | 0.906 | 0.521 | 0.250 |
+
+Der Standard gewinnt in Recall@10, Recall@20 und MRR@10. Der Kontext-Header (Rat, Datum, Redner bzw. Geschäft, Titel) bringt am meisten: Ohne ihn sinkt Recall@10 um 0.116. Kleinere oder grössere Chunks verlieren je rund 0.10. Die Einstellungen bleiben deshalb, der Hauptindex muss nicht neu gebaut werden. Mit 23 Fragen sind die Werte grob; eine Frage mehr oder weniger ändert Recall@10 um rund 0.04, im sprachübergreifenden Teilset um 0.25. Auf dem kleinen Teilkorpus liegen die Werte höher als auf dem ganzen Korpus, aussagekräftig ist nur der Vergleich der Varianten. Suche p95 bei allen Varianten unter 0.25 s. Ein API-Embedding-Modell wurde nicht gemessen: Anthropic bietet keine Embeddings an, ein Anbieter wie Voyage AI bräuchte einen eigenen API-Key, und für einen fairen Vergleich müsste der ganze Korpus neu indexiert werden.
+
+Nachbauen (Datenbank im Container, Evals lokal mit uv; Indexieren rund 1,5 bis 2 Stunden pro Variante auf der CPU):
+
+```bash
+scripts/experiment_db.sh parlrag_exp_base chunks      # Teilkorpus samt Chunks aus der Hauptdatenbank
+scripts/experiment_db.sh parlrag_exp_c300             # nur die Dokumente, danach indexieren
+docker compose run --rm -e POSTGRES_DB=parlrag_exp_c300 -e CHUNK_TARGET_TOKENS=300 app parlrag index
+POSTGRES_DB=parlrag_exp_c300 CHUNK_TARGET_TOKENS=300 uv run parlrag eval --suite full --tag teilkorpus --label c300
+```
+
+`--tag` misst nur die Fragen mit diesem Tag, `--label` hängt den Namen der Variante an die Ergebnisdatei.
+
 ## Lokale Entwicklung mit uv
 
 Voraussetzung: [uv](https://docs.astral.sh/uv/). Python 3.12 installiert uv bei Bedarf selbst. Die Datenbank läuft auch dann im Container.

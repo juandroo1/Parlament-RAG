@@ -14,6 +14,7 @@ from typing import Any
 from pydantic import BaseModel, ValidationError
 
 from parlrag.evals.answers import ANSWER_METRICS, AnswerResult
+from parlrag.evals.dataset import Tag
 from parlrag.evals.runner import (
     LATENCY_METRICS,
     MRR_K,
@@ -64,6 +65,8 @@ class EvalRun(BaseModel):
     suite: Suite
     mode: SearchMode
     rerank: bool = False  # Vektortreffer mit Reranker neu sortiert (Task 6.1a)
+    tag: Tag | None = None  # nur Fragen mit diesem Tag (Task 6.1b)
+    label: str | None = None  # Name der Variante eines Experiments (Task 6.1b)
     golden: str
     questions_total: int
     skipped_unanswerable: int
@@ -106,9 +109,18 @@ def _git(*args: str) -> str:
 
 
 def run_stem(run: EvalRun) -> str:
-    stem = f"{run.created_at:%Y-%m-%d}_{run.git_sha[:7]}_{run.suite}-{run.mode}"
+    scope = f"{run.suite}-{run.tag}" if run.tag else run.suite
+    stem = f"{run.created_at:%Y-%m-%d}_{run.git_sha[:7]}_{scope}-{run.mode}"
     stem += "-rerank" if run.rerank else ""
+    stem += f"-{run.label}" if run.label else ""
     return stem + ("-answers" if run.answer_config else "")
+
+
+def run_title(run: EvalRun) -> str:
+    """Suite, Tag, Suchart, Reranker und Label, z. B. «full (teilkorpus) · vector · c300»."""
+    title = f"{run.suite} ({run.tag})" if run.tag else run.suite
+    title += f" · {run.mode}" + (" + Reranker" if run.rerank else "")
+    return title + (f" · {run.label}" if run.label else "")
 
 
 def load_run(path: Path) -> EvalRun:
@@ -125,9 +137,11 @@ def find_previous(
     answer_model: str | None = None,
     *,
     rerank: bool = False,
+    tag: Tag | None = None,
+    label: str | None = None,
 ) -> Path | None:
     """Letzter Lauf mit derselben Suite, demselben Modus und demselben Antwortmodell (None:
-    Lauf ohne Antworten), nach Zeitpunkt."""
+    Lauf ohne Antworten), gleichem Reranker, Tag und Label, nach Zeitpunkt."""
     candidates = [
         (run.created_at, path)
         for path in sorted(results_dir.glob("*.json"))
@@ -135,6 +149,8 @@ def find_previous(
         and run.mode == mode
         and run.answer_model == answer_model
         and run.rerank == rerank
+        and run.tag == tag
+        and run.label == label
     ]
     return max(candidates)[1] if candidates else None
 
@@ -348,8 +364,7 @@ def _table(header: Sequence[str], rows: Sequence[Sequence[str]]) -> list[str]:
 def render_markdown(run: EvalRun, previous: EvalRun | None) -> str:
     measured = len(run.questions)
     lines = [
-        f"# Eval-Lauf {run.created_at:%Y-%m-%d %H:%M} · {run.suite} · {run.mode}"
-        + (" + Reranker" if run.rerank else ""),
+        f"# Eval-Lauf {run.created_at:%Y-%m-%d %H:%M} · {run_title(run)}",
         "",
         f"- Commit: `{run.git_sha[:7]}`"
         + (" (mit ungecommitteten Änderungen)" if run.git_dirty else ""),
