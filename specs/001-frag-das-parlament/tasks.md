@@ -62,6 +62,6 @@ Tasks:
 
 - [x] 6.1a Experiment Suchverfahren: Reranker (bge-reranker-v2-m3) auf den Vektortreffern messen (Retrieval auf dem ganzen Korpus, Teilset Teilkorpus), entscheiden und dokumentieren
 - [x] 6.1b Experimente Kontext-Header und Chunkgrösse (300/500/800) in einer eigenen Experiment-Datenbank mit dem Teilkorpus (Herbstsession 2026) messen und dokumentieren; API-Embedding-Modell mit Begründung nicht durchgeführt
-- [ ] 6.1c Experiment LLM: Opus 5.5 `high` und `low`, Sonnet 5.5, Haiku 5.5 auf der Smoke-Suite mit Antworten messen und dokumentieren
+- [x] 6.1c Experiment LLM: Opus 5.5 `high` und `low`, Sonnet 5.5, Haiku 5.5 auf der Smoke-Suite mit Antworten messen und dokumentieren
 - [ ] 6.2 README: Architekturdiagramm, Ergebnistabelle, Designentscheide, Kosten und Latenz, bekannte Grenzen, Hinweis auf den SDD-Workflow
 - [ ] 6.3 Demo mit denselben Compose-Dateien deployen (Override-Datei für Produktion, Rate-Limit, Kostendeckel), Link im README und im Lebenslauf
