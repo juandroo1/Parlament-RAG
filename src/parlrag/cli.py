@@ -1,8 +1,10 @@
 """Kommandozeile `parlrag` (Typer)."""
 
 import datetime as dt
+import io
 import logging
 import re
+import sys
 import time
 from enum import StrEnum
 from pathlib import Path
@@ -80,11 +82,24 @@ DEFAULT_SINCE = dt.datetime(2023, 12, 1)  # Beginn der 52. Legislatur (spec.md, 
 app = typer.Typer(help="Frag das Parlament", no_args_is_help=True, add_completion=False)
 
 
+def use_utf8_output() -> None:
+    """Ausgabe immer als UTF-8 schreiben.
+
+    Unter Windows ist die Ausgabe in eine Datei oder Pipe sonst cp1252; Zeichen wie «Δ» oder
+    «≈» brechen dann den Befehl ab, nachdem die Arbeit schon getan ist.
+    """
+    for stream in (sys.stdout, sys.stderr):
+        encoding = (getattr(stream, "encoding", None) or "").lower().replace("-", "")
+        if encoding != "utf8" and isinstance(stream, io.TextIOWrapper):
+            stream.reconfigure(encoding="utf-8")
+
+
 @app.callback()
 def main(
     verbose: Annotated[bool, typer.Option("--verbose", "-v", help="Ausführliche Logs.")] = False,
 ) -> None:
     """Fragen zu Debatten und Geschäften des Schweizer Bundesparlaments."""
+    use_utf8_output()
     logging.basicConfig(
         level=logging.DEBUG if verbose else logging.INFO,
         format="%(asctime)s %(levelname)s [%(name)s] %(message)s",

@@ -1,8 +1,10 @@
 """CLI `parlrag ingest`: Optionen und Ausgabe (Pipeline ersetzt, kein Netz, keine DB)."""
 
 import datetime as dt
+import io
 import logging
 import re
+import sys
 from typing import Any
 
 import pytest
@@ -103,3 +105,24 @@ def test_invalid_options_are_rejected(calls: list[dict[str, Any]], args: list[st
 
     assert result.exit_code == 2
     assert calls == []
+
+
+def test_output_is_utf8_even_when_redirected(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Windows schreibt in eine Datei oder Pipe als cp1252; «Δ» bräche dann ab."""
+    buffer = io.BytesIO()
+    redirected = io.TextIOWrapper(buffer, encoding="cp1252", newline="\n")
+    monkeypatch.setattr(sys, "stdout", redirected)
+    monkeypatch.setattr(sys, "stderr", redirected)
+
+    cli.use_utf8_output()
+    print("Δ Recall@10 ≈ 0.83", file=sys.stdout)
+    sys.stdout.flush()
+
+    assert buffer.getvalue().decode("utf-8") == "Δ Recall@10 ≈ 0.83\n"
+
+
+def test_utf8_output_leaves_other_streams_alone(monkeypatch: pytest.MonkeyPatch) -> None:
+    stream = io.StringIO()  # z. B. pytest-Capture: kein TextIOWrapper, bleibt unverändert
+    monkeypatch.setattr(sys, "stdout", stream)
+    cli.use_utf8_output()
+    assert sys.stdout is stream
