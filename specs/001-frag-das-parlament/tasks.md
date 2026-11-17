@@ -65,4 +65,4 @@ Tasks:
 - [x] 6.1c Experiment LLM: Opus 5.5 `high` und `low`, Sonnet 5.5, Haiku 5.5 auf der Smoke-Suite mit Antworten messen und dokumentieren
 - [x] 6.2 README: Architekturdiagramm, Ergebnistabelle, Designentscheide, Kosten und Latenz, bekannte Grenzen, Hinweis auf den SDD-Workflow
 - [x] 6.3a Demo-Betrieb vorbereiten: Override-Datei für Produktion mit Caddy (HTTPS), Kostendeckel pro Monat auf die Tage verteilt, Rate-Limit pro IP, Übertragung der Datenbank, Anleitung, Nutzungsbedingungen der Daten
-- [ ] 6.3b Demo deployen (Server, API-Key mit Ausgabenlimit, Domain), prüfen, Link im README und im Lebenslauf
+- [x] 6.3b Demo deployen (Server, API-Key mit Ausgabenlimit, Domain), prüfen, Link im README und im Lebenslauf
