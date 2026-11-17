@@ -4,7 +4,9 @@
 
 RAG-Anwendung, die Fragen zu Debatten und Geschäften des Schweizer Bundesparlaments beantwortet, auf Deutsch und Französisch. Grundlage sind das Amtliche Bulletin (Wortprotokolle) und Curia Vista (Geschäfte). Jede Aussage ist mit einer überprüfbaren Quelle auf parlament.ch belegt. Die Qualität wird mit einem reproduzierbaren Eval-Set gemessen, nicht nach Gefühl beurteilt.
 
-> **In English:** *Frag das Parlament* ("Ask Parliament") answers questions about debates and proposals in the Swiss federal parliament in German and French, with every statement linked to its source on parlament.ch. It is a retrieval-augmented generation system built on Postgres/pgvector, local multilingual embeddings and Claude, shipped as a Docker Compose stack with a FastAPI backend and a React UI. Every design choice was measured against a human-reviewed evaluation set, and the results, costs and known limits are documented below.
+> **In English:** *Frag das Parlament* ("Ask Parliament") answers questions about debates and proposals in the Swiss federal parliament in German and French, with every statement linked to its source on parlament.ch. It is a retrieval-augmented generation system built on Postgres/pgvector, local multilingual embeddings and Claude, shipped as a Docker Compose stack with a FastAPI backend and a React UI. Every design choice was measured against a human-reviewed evaluation set, and the results, costs and known limits are documented below. Live demo: <https://frag-das-parlament.duckdns.org>.
+
+**Demo:** [frag-das-parlament.duckdns.org](https://frag-das-parlament.duckdns.org) (Antworten mit Claude Haiku 5.5, begrenztes Tagesbudget und 10 Fragen pro Stunde)
 
 ![Web-UI: Frage mit Beispielen auf Deutsch und Französisch, aufklappbare Filter, Hinweis auf Datenquelle und Lizenz](docs/screenshot.png)
 
@@ -338,7 +340,7 @@ POSTGRES_DB=parlrag_exp_c300 CHUNK_TARGET_TOKENS=300 uv run parlrag eval --suite
 
 ## Öffentliche Demo betreiben
 
-Die Demo läuft mit denselben Compose-Dateien wie lokal, ergänzt um [`docker-compose.prod.yml`](docker-compose.prod.yml). Caddy ist der einzige öffentliche Service und sorgt für HTTPS; die Antworten kommen von Claude Haiku 5.5 über einen API-Key. Zwei Grenzen schützen vor Missbrauch und Kosten:
+Die Demo läuft mit denselben Compose-Dateien wie lokal, ergänzt um [`docker-compose.prod.yml`](docker-compose.prod.yml). Caddy ist der einzige öffentliche Service und sorgt für HTTPS; die Antworten kommen von Claude Haiku 5.5 über einen API-Key. Sie läuft unter [frag-das-parlament.duckdns.org](https://frag-das-parlament.duckdns.org) auf einem VPS bei netcup (8 GB RAM); die Domain ist eine kostenlose Subdomain von DuckDNS. Zwei Grenzen schützen vor Missbrauch und Kosten:
 
 - **Kostendeckel:** 5 USD pro Kalendermonat, verteilt auf die Tage. Jeden Tag steht der Rest des Monatsbudgets geteilt durch die verbleibenden Tage zur Verfügung, am Monatsanfang also rund 100 Fragen. Ist das Tagesbudget aufgebraucht, antwortet die API bis Mitternacht (UTC) mit 429 und einem Hinweis. Die Ausgaben stehen in der Tabelle `api_usage`.
 - **Rate-Limit:** 10 Fragen pro Stunde und IP-Adresse. Die Adressen bleiben nur im Arbeitsspeicher.

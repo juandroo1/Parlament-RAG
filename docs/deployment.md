@@ -1,6 +1,6 @@
 # Deployment der öffentlichen Demo
 
-Die Demo läuft mit denselben Compose-Dateien wie lokal, ergänzt um [`docker-compose.prod.yml`](../docker-compose.prod.yml):
+Die öffentliche Demo läuft unter <https://frag-das-parlament.duckdns.org>. Sie läuft mit denselben Compose-Dateien wie lokal, ergänzt um [`docker-compose.prod.yml`](../docker-compose.prod.yml):
 
 - **Caddy** ist der einzige öffentliche Service (Port 80 und 443) und holt das HTTPS-Zertifikat automatisch bei Let's Encrypt. `db`, `app` und `web` sind nur im internen Netz erreichbar.
 - **Antworten mit Claude Haiku 5.5** über einen API-Key, nie über ein Claude-Abo (AK-6.3).
@@ -14,29 +14,48 @@ Die Werte stehen fest in `docker-compose.prod.yml`, damit eine aus `.env.example
 
 | Was | Empfehlung | Kosten |
 |---|---|---|
-| Server | Linux-VM mit 4 vCPU und 8 GB RAM, Ubuntu 24.04, z. B. bei Hetzner Cloud (Standort in der EU) | rund 7 bis 15 € pro Monat |
+| Server | Linux-VM mit 4 vCPU und 8 GB RAM, Ubuntu 24.04 LTS (UEFI, eine Partition über den ganzen Speicher). Die Demo läuft bei netcup; ebenso geeignet sind Hetzner Cloud (CX33) oder Infomaniak VPS Lite (Standort Schweiz). Weniger als 8 GB RAM reicht nicht: Das Embedding-Modell allein braucht rund 2,5 GB | rund 9 € (netcup, Hetzner) bis CHF 18 (Infomaniak) pro Monat |
 | API-Key | In der [Claude Console](https://platform.claude.com) einen eigenen Workspace für die Demo anlegen, dort ein **Ausgabenlimit** (z. B. 5 USD pro Monat) setzen und einen API-Key nur für die Demo erstellen | nach Verbrauch, höchstens das Limit |
-| Domain | Eigene Domain oder Subdomain mit einem A-Record auf die IP des Servers. Ohne eigene Domain geht auch `<ip-mit-bindestrichen>.sslip.io`, z. B. `203-0-113-7.sslip.io` | eigene Domain rund 10 bis 15 CHF pro Jahr |
+| Domain | Eigene Domain oder Subdomain mit einem A-Record auf die IP des Servers. Kostenlos: eine Subdomain bei [DuckDNS](https://www.duckdns.org) (die Demo nutzt `frag-das-parlament.duckdns.org`) oder `<ip-mit-bindestrichen>.sslip.io`. Der Hostname im Panel des Anbieters ist meist kein eigener DNS-Eintrag | eigene Domain rund 10 bis 15 CHF pro Jahr, DuckDNS gratis |
 
 Das Ausgabenlimit in der Console ist die zweite Sicherung: Es greift auch dann, wenn in der App etwas schiefgeht.
 
 Der Server braucht rund 15 GB Speicher (Images, Datenbank 1,7 GB, Embedding-Modell rund 4 GB).
 
+Die Console bietet für die Kosten zwei weitere Grenzen: Guthaben vorausbezahlen und das automatische Nachladen ausgeschaltet lassen, dazu das Ausgabenlimit im Workspace der Demo.
+
 ## 2. Server vorbereiten
 
+Als `root` auf dem Server. Ubuntu minimal bringt wenig mit, deshalb zuerst die Werkzeuge; `unattended-upgrades` spielt Sicherheitsupdates automatisch ein:
+
 ```bash
-ssh root@<server-ip>
+apt update && apt upgrade -y
+apt install -y curl git ufw nano ca-certificates unattended-upgrades
+
 adduser deploy && usermod -aG sudo deploy
-mkdir -p /home/deploy/.ssh && cp ~/.ssh/authorized_keys /home/deploy/.ssh/ && chown -R deploy:deploy /home/deploy/.ssh
-# Anmeldung nur mit SSH-Key: in /etc/ssh/sshd_config PasswordAuthentication no und PermitRootLogin no, dann
-systemctl restart ssh
+install -d -m 700 -o deploy -g deploy /home/deploy/.ssh
+install -m 600 -o deploy -g deploy /root/.ssh/authorized_keys /home/deploy/.ssh/authorized_keys
+```
+
+Wurde beim Bestellen kein SSH-Key hinterlegt, fehlt `/root/.ssh/authorized_keys`: dann den Public Key (`id_ed25519.pub`, erzeugt mit `ssh-keygen -t ed25519`) mit `nano` in `/home/deploy/.ssh/authorized_keys` einfügen und Besitz und Rechte wie oben setzen.
+
+In einem **zweiten** Fenster `ssh deploy@<server-ip>` und `sudo whoami` testen (muss `root` ausgeben), erst dann weiter. Meldet `sudo` «not in the sudoers file», fehlt die Gruppe in den sudoers: `echo '%sudo ALL=(ALL:ALL) ALL' > /etc/sudoers.d/sudo-group && chmod 440 /etc/sudoers.d/sudo-group && visudo -c`, danach neu anmelden.
+
+```bash
+# Anmeldung nur mit SSH-Key; 00- gewinnt gegen Vorgaben des Anbieters (die erste Einstellung gilt)
+printf 'PasswordAuthentication no\nPermitRootLogin no\n' > /etc/ssh/sshd_config.d/00-hardening.conf
+sshd -t && systemctl restart ssh
 
 ufw allow OpenSSH && ufw allow 80/tcp && ufw allow 443/tcp && ufw allow 443/udp && ufw enable
 curl -fsSL https://get.docker.com | sh
 usermod -aG docker deploy
+
+# 4 GB Swap als Reserve gegen Speichermangel bei Lastspitzen
+fallocate -l 4G /swapfile && chmod 600 /swapfile && mkswap /swapfile && swapon /swapfile
+echo '/swapfile none swap sw 0 0' >> /etc/fstab
 ```
 
-Docker veröffentlicht nur die Ports von Caddy; die anderen Services haben in der Produktion keine Ports auf dem Host.
+Hat der Anbieter im Panel eine eigene Firewall, dort ebenfalls 22, 80 und 443 öffnen. Docker veröffentlicht nur die Ports von Caddy; die anderen Services haben in der Produktion keine Ports auf dem Host.
 
 ## 3. Code und Konfiguration
 
@@ -89,7 +108,7 @@ docker compose ps                                # db, app, web und caddy "healt
 docker compose exec app parlrag search "Test" --top 1   # lädt das Embedding-Modell vorab
 ```
 
-Danach unter `https://<DEMO_DOMAIN>` eine Frage stellen. Beim ersten Start lädt Caddy das Zertifikat; das dauert einige Sekunden.
+Danach unter `https://<DEMO_DOMAIN>` eine Frage stellen. Beim ersten Start lädt Caddy das Zertifikat; das dauert einige Sekunden. Die Domain muss dann schon auf den Server zeigen. Der erste Build dauert je nach Server 5 bis 15 Minuten.
 
 Kontrolle im Betrieb:
 
