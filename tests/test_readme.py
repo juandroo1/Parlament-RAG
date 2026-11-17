@@ -56,6 +56,14 @@ def test_readme_covers_portfolio_sections() -> None:
     assert "](docs/screenshot.png)" in README
 
 
+def test_demo_link_is_prominent() -> None:
+    """Task 6.3b: Der Link zur öffentlichen Demo steht oben, vor dem Inhaltsverzeichnis."""
+    demo = "https://frag-das-parlament.duckdns.org"
+    head = README.split("## Inhalt", 1)[0]
+    assert f"**Demo:** [frag-das-parlament.duckdns.org]({demo})" in head
+    assert demo in (ROOT / "docs" / "deployment.md").read_text(encoding="utf-8")
+
+
 def test_slug_matches_github() -> None:
     assert _slug(" Web-UI (Entwicklung)") == "web-ui-entwicklung"
     assert _slug(" Kosten und Latenz") == "kosten-und-latenz"
