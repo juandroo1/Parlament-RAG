@@ -103,7 +103,7 @@ Goldset (Endstand MVP): mindestens 65 Fragen, davon 40 auf Deutsch und 10 auf Fr
 ## 8. Offene Fragen
 
 - Lizenz und Nutzungsbedingungen der Daten für eine öffentliche Demo verifizieren.
-- Lokales Embedding-Modell oder API-Modell: per Eval entscheiden (Qualität gegen Kosten). Gemessen in Task 2.2: bge-m3 auf der CPU schafft rund 2 Chunks/s, der volle Korpus braucht rund 14 Stunden. Entschieden: bge-m3 bleibt; einmal voll indexieren, danach inkrementell; Experimente auf einer Session (plan.md, Entscheidungsprotokoll). Offen bleibt der Vergleich mit einem API-Modell als Experiment.
+- Lokales Embedding-Modell oder API-Modell: per Eval entscheiden (Qualität gegen Kosten). Gemessen in Task 2.2: bge-m3 auf der CPU schafft rund 2 Chunks/s, der volle Korpus braucht rund 14 Stunden. Entschieden: bge-m3 bleibt; einmal voll indexieren, danach inkrementell; Experimente auf einer Session (plan.md, Entscheidungsprotokoll). Ein API-Modell wurde in Task 6.1b nicht gemessen: Anthropic bietet keine Embeddings an, ein anderer Anbieter (z. B. Voyage AI) bräuchte einen eigenen API-Key mit Kosten und einen Neubau des ganzen Index. Offen für eine spätere Version.
 - Hosting der Demo und Schutz vor Missbrauch (Rate-Limit, Kostendeckel).
 - Reranker mit GPU oder als API-Dienst? Der Cross-Encoder bge-reranker-v2-m3 hebt Recall@10 auf 0.826 (sprachübergreifend 0.800), braucht auf der CPU aber rund 28 s pro Suche und bleibt deshalb ausgeschaltet (Task 6.1a, plan.md, Entscheidungsprotokoll).
 - Mehrturn-Gespräche (Folgefragen) für eine spätere Version?
