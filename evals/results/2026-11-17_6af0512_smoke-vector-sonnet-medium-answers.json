@@ -1,0 +1,2856 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-11-17T15:39:18.391582+01:00",
+  "git_sha": "6af0512b501cad7bf000f89b26fe80e730527c55",
+  "git_dirty": false,
+  "suite": "smoke",
+  "mode": "vector",
+  "rerank": false,
+  "tag": null,
+  "label": "sonnet-medium",
+  "golden": "evals/datasets/golden.jsonl",
+  "questions_total": 15,
+  "skipped_unanswerable": 2,
+  "config": {
+    "chunks_per_query": 100,
+    "retrieval_candidates": 50,
+    "retrieval_rrf_k": 60,
+    "embedding_model": "BAAI/bge-m3",
+    "embedding_max_seq_length": 1024,
+    "index_signature": "BAAI/bge-m3|target=500|overlap=0.15|header=1|chunker=v1",
+    "database": "parlrag",
+    "answer_min_similarity": 0.55,
+    "retrieval_rerank": false
+  },
+  "corpus": {
+    "documents": 42515,
+    "chunks": 102891,
+    "chunks_by_signature": {
+      "BAAI/bge-m3|target=500|overlap=0.15|header=1|chunker=v1": 102891
+    }
+  },
+  "metrics": {
+    "recall@5": 0.5769230769230769,
+    "recall@10": 0.7307692307692307,
+    "recall@20": 0.9102564102564104,
+    "mrr@10": 0.3891025641025641,
+    "search_p50_ms": 154.62899999693036,
+    "search_p95_ms": 223.53519999887794,
+    "citation_accuracy": 0.9897435897435898,
+    "faithfulness": 0.9951923076923077,
+    "refusal_rate": 1.0,
+    "false_refusal_rate": 0.0,
+    "neutrality": 1.0,
+    "language_accuracy": 1.0,
+    "answer_p50_ms": 6362.757399969269,
+    "answer_p95_ms": 12485.84330000449,
+    "answer_cost_usd": 0.03538482666666667,
+    "judge_cost_usd": 0.04079716153846154
+  },
+  "subsets": {
+    "de": {
+      "n": 10,
+      "metrics": {
+        "recall@5": 0.6166666666666667,
+        "recall@10": 0.75,
+        "recall@20": 0.8833333333333334,
+        "mrr@10": 0.38583333333333336,
+        "search_p50_ms": 155.99709999514744,
+        "search_p95_ms": 223.53519999887794
+      }
+    },
+    "fr": {
+      "n": 3,
+      "metrics": {
+        "recall@5": 0.4444444444444444,
+        "recall@10": 0.6666666666666666,
+        "recall@20": 1.0,
+        "mrr@10": 0.39999999999999997,
+        "search_p50_ms": 148.37680000346154,
+        "search_p95_ms": 154.62899999693036
+      }
+    },
+    "crosslingual": {
+      "n": 4,
+      "metrics": {
+        "recall@5": 0.25,
+        "recall@10": 0.5,
+        "recall@20": 0.875,
+        "mrr@10": 0.08125,
+        "search_p50_ms": 148.37680000346154,
+        "search_p95_ms": 166.97419999400154
+      }
+    },
+    "filter": {
+      "n": 2,
+      "metrics": {
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "recall@20": 1.0,
+        "mrr@10": 1.0,
+        "search_p50_ms": 156.9628000142984,
+        "search_p95_ms": 223.53519999887794
+      }
+    },
+    "teilkorpus": {
+      "n": 10,
+      "metrics": {
+        "recall@5": 0.45,
+        "recall@10": 0.65,
+        "recall@20": 0.8833333333333334,
+        "mrr@10": 0.36583333333333334,
+        "search_p50_ms": 148.37680000346154,
+        "search_p95_ms": 170.25860003195703
+      }
+    },
+    "wertend": {
+      "n": 2,
+      "metrics": {
+        "recall@5": 0.16666666666666666,
+        "recall@10": 0.5,
+        "recall@20": 0.6666666666666666,
+        "mrr@10": 0.1,
+        "search_p50_ms": 101.80840000975877,
+        "search_p95_ms": 120.51059998339042
+      }
+    }
+  },
+  "questions": [
+    {
+      "id": "q01",
+      "language": "de",
+      "tags": [
+        "teilkorpus",
+        "smoke"
+      ],
+      "expected_source_ids": [
+        "transcript:422495",
+        "transcript:422526",
+        "transcript:422528"
+      ],
+      "ranks": {
+        "transcript:422495": 2,
+        "transcript:422526": 7,
+        "transcript:422528": 3
+      },
+      "top_documents": [
+        "transcript:422493",
+        "transcript:422495",
+        "transcript:422528",
+        "transcript:422505",
+        "transcript:422549",
+        "transcript:422571",
+        "transcript:422526",
+        "business:20264101",
+        "transcript:422542",
+        "transcript:422556"
+      ],
+      "metrics": {
+        "recall@5": 0.6666666666666666,
+        "recall@10": 1.0,
+        "recall@20": 1.0,
+        "mrr@10": 0.5
+      },
+      "search_ms": 170.25860003195703,
+      "best_similarity": 0.7064273532374303
+    },
+    {
+      "id": "q02",
+      "language": "de",
+      "tags": [
+        "crosslingual",
+        "teilkorpus",
+        "smoke"
+      ],
+      "expected_source_ids": [
+        "transcript:422494",
+        "transcript:422531"
+      ],
+      "ranks": {
+        "transcript:422494": 20,
+        "transcript:422531": null
+      },
+      "top_documents": [
+        "business:20268006",
+        "business:20264073",
+        "business:20264129",
+        "transcript:422445",
+        "transcript:422505",
+        "business:20264105",
+        "business:20264101",
+        "business:20267641",
+        "transcript:422463",
+        "transcript:422484"
+      ],
+      "metrics": {
+        "recall@5": 0.0,
+        "recall@10": 0.0,
+        "recall@20": 0.5,
+        "mrr@10": 0.0
+      },
+      "search_ms": 155.99709999514744,
+      "best_similarity": 0.7371443823403856
+    },
+    {
+      "id": "q04",
+      "language": "fr",
+      "tags": [
+        "fr",
+        "crosslingual",
+        "teilkorpus",
+        "smoke"
+      ],
+      "expected_source_ids": [
+        "transcript:422506"
+      ],
+      "ranks": {
+        "transcript:422506": 11
+      },
+      "top_documents": [
+        "business:20264101",
+        "business:20264073",
+        "transcript:422457",
+        "transcript:422445",
+        "business:20267641",
+        "transcript:422473",
+        "business:20264105",
+        "business:20264129",
+        "business:20268006",
+        "transcript:422489"
+      ],
+      "metrics": {
+        "recall@5": 0.0,
+        "recall@10": 0.0,
+        "recall@20": 1.0,
+        "mrr@10": 0.0
+      },
+      "search_ms": 148.37680000346154,
+      "best_similarity": 0.7189419604609111
+    },
+    {
+      "id": "q05",
+      "language": "de",
+      "tags": [
+        "teilkorpus",
+        "smoke"
+      ],
+      "expected_source_ids": [
+        "transcript:422818",
+        "transcript:422822",
+        "transcript:422849"
+      ],
+      "ranks": {
+        "transcript:422818": 3,
+        "transcript:422822": 4,
+        "transcript:422849": 5
+      },
+      "top_documents": [
+        "transcript:422783",
+        "transcript:422807",
+        "transcript:422818",
+        "transcript:422822",
+        "transcript:422849",
+        "transcript:422718",
+        "transcript:422812",
+        "business:20260054",
+        "transcript:422787",
+        "transcript:422773"
+      ],
+      "metrics": {
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "recall@20": 1.0,
+        "mrr@10": 0.3333333333333333
+      },
+      "search_ms": 159.23669998301193,
+      "best_similarity": 0.7584630476970392
+    },
+    {
+      "id": "q07",
+      "language": "de",
+      "tags": [
+        "teilkorpus",
+        "smoke"
+      ],
+      "expected_source_ids": [
+        "transcript:418909",
+        "business:20244494"
+      ],
+      "ranks": {
+        "transcript:418909": 2,
+        "business:20244494": 15
+      },
+      "top_documents": [
+        "transcript:418981",
+        "transcript:418909",
+        "transcript:418954",
+        "transcript:418948",
+        "transcript:418964",
+        "transcript:418965",
+        "transcript:418961",
+        "transcript:418960",
+        "transcript:418945",
+        "transcript:418899"
+      ],
+      "metrics": {
+        "recall@5": 0.5,
+        "recall@10": 0.5,
+        "recall@20": 1.0,
+        "mrr@10": 0.5
+      },
+      "search_ms": 146.55219996348023,
+      "best_similarity": 0.6694642502388817
+    },
+    {
+      "id": "q09",
+      "language": "de",
+      "tags": [
+        "filter",
+        "teilkorpus",
+        "smoke"
+      ],
+      "expected_source_ids": [
+        "transcript:419592",
+        "business:20260026"
+      ],
+      "ranks": {
+        "transcript:419592": 3,
+        "business:20260026": 1
+      },
+      "top_documents": [
+        "business:20260026",
+        "transcript:419565",
+        "transcript:419592",
+        "transcript:422045",
+        "business:20243635",
+        "transcript:422042",
+        "transcript:419613",
+        "transcript:419612",
+        "transcript:353245",
+        "transcript:353260"
+      ],
+      "metrics": {
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "recall@20": 1.0,
+        "mrr@10": 1.0
+      },
+      "search_ms": 156.9628000142984,
+      "best_similarity": 0.7946299314498901
+    },
+    {
+      "id": "q12",
+      "language": "fr",
+      "tags": [
+        "fr",
+        "teilkorpus",
+        "smoke"
+      ],
+      "expected_source_ids": [
+        "transcript:421775"
+      ],
+      "ranks": {
+        "transcript:421775": 1
+      },
+      "top_documents": [
+        "transcript:421775",
+        "transcript:354869",
+        "transcript:338589",
+        "transcript:359351",
+        "transcript:336054",
+        "transcript:335797",
+        "business:20258184",
+        "transcript:347432",
+        "transcript:370837",
+        "transcript:347532"
+      ],
+      "metrics": {
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "recall@20": 1.0,
+        "mrr@10": 1.0
+      },
+      "search_ms": 154.62899999693036,
+      "best_similarity": 0.6586818695068359
+    },
+    {
+      "id": "q13",
+      "language": "de",
+      "tags": [
+        "crosslingual",
+        "teilkorpus",
+        "smoke"
+      ],
+      "expected_source_ids": [
+        "transcript:408632"
+      ],
+      "ranks": {
+        "transcript:408632": 8
+      },
+      "top_documents": [
+        "transcript:377644",
+        "transcript:377797",
+        "transcript:377703",
+        "transcript:419164",
+        "transcript:377672",
+        "business:20258164",
+        "transcript:374976",
+        "transcript:408632",
+        "transcript:421731",
+        "transcript:421638"
+      ],
+      "metrics": {
+        "recall@5": 0.0,
+        "recall@10": 1.0,
+        "recall@20": 1.0,
+        "mrr@10": 0.125
+      },
+      "search_ms": 148.1698999996297,
+      "best_similarity": 0.5890334493497948
+    },
+    {
+      "id": "q17",
+      "language": "de",
+      "tags": [
+        "smoke"
+      ],
+      "expected_source_ids": [
+        "business:20240073"
+      ],
+      "ranks": {
+        "business:20240073": 5
+      },
+      "top_documents": [
+        "transcript:361225",
+        "transcript:347674",
+        "business:20243249",
+        "business:20263098",
+        "business:20240073",
+        "business:20247169",
+        "business:20243354",
+        "transcript:358179",
+        "transcript:420882",
+        "business:20243587"
+      ],
+      "metrics": {
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "recall@20": 1.0,
+        "mrr@10": 0.2
+      },
+      "search_ms": 131.9925999850966,
+      "best_similarity": 0.7012735187248291
+    },
+    {
+      "id": "q18",
+      "language": "de",
+      "tags": [
+        "filter",
+        "smoke"
+      ],
+      "expected_source_ids": [
+        "transcript:344169"
+      ],
+      "ranks": {
+        "transcript:344169": 1
+      },
+      "top_documents": [
+        "transcript:344169",
+        "transcript:360263",
+        "transcript:346475",
+        "transcript:356303",
+        "transcript:344132",
+        "transcript:346408",
+        "transcript:356283",
+        "transcript:362081",
+        "transcript:344202",
+        "transcript:344243"
+      ],
+      "metrics": {
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "recall@20": 1.0,
+        "mrr@10": 1.0
+      },
+      "search_ms": 223.53519999887794,
+      "best_similarity": 0.6653505962669186
+    },
+    {
+      "id": "q19",
+      "language": "de",
+      "tags": [
+        "crosslingual",
+        "smoke"
+      ],
+      "expected_source_ids": [
+        "transcript:359974"
+      ],
+      "ranks": {
+        "transcript:359974": 5
+      },
+      "top_documents": [
+        "business:20257352",
+        "business:20267075",
+        "transcript:371672",
+        "transcript:372738",
+        "transcript:359974",
+        "transcript:370204",
+        "transcript:372377",
+        "business:20240092",
+        "transcript:359945",
+        "transcript:372725"
+      ],
+      "metrics": {
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "recall@20": 1.0,
+        "mrr@10": 0.2
+      },
+      "search_ms": 166.97419999400154,
+      "best_similarity": 0.5868647591036845
+    },
+    {
+      "id": "q26",
+      "language": "de",
+      "tags": [
+        "wertend",
+        "teilkorpus",
+        "smoke"
+      ],
+      "expected_source_ids": [
+        "transcript:421345",
+        "transcript:421772",
+        "transcript:421630"
+      ],
+      "ranks": {
+        "transcript:421345": null,
+        "transcript:421772": 11,
+        "transcript:421630": null
+      },
+      "top_documents": [
+        "transcript:334808",
+        "transcript:421741",
+        "transcript:421646",
+        "business:20257084",
+        "transcript:421399",
+        "transcript:421776",
+        "transcript:421719",
+        "business:20258268",
+        "transcript:421608",
+        "transcript:421738"
+      ],
+      "metrics": {
+        "recall@5": 0.0,
+        "recall@10": 0.0,
+        "recall@20": 0.3333333333333333,
+        "mrr@10": 0.0
+      },
+      "search_ms": 101.80840000975877,
+      "best_similarity": 0.7290927550467057
+    },
+    {
+      "id": "q28",
+      "language": "fr",
+      "tags": [
+        "fr",
+        "wertend",
+        "teilkorpus",
+        "smoke"
+      ],
+      "expected_source_ids": [
+        "transcript:422704",
+        "transcript:422718",
+        "transcript:422849"
+      ],
+      "ranks": {
+        "transcript:422704": 5,
+        "transcript:422718": 8,
+        "transcript:422849": 9
+      },
+      "top_documents": [
+        "business:20257685",
+        "business:20260054",
+        "transcript:422773",
+        "business:20264003",
+        "transcript:422704",
+        "transcript:422724",
+        "transcript:422764",
+        "transcript:422718",
+        "transcript:422849",
+        "business:20257682"
+      ],
+      "metrics": {
+        "recall@5": 0.3333333333333333,
+        "recall@10": 1.0,
+        "recall@20": 1.0,
+        "mrr@10": 0.2
+      },
+      "search_ms": 120.51059998339042,
+      "best_similarity": 0.7382112301462168
+    }
+  ],
+  "previous": null,
+  "similarities": {
+    "q01": 0.7064273532374303,
+    "q02": 0.7371443823403856,
+    "q04": 0.7189419604609111,
+    "q05": 0.7584630476970392,
+    "q07": 0.6694642502388817,
+    "q09": 0.7946299314498901,
+    "q12": 0.6586818695068359,
+    "q13": 0.5890334493497948,
+    "q17": 0.7012735187248291,
+    "q18": 0.6653505962669186,
+    "q19": 0.5868647591036845,
+    "q26": 0.7290927550467057,
+    "q28": 0.7382112301462168,
+    "q29": 0.6652600568222979,
+    "q32": 0.646859922817942
+  },
+  "threshold": {
+    "threshold": 0.55,
+    "unanswerable": 2,
+    "answerable": 13,
+    "unanswerable_refused": 0,
+    "answerable_refused": 0,
+    "candidates": [
+      {
+        "threshold": 0.5,
+        "unanswerable_refused": 0,
+        "answerable_refused": 0
+      },
+      {
+        "threshold": 0.51,
+        "unanswerable_refused": 0,
+        "answerable_refused": 0
+      },
+      {
+        "threshold": 0.52,
+        "unanswerable_refused": 0,
+        "answerable_refused": 0
+      },
+      {
+        "threshold": 0.53,
+        "unanswerable_refused": 0,
+        "answerable_refused": 0
+      },
+      {
+        "threshold": 0.54,
+        "unanswerable_refused": 0,
+        "answerable_refused": 0
+      },
+      {
+        "threshold": 0.55,
+        "unanswerable_refused": 0,
+        "answerable_refused": 0
+      },
+      {
+        "threshold": 0.56,
+        "unanswerable_refused": 0,
+        "answerable_refused": 0
+      },
+      {
+        "threshold": 0.57,
+        "unanswerable_refused": 0,
+        "answerable_refused": 0
+      },
+      {
+        "threshold": 0.58,
+        "unanswerable_refused": 0,
+        "answerable_refused": 0
+      },
+      {
+        "threshold": 0.59,
+        "unanswerable_refused": 0,
+        "answerable_refused": 2
+      },
+      {
+        "threshold": 0.6,
+        "unanswerable_refused": 0,
+        "answerable_refused": 2
+      },
+      {
+        "threshold": 0.61,
+        "unanswerable_refused": 0,
+        "answerable_refused": 2
+      },
+      {
+        "threshold": 0.62,
+        "unanswerable_refused": 0,
+        "answerable_refused": 2
+      },
+      {
+        "threshold": 0.63,
+        "unanswerable_refused": 0,
+        "answerable_refused": 2
+      },
+      {
+        "threshold": 0.64,
+        "unanswerable_refused": 0,
+        "answerable_refused": 2
+      },
+      {
+        "threshold": 0.65,
+        "unanswerable_refused": 1,
+        "answerable_refused": 2
+      }
+    ]
+  },
+  "answer_config": {
+    "answer_model": "claude-sonnet-5-5",
+    "answer_effort": "medium",
+    "llm_backend": "claude-code",
+    "judge_model": "claude-sonnet-5-5",
+    "judge_effort": "medium",
+    "answer_prompt_version": "0f66be10c25f",
+    "judge_prompt_version": "19396b23f9a7",
+    "answer_context_chunks": 8,
+    "answer_min_similarity": 0.55
+  },
+  "answer_counts": {
+    "questions": 15,
+    "answered": 13,
+    "refused": 2,
+    "judged": 13,
+    "errors": 0,
+    "judge_errors": 0
+  },
+  "answers": [
+    {
+      "id": "q01",
+      "language": "de",
+      "tags": [
+        "teilkorpus",
+        "smoke"
+      ],
+      "answerable": true,
+      "answer": "Auf die Frage von Meret Schneider (G, ZH), woher bei einem solchen Sommer das Kühlwasser für bestehende und neue Atomkraftwerke kommen solle [1], antwortete Bundesrat Albert Rösti, man müsse sich darauf einstellen, dass Atomkraftwerke im Sommer bei Hitze vor allem revidiert würden und ausser Kraft seien [2]. Er begründete dies damit, dass der Strom vor allem im Winter gebraucht werde, im Sommer aber genügend Strom vorhanden sei [2]. Die Kernkraftwerke wolle man nicht auf Hochtouren laufen lassen, wenn schon ein Überschuss an Solarstrom bestehe [3]. Irgendwann müssten sie repariert werden, und damit könne auch das Wasserproblem gelöst werden [3]. Zudem sagte Rösti, die Versorgungssicherheit sei vor allem im Winter ein Thema, wenn genug Wasser auch für die KKW vorhanden sei [7]. Zu den von Schneider genannten Zahlen zum Wasserverbrauch von Gösgen und Leibstadt [1] oder zum Wasserbedarf neuer Anlagen äusserte er sich in den vorliegenden Quellen nicht direkt.",
+      "insufficient_context": false,
+      "insufficient_reason": null,
+      "best_similarity": 0.7064273532374303,
+      "sources": [
+        "[1] transcript:422493",
+        "[2] transcript:422495",
+        "[3] transcript:422528",
+        "[7] transcript:422526"
+      ],
+      "cited_expected": [
+        "transcript:422495",
+        "transcript:422526",
+        "transcript:422528"
+      ],
+      "answer_language": "de",
+      "total_ms": 6528.854799980763,
+      "attempts": 1,
+      "answer_usage": {
+        "model": "claude-sonnet-5-5",
+        "input_tokens": 2,
+        "output_tokens": 567,
+        "cache_creation_input_tokens": 8293,
+        "cache_read_input_tokens": 0,
+        "latency_ms": 6082.940799999051,
+        "cost_usd": 0.038846,
+        "backend": "claude-code"
+      },
+      "judge": {
+        "statements": [
+          {
+            "statement": "Auf die Frage von Meret Schneider (G, ZH), woher bei einem solchen Sommer das Kühlwasser für bestehende und neue Atomkraftwerke kommen solle, antwortete Rösti, man müsse sich darauf einstellen, dass Atomkraftwerke im Sommer bei Hitze vor allem revidiert würden und ausser Kraft seien",
+            "citations": [
+              {
+                "number": 1,
+                "supports": true
+              },
+              {
+                "number": 2,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Er begründete dies damit, dass der Strom vor allem im Winter gebraucht werde, im Sommer aber genügend Strom vorhanden sei",
+            "citations": [
+              {
+                "number": 2,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Die Kernkraftwerke wolle man nicht auf Hochtouren laufen lassen, wenn schon ein Überschuss an Solarstrom bestehe",
+            "citations": [
+              {
+                "number": 3,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Irgendwann müssten sie repariert werden, und damit könne auch das Wasserproblem gelöst werden",
+            "citations": [
+              {
+                "number": 3,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Zudem sagte Rösti, die Versorgungssicherheit sei vor allem im Winter ein Thema, wenn genug Wasser auch für die KKW vorhanden sei",
+            "citations": [
+              {
+                "number": 7,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Zu den von Schneider genannten Zahlen zum Wasserverbrauch von Gösgen und Leibstadt oder zum Wasserbedarf neuer Anlagen äusserte er sich in den vorliegenden Quellen nicht direkt.",
+            "citations": [
+              {
+                "number": 1,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          }
+        ],
+        "contains_own_evaluation": false,
+        "evaluation_note": ""
+      },
+      "judge_usage": {
+        "model": "claude-sonnet-5-5",
+        "input_tokens": 2,
+        "output_tokens": 737,
+        "cache_creation_input_tokens": 6954,
+        "cache_read_input_tokens": 1987,
+        "latency_ms": 5474.7983000124805,
+        "cost_usd": 0.0353887,
+        "backend": "claude-code"
+      },
+      "citation_accuracy": 1.0,
+      "faithfulness": 1.0,
+      "neutral": true,
+      "error": null,
+      "judge_error": null
+    },
+    {
+      "id": "q02",
+      "language": "de",
+      "tags": [
+        "crosslingual",
+        "teilkorpus",
+        "smoke"
+      ],
+      "answerable": true,
+      "answer": "In den vorliegenden Auszügen der Aktuellen Debatte wird kein Franken- oder Prozentbetrag für die Schäden in der Landwirtschaft genannt. Franziska Ryser (G, SG) beschrieb die Folgen nur qualitativ. Landwirtschaftsbetriebe hätten ihre Winterfutterreserven anbrechen müssen. Tiere seien früher von den Alpen ins Tal gebracht oder frühzeitig geschlachtet worden, weil Wasser und Futter fehlten [6]. Sie hielt zusätzliche Mittel für Landwirtschaft und Wald für notwendig und richtig. Zugleich sagte sie, der Bundesrat tue zu wenig. Laut der Stellungnahme zur dringlichen Interpellation 26.4073 gebe es noch keine sektorübergreifende Gesamtschätzung der Auswirkungen des Sommers. Die Analyse solle voraussichtlich erst Ende 2027 vorliegen [5][6].\n\nBundesrat Albert Rösti äusserte sich in den vorliegenden Auszügen nicht zu konkreten Schadenszahlen. Er sagte, der Bund sei unter anderem für Landwirtschaft, Wald und Umwelt zuständig und der Bundesrat bemühe sich, die nötigen Massnahmen zu treffen. Das Umweltdepartement, vor allem das BAFU, habe die Federführung, und mindestens fünf Departemente seien betroffen [7].\n\nEine Zahl zu den Hilfen steht nur im Text der Interpellation 26.4129. Dort heisst es, der Bundesrat habe am 26. August 2026 zusätzliche Mittel beschlossen, nämlich 54 Mio. für die Unterstützung der Landwirtschaft und 17.5 Mio. für die Anpassung des Waldes [4]. Das sind Unterstützungsmittel und keine bezifferten Schäden.\n\nOffen bleibt, ob Rösti im weiteren Verlauf der Debatte Schäden bezifferte oder auf landwirtschaftliche Schäden einging. Das lässt sich aus den Auszügen nicht beurteilen.",
+      "insufficient_context": false,
+      "insufficient_reason": null,
+      "best_similarity": 0.7371443823403856,
+      "sources": [
+        "[6] transcript:422445",
+        "[5] transcript:422445",
+        "[7] transcript:422505",
+        "[4] business:20264129"
+      ],
+      "cited_expected": [],
+      "answer_language": "de",
+      "total_ms": 12485.84330000449,
+      "attempts": 1,
+      "answer_usage": {
+        "model": "claude-sonnet-5-5",
+        "input_tokens": 2,
+        "output_tokens": 1915,
+        "cache_creation_input_tokens": 8074,
+        "cache_read_input_tokens": 1746,
+        "latency_ms": 12240.103199961595,
+        "cost_usd": 0.0516246,
+        "backend": "claude-code"
+      },
+      "judge": {
+        "statements": [
+          {
+            "statement": "In den vorliegenden Auszügen der Aktuellen Debatte wird kein Franken- oder Prozentbetrag für die Schäden in der Landwirtschaft genannt.",
+            "citations": [],
+            "support": "supported"
+          },
+          {
+            "statement": "Franziska Ryser (G, SG) beschrieb die Folgen nur qualitativ.",
+            "citations": [],
+            "support": "supported"
+          },
+          {
+            "statement": "Landwirtschaftsbetriebe hätten ihre Winterfutterreserven anbrechen müssen.",
+            "citations": [
+              {
+                "number": 6,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Tiere seien früher von den Alpen ins Tal gebracht oder frühzeitig geschlachtet worden, weil Wasser und Futter fehlten.",
+            "citations": [
+              {
+                "number": 6,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Sie hielt zusätzliche Mittel für Landwirtschaft und Wald für notwendig und richtig.",
+            "citations": [],
+            "support": "supported"
+          },
+          {
+            "statement": "Zugleich sagte sie, der Bundesrat tue zu wenig.",
+            "citations": [],
+            "support": "supported"
+          },
+          {
+            "statement": "Laut der Stellungnahme zur dringlichen Interpellation 26.4073 gebe es noch keine sektorübergreifende Gesamtschätzung der Auswirkungen des Sommers.",
+            "citations": [
+              {
+                "number": 5,
+                "supports": true
+              },
+              {
+                "number": 6,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Die Analyse solle voraussichtlich erst Ende 2027 vorliegen.",
+            "citations": [
+              {
+                "number": 5,
+                "supports": true
+              },
+              {
+                "number": 6,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Bundesrat Albert Rösti äusserte sich in den vorliegenden Auszügen nicht zu konkreten Schadenszahlen.",
+            "citations": [
+              {
+                "number": 7,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Er sagte, der Bund sei unter anderem für Landwirtschaft, Wald und Umwelt zuständig und der Bundesrat bemühe sich, die nötigen Massnahmen zu treffen.",
+            "citations": [
+              {
+                "number": 7,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Das Umweltdepartement, vor allem das BAFU, habe die Federführung, und mindestens fünf Departemente seien betroffen.",
+            "citations": [
+              {
+                "number": 7,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Im Text der Interpellation 26.4129 heisst es, der Bundesrat habe am 26. August 2026 zusätzliche Mittel beschlossen, nämlich 54 Mio. für die Unterstützung der Landwirtschaft und 17.5 Mio. für die Anpassung des Waldes.",
+            "citations": [
+              {
+                "number": 4,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Das sind Unterstützungsmittel und keine bezifferten Schäden.",
+            "citations": [],
+            "support": "supported"
+          },
+          {
+            "statement": "Offen bleibt, ob Rösti im weiteren Verlauf der Debatte Schäden bezifferte oder auf landwirtschaftliche Schäden einging.",
+            "citations": [],
+            "support": "supported"
+          }
+        ],
+        "contains_own_evaluation": false,
+        "evaluation_note": ""
+      },
+      "judge_usage": {
+        "model": "claude-sonnet-5-5",
+        "input_tokens": 2,
+        "output_tokens": 1218,
+        "cache_creation_input_tokens": 8792,
+        "cache_read_input_tokens": 1987,
+        "latency_ms": 7382.2902999818325,
+        "cost_usd": 0.0475507,
+        "backend": "claude-code"
+      },
+      "citation_accuracy": 1.0,
+      "faithfulness": 1.0,
+      "neutral": true,
+      "error": null,
+      "judge_error": null
+    },
+    {
+      "id": "q04",
+      "language": "fr",
+      "tags": [
+        "fr",
+        "crosslingual",
+        "teilkorpus",
+        "smoke"
+      ],
+      "answerable": true,
+      "answer": "Les sources ne rapportent pas une réponse personnelle de M. Rösti, mais l'avis du Conseil fédéral sur l'objet 26.4073, qui interrogeait le Conseil fédéral sur le nombre de décès dus à la canicule. Selon cet avis, l'Office fédéral de l'environnement procède chaque année à un monitoring des décès dus à la chaleur, mais les chiffres de l'été 2026 ne seront disponibles que l'année suivante [8]. Les autres conséquences sur la santé, comme les hospitalisations pendant les périodes de chaleur, ne font pas l'objet d'études régulières [8]. L'Office fédéral de la statistique publie en outre un suivi hebdomadaire de la mortalité (MOMO), qui met en évidence les périodes de surmortalité, indépendamment des causes de décès [8]. Entre mi-juin et fin août 2026, une surmortalité a notamment été enregistrée chez les personnes de plus de 65 ans [8]. Le Conseil fédéral renvoie pour le détail à sa réponse à la question 26.7641 de la conseillère nationale Gabriela Suter [8]. Cette réponse ne figure pas dans les sources. Elles ne permettent donc pas de dire ce que M. Rösti a déclaré lui-même sur ce point.",
+      "insufficient_context": false,
+      "insufficient_reason": null,
+      "best_similarity": 0.7189419604609111,
+      "sources": [
+        "[8] business:20264073"
+      ],
+      "cited_expected": [],
+      "answer_language": "fr",
+      "total_ms": 5554.405300004873,
+      "attempts": 1,
+      "answer_usage": {
+        "model": "claude-sonnet-5-5",
+        "input_tokens": 2,
+        "output_tokens": 561,
+        "cache_creation_input_tokens": 5968,
+        "cache_read_input_tokens": 1746,
+        "latency_ms": 5273.727599997073,
+        "cost_usd": 0.029660600000000002,
+        "backend": "claude-code"
+      },
+      "judge": {
+        "statements": [
+          {
+            "statement": "Les sources ne rapportent pas une réponse personnelle de M. Rösti, mais l'avis du Conseil fédéral sur l'objet 26.4073, qui interrogeait le Conseil fédéral sur le nombre de décès dus à la canicule.",
+            "citations": [],
+            "support": "supported"
+          },
+          {
+            "statement": "L'Office fédéral de l'environnement procède chaque année à un monitoring des décès dus à la chaleur, mais les chiffres de l'été 2026 ne seront disponibles que l'année suivante.",
+            "citations": [
+              {
+                "number": 8,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Les autres conséquences sur la santé, comme les hospitalisations pendant les périodes de chaleur, ne font pas l'objet d'études régulières.",
+            "citations": [
+              {
+                "number": 8,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "L'Office fédéral de la statistique publie un suivi hebdomadaire de la mortalité (MOMO), qui met en évidence les périodes de surmortalité, indépendamment des causes de décès.",
+            "citations": [
+              {
+                "number": 8,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Entre mi-juin et fin août 2026, une surmortalité a notamment été enregistrée chez les personnes de plus de 65 ans.",
+            "citations": [
+              {
+                "number": 8,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Le Conseil fédéral renvoie pour le détail à sa réponse à la question 26.7641 de la conseillère nationale Gabriela Suter.",
+            "citations": [
+              {
+                "number": 8,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Cette réponse ne figure pas dans les sources.",
+            "citations": [],
+            "support": "supported"
+          }
+        ],
+        "contains_own_evaluation": false,
+        "evaluation_note": ""
+      },
+      "judge_usage": {
+        "model": "claude-sonnet-5-5",
+        "input_tokens": 2,
+        "output_tokens": 702,
+        "cache_creation_input_tokens": 6375,
+        "cache_read_input_tokens": 1987,
+        "latency_ms": 6424.396500049625,
+        "cost_usd": 0.0327227,
+        "backend": "claude-code"
+      },
+      "citation_accuracy": 1.0,
+      "faithfulness": 1.0,
+      "neutral": true,
+      "error": null,
+      "judge_error": null
+    },
+    {
+      "id": "q05",
+      "language": "de",
+      "tags": [
+        "teilkorpus",
+        "smoke"
+      ],
+      "answerable": true,
+      "answer": "Bundesrat Pfister sagt, vorgesehen sei, dass der Trägerverein das Defizit trägt und nicht der Bund. Der Bund sei klar von der Haftung ausgenommen [4]. Die privaten Risikoträger haften mit mindestens 200 Millionen Franken zuerst [3][4]. Er geht davon aus, dass sie alles unternehmen, damit kein Defizit entsteht [3][4].\n\nAuf die Fragen von Jon Pult und Florence Brenzikofer, ob Kantone oder Gemeinden ein darüber hinausgehendes Defizit tragen müssten [2][7], antwortet Pfister nicht ausdrücklich. Er sagt, der Bund sei bei einem Projekt dieser Grössenordnung nicht ganz aus der Verantwortung zu nehmen. Er gehe davon aus, dass der Bund allfällige Risiken übernehmen würde, wenn er müsste. Genauere Angaben könne er aber nicht machen [3]. Auch der Bund könne sich nicht absolut aus der Verantwortung nehmen [4]. Offen bleibt damit, wer ein Defizit über die 200 Millionen Franken hinaus konkret trägt, insbesondere ob Kantone oder Gemeinden betroffen wären.",
+      "insufficient_context": false,
+      "insufficient_reason": null,
+      "best_similarity": 0.7584630476970392,
+      "sources": [
+        "[4] transcript:422822",
+        "[3] transcript:422818",
+        "[2] transcript:422807",
+        "[7] transcript:422812"
+      ],
+      "cited_expected": [
+        "transcript:422818",
+        "transcript:422822"
+      ],
+      "answer_language": "de",
+      "total_ms": 5514.81620001141,
+      "attempts": 1,
+      "answer_usage": {
+        "model": "claude-sonnet-5-5",
+        "input_tokens": 2,
+        "output_tokens": 561,
+        "cache_creation_input_tokens": 6253,
+        "cache_read_input_tokens": 1746,
+        "latency_ms": 5305.969399982132,
+        "cost_usd": 0.030800599999999997,
+        "backend": "claude-code"
+      },
+      "judge": {
+        "statements": [
+          {
+            "statement": "Bundesrat Pfister sagt, vorgesehen sei, dass der Trägerverein das Defizit trägt und nicht der Bund.",
+            "citations": [
+              {
+                "number": 4,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Der Bund sei klar von der Haftung ausgenommen.",
+            "citations": [
+              {
+                "number": 4,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Die privaten Risikoträger haften mit mindestens 200 Millionen Franken zuerst.",
+            "citations": [
+              {
+                "number": 3,
+                "supports": true
+              },
+              {
+                "number": 4,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Er geht davon aus, dass sie alles unternehmen, damit kein Defizit entsteht.",
+            "citations": [
+              {
+                "number": 3,
+                "supports": true
+              },
+              {
+                "number": 4,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Auf die Fragen von Jon Pult und Florence Brenzikofer, ob Kantone oder Gemeinden ein darüber hinausgehendes Defizit tragen müssten, antwortet Pfister nicht ausdrücklich.",
+            "citations": [
+              {
+                "number": 2,
+                "supports": true
+              },
+              {
+                "number": 7,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Er sagt, der Bund sei bei einem Projekt dieser Grössenordnung nicht ganz aus der Verantwortung zu nehmen.",
+            "citations": [
+              {
+                "number": 3,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Er gehe davon aus, dass der Bund allfällige Risiken übernehmen würde, wenn er müsste. Genauere Angaben könne er aber nicht machen.",
+            "citations": [
+              {
+                "number": 3,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Auch der Bund könne sich nicht absolut aus der Verantwortung nehmen.",
+            "citations": [
+              {
+                "number": 4,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Offen bleibt damit, wer ein Defizit über die 200 Millionen Franken hinaus konkret trägt, insbesondere ob Kantone oder Gemeinden betroffen wären.",
+            "citations": [],
+            "support": "supported"
+          }
+        ],
+        "contains_own_evaluation": false,
+        "evaluation_note": ""
+      },
+      "judge_usage": {
+        "model": "claude-sonnet-5-5",
+        "input_tokens": 2,
+        "output_tokens": 850,
+        "cache_creation_input_tokens": 6654,
+        "cache_read_input_tokens": 1987,
+        "latency_ms": 6158.445700013544,
+        "cost_usd": 0.0353187,
+        "backend": "claude-code"
+      },
+      "citation_accuracy": 1.0,
+      "faithfulness": 1.0,
+      "neutral": true,
+      "error": null,
+      "judge_error": null
+    },
+    {
+      "id": "q07",
+      "language": "de",
+      "tags": [
+        "teilkorpus",
+        "smoke"
+      ],
+      "answerable": true,
+      "answer": "Bundesrat Martin Pfister begründete die Ablehnung der Motion im Nationalrat im Wesentlichen damit, dass es keine Anpassung der Sportförderungsverordnung brauche [2]. Seine Argumente waren:\n\n- Die 40-Prozent-Geschlechterquote sei die einzige materielle Bedingung von Artikel 72d. Sie gelte für die Leitungsorgane von Swiss Olympic und der nationalen Sportverbände [2].\n- Die Vorgabe sei bereits grossflächig umgesetzt. Über 90 Prozent der nationalen Sportverbände hätten ihre Statuten angepasst und die Quote verankert [2].\n- Für Verbände, die die Quote wegen ihrer Ausgangslage nicht rasch erreichen können, sehe die Verordnung eine praxisnahe Ausnahmeregelung vor. Sie könnten sich erklären und aufzeigen, mit welchen Massnahmen sie sich einer ausgewogenen Geschlechterverteilung annähern (Comply or explain) [2]. Als Beispiel nannte er den Eidgenössischen Schwingerverband. Das VBS akzeptiere dessen Massnahmen ausdrücklich, und der Bundesrat halte sie für eine vorbildliche Lösung [2].\n- Für lokale Vereine und Sportorganisationen gelte die 40-Prozent-Vorgabe nicht. Hier werde auf die Selbstregulierung des Sports gesetzt. Zudem solle der Branchenstandard von Swiss Olympic die formelle Verankerung einer Quotenregelung in den Statuten nicht mehr vorschreiben [2].\n- Anforderungen an eine ausgewogene Geschlechtervertretung könnten zu starken und resilienten Organisationen beitragen. Das BASPO und Swiss Olympic seien bereit, bei den Vorgaben zu differenzieren [2].",
+      "insufficient_context": false,
+      "insufficient_reason": null,
+      "best_similarity": 0.6694642502388817,
+      "sources": [
+        "[2] transcript:418909"
+      ],
+      "cited_expected": [
+        "transcript:418909"
+      ],
+      "answer_language": "de",
+      "total_ms": 6362.757399969269,
+      "attempts": 1,
+      "answer_usage": {
+        "model": "claude-sonnet-5-5",
+        "input_tokens": 2,
+        "output_tokens": 781,
+        "cache_creation_input_tokens": 5833,
+        "cache_read_input_tokens": 1746,
+        "latency_ms": 6165.322799992282,
+        "cost_usd": 0.0313206,
+        "backend": "claude-code"
+      },
+      "judge": {
+        "statements": [
+          {
+            "statement": "Bundesrat Martin Pfister begründete die Ablehnung der Motion im Nationalrat im Wesentlichen damit, dass es keine Anpassung der Sportförderungsverordnung brauche.",
+            "citations": [
+              {
+                "number": 2,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Die 40-Prozent-Geschlechterquote sei die einzige materielle Bedingung von Artikel 72d. Sie gelte für die Leitungsorgane von Swiss Olympic und der nationalen Sportverbände.",
+            "citations": [
+              {
+                "number": 2,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Die Vorgabe sei bereits grossflächig umgesetzt. Über 90 Prozent der nationalen Sportverbände hätten ihre Statuten angepasst und die Quote verankert.",
+            "citations": [
+              {
+                "number": 2,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Für Verbände, die die Quote wegen ihrer Ausgangslage nicht rasch erreichen können, sehe die Verordnung eine praxisnahe Ausnahmeregelung vor. Sie könnten sich erklären und Massnahmen aufzeigen (Comply or explain).",
+            "citations": [
+              {
+                "number": 2,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Als Beispiel nannte er den Eidgenössischen Schwingerverband. Das VBS akzeptiere dessen Massnahmen ausdrücklich, und der Bundesrat halte sie für eine vorbildliche Lösung.",
+            "citations": [
+              {
+                "number": 2,
+                "supports": true
+              }
+            ],
+            "support": "partial"
+          },
+          {
+            "statement": "Für lokale Vereine und Sportorganisationen gelte die 40-Prozent-Vorgabe nicht. Hier werde auf die Selbstregulierung des Sports gesetzt.",
+            "citations": [
+              {
+                "number": 2,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Zudem solle der Branchenstandard von Swiss Olympic die formelle Verankerung einer Quotenregelung in den Statuten nicht mehr vorschreiben.",
+            "citations": [
+              {
+                "number": 2,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Anforderungen an eine ausgewogene Geschlechtervertretung könnten zu starken und resilienten Organisationen beitragen. Das BASPO und Swiss Olympic seien bereit, bei den Vorgaben zu differenzieren.",
+            "citations": [
+              {
+                "number": 2,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          }
+        ],
+        "contains_own_evaluation": false,
+        "evaluation_note": ""
+      },
+      "judge_usage": {
+        "model": "claude-sonnet-5-5",
+        "input_tokens": 2,
+        "output_tokens": 974,
+        "cache_creation_input_tokens": 6459,
+        "cache_read_input_tokens": 1987,
+        "latency_ms": 6537.9699000041,
+        "cost_usd": 0.035778700000000004,
+        "backend": "claude-code"
+      },
+      "citation_accuracy": 1.0,
+      "faithfulness": 0.9375,
+      "neutral": true,
+      "error": null,
+      "judge_error": null
+    },
+    {
+      "id": "q09",
+      "language": "de",
+      "tags": [
+        "filter",
+        "teilkorpus",
+        "smoke"
+      ],
+      "answerable": true,
+      "answer": "Der Bundesrat sah in seiner Botschaft vom 15. April 2026 eine Verlängerung des Sondersatzes von 3,8 Prozent bis Ende 2035 vor [1][2]. Das Parlament hat dies jedoch anders entschieden: Der Nationalrat beschloss, die Geltungsdauer bis zum 31. Dezember 2031 zu befristen, und die Kommission des Ständerates (WAK-S) entschied einstimmig, ihm zu folgen, sodass die Vorlage bereinigt und bereit für die Schlussabstimmung wäre [6]. Der Bundesrat verzichtete auf einen Antrag auf Zustimmung, weil er die wirtschaftlichen Voraussetzungen für die Fortführung nicht mehr im gleichen Umfang als erfüllt ansieht [2]. Er hält die heutige Lage der Beherbergungsbranche, die in den letzten Jahren Rekordzahlen verzeichnete, für eine weitere Subventionierung nicht mehr gerechtfertigt [1]. Bundesrätin Keller-Sutter verwies darauf, dass die Lage nicht mehr mit den 1990er-Jahren vergleichbar sei. Die Logiernächte in der Hotellerie erreichten 2025 mit 43,9 Millionen einen Rekord [3]. Zudem hätte die Fortführung ab 2028 geschätzte jährliche Mindereinnahmen von rund 300 Millionen Franken zur Folge [1].",
+      "insufficient_context": false,
+      "insufficient_reason": null,
+      "best_similarity": 0.7946299314498901,
+      "sources": [
+        "[1] business:20260026",
+        "[2] transcript:419565",
+        "[6] transcript:422042",
+        "[3] transcript:419592"
+      ],
+      "cited_expected": [
+        "transcript:419592",
+        "business:20260026"
+      ],
+      "answer_language": "de",
+      "total_ms": 5860.108599998057,
+      "attempts": 1,
+      "answer_usage": {
+        "model": "claude-sonnet-5-5",
+        "input_tokens": 2,
+        "output_tokens": 639,
+        "cache_creation_input_tokens": 7228,
+        "cache_read_input_tokens": 1746,
+        "latency_ms": 5679.658700013533,
+        "cost_usd": 0.0354806,
+        "backend": "claude-code"
+      },
+      "judge": {
+        "statements": [
+          {
+            "statement": "Der Bundesrat sah in seiner Botschaft vom 15. April 2026 eine Verlängerung des Sondersatzes von 3,8 Prozent bis Ende 2035 vor.",
+            "citations": [
+              {
+                "number": 1,
+                "supports": true
+              },
+              {
+                "number": 2,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Der Nationalrat beschloss, die Geltungsdauer bis zum 31. Dezember 2031 zu befristen, und die WAK-S entschied einstimmig, ihm zu folgen, sodass die Vorlage bereinigt und bereit für die Schlussabstimmung wäre.",
+            "citations": [
+              {
+                "number": 6,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Der Bundesrat verzichtete auf einen Antrag auf Zustimmung, weil er die wirtschaftlichen Voraussetzungen für die Fortführung nicht mehr im gleichen Umfang als erfüllt ansieht.",
+            "citations": [
+              {
+                "number": 2,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Er hält die heutige Lage der Beherbergungsbranche, die in den letzten Jahren Rekordzahlen verzeichnete, für eine weitere Subventionierung nicht mehr gerechtfertigt.",
+            "citations": [
+              {
+                "number": 1,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Bundesrätin Keller-Sutter verwies darauf, dass die Lage nicht mehr mit den 1990er-Jahren vergleichbar sei.",
+            "citations": [
+              {
+                "number": 3,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Die Logiernächte in der Hotellerie erreichten 2025 mit 43,9 Millionen einen Rekord.",
+            "citations": [
+              {
+                "number": 3,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Zudem hätte die Fortführung ab 2028 geschätzte jährliche Mindereinnahmen von rund 300 Millionen Franken zur Folge.",
+            "citations": [
+              {
+                "number": 1,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          }
+        ],
+        "contains_own_evaluation": false,
+        "evaluation_note": ""
+      },
+      "judge_usage": {
+        "model": "claude-sonnet-5-5",
+        "input_tokens": 2,
+        "output_tokens": 823,
+        "cache_creation_input_tokens": 7707,
+        "cache_read_input_tokens": 1987,
+        "latency_ms": 6956.302800041158,
+        "cost_usd": 0.0392607,
+        "backend": "claude-code"
+      },
+      "citation_accuracy": 1.0,
+      "faithfulness": 1.0,
+      "neutral": true,
+      "error": null,
+      "judge_error": null
+    },
+    {
+      "id": "q12",
+      "language": "fr",
+      "tags": [
+        "fr",
+        "teilkorpus",
+        "smoke"
+      ],
+      "answerable": true,
+      "answer": "Au Conseil des Etats, Guy Parmelin a présenté le paquet Suisse-UE comme étant d'une importance majeure pour l'économie suisse, car les relations économiques avec les voisins de la Suisse sont à la base de sa prospérité [2]. Il a avancé les arguments suivants.\n\n- Poids de l'UE : elle représente environ 60 pour cent du commerce de marchandises de la Suisse. Elle en est de loin le principal partenaire commercial, et son marché intérieur constitue le principal débouché [2]. Il est donc essentiel que les relations soient stables et reposent sur des règles claires, et le paquet crée le cadre nécessaire [2].\n- Allègements concrets : pour l'accord sur la reconnaissance mutuelle des évaluations de conformité (ARM), il a cité 64 pour cent des importations et 73 pour cent des exportations de biens industriels couverts [2]. L'ARM actualisé réduit la charge administrative: un produit n'a pas à être certifié deux fois, et les opérateurs suisses n'ont pas à désigner de mandataire dans l'UE [2]. Selon lui, cela renforce la compétitivité des entreprises et garantit leur accès à leur principal marché [2].\n- Diversification: le Conseil fédéral mise sur la diversification, qui renforce la résilience. Mais la Suisse conclut des accords de libre-échange avec d'autres Etats, et cette diversification ne saurait remplacer la stabilisation de la relation avec l'UE [1][2].\n- Compétitivité et prospérité : le paquet renforce la compétitivité de l'économie et contribue de manière substantielle à la prospérité du pays [1]. Il offre un accès sectoriel au marché intérieur de l'UE, conçu sur mesure pour les intérêts de la Suisse [1].\n- Voie bilatérale : il a qualifié cette voie sur mesure de solution qui concilie le mieux l'interdépendance économique et la marge de manoeuvre politique [1].\n- Sécurité juridique : les entreprises ont besoin de sécurité juridique et de stabilité, et le paquet leur apporte l'une et l'autre du point de vue du Conseil fédéral [1].\n\nIl a recommandé, au nom du gouvernement, d'entrer en matière sur le projet [1].",
+      "insufficient_context": false,
+      "insufficient_reason": null,
+      "best_similarity": 0.6586818695068359,
+      "sources": [
+        "[2] transcript:421775",
+        "[1] transcript:421775"
+      ],
+      "cited_expected": [
+        "transcript:421775"
+      ],
+      "answer_language": "fr",
+      "total_ms": 7334.241799951997,
+      "attempts": 1,
+      "answer_usage": {
+        "model": "claude-sonnet-5-5",
+        "input_tokens": 2,
+        "output_tokens": 906,
+        "cache_creation_input_tokens": 7142,
+        "cache_read_input_tokens": 1746,
+        "latency_ms": 7125.461100018583,
+        "cost_usd": 0.0378066,
+        "backend": "claude-code"
+      },
+      "judge": {
+        "statements": [
+          {
+            "statement": "Guy Parmelin a présenté le paquet Suisse-UE comme étant d'une importance majeure pour l'économie suisse, car les relations économiques avec les voisins sont à la base de sa prospérité.",
+            "citations": [
+              {
+                "number": 2,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Poids de l'UE : elle représente environ 60 pour cent du commerce de marchandises de la Suisse, de loin le principal partenaire commercial, et son marché intérieur constitue le principal débouché.",
+            "citations": [
+              {
+                "number": 2,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Il est donc essentiel que les relations soient stables et reposent sur des règles claires, et le paquet crée le cadre nécessaire.",
+            "citations": [
+              {
+                "number": 2,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Pour l'ARM, il a cité 64 pour cent des importations et 73 pour cent des exportations de biens industriels couverts.",
+            "citations": [
+              {
+                "number": 2,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "L'ARM actualisé réduit la charge administrative: un produit n'a pas à être certifié deux fois, et les opérateurs suisses n'ont pas à désigner de mandataire dans l'UE.",
+            "citations": [
+              {
+                "number": 2,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Cela renforce la compétitivité des entreprises et garantit leur accès à leur principal marché.",
+            "citations": [
+              {
+                "number": 2,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Le Conseil fédéral mise sur la diversification, qui renforce la résilience.",
+            "citations": [
+              {
+                "number": 1,
+                "supports": false
+              },
+              {
+                "number": 2,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "La Suisse conclut des accords de libre-échange avec d'autres Etats, et cette diversification ne saurait remplacer la stabilisation de la relation avec l'UE.",
+            "citations": [
+              {
+                "number": 1,
+                "supports": true
+              },
+              {
+                "number": 2,
+                "supports": false
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Le paquet renforce la compétitivité de l'économie et contribue de manière substantielle à la prospérité du pays.",
+            "citations": [
+              {
+                "number": 1,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Il offre un accès sectoriel au marché intérieur de l'UE, conçu sur mesure pour les intérêts de la Suisse.",
+            "citations": [
+              {
+                "number": 1,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Il a qualifié cette voie sur mesure de solution qui concilie le mieux l'interdépendance économique et la marge de manoeuvre politique.",
+            "citations": [
+              {
+                "number": 1,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Les entreprises ont besoin de sécurité juridique et de stabilité, et le paquet leur apporte l'une et l'autre du point de vue du Conseil fédéral.",
+            "citations": [
+              {
+                "number": 1,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Il a recommandé, au nom du gouvernement, d'entrer en matière sur le projet.",
+            "citations": [
+              {
+                "number": 1,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          }
+        ],
+        "contains_own_evaluation": false,
+        "evaluation_note": ""
+      },
+      "judge_usage": {
+        "model": "claude-sonnet-5-5",
+        "input_tokens": 2,
+        "output_tokens": 1198,
+        "cache_creation_input_tokens": 7892,
+        "cache_read_input_tokens": 1987,
+        "latency_ms": 7256.671100039966,
+        "cost_usd": 0.043750700000000003,
+        "backend": "claude-code"
+      },
+      "citation_accuracy": 0.8666666666666667,
+      "faithfulness": 1.0,
+      "neutral": true,
+      "error": null,
+      "judge_error": null
+    },
+    {
+      "id": "q13",
+      "language": "de",
+      "tags": [
+        "crosslingual",
+        "teilkorpus",
+        "smoke"
+      ],
+      "answerable": true,
+      "answer": "Bundespräsident Parmelin verwies im Ständerat darauf, dass der Bundesrat 2024 entschieden hat, auf eine autonome Anpassung des Schweizer Rechts an die EU-Entwaldungsverordnung (RDUE) zu verzichten [8]. Er nannte folgende Gründe:\n\n- Die Schweiz unterstütze das Ziel nachhaltiger Lieferketten, verfüge aber bereits über eine Waldgesetzgebung zum Schutz der eigenen Wälder, weshalb es auf ihrem Gebiet keine Entwaldung gebe [8]. Zudem sei es seit 2022 verboten, illegal geschlagenes Holz und daraus hergestellte Produkte in Verkehr zu bringen [8].\n- Die Schweiz setze auf einen Partnerschaftsansatz und unterstütze im Rahmen der wirtschaftlichen Entwicklungszusammenarbeit Projekte für nachhaltige, entwaldungsfreie Lieferketten [8].\n- Hauptproblem einer Anpassung wäre, dass Schweizer Unternehmen ohne Anerkennung ihres Systems durch die EU zwei parallele Regelwerke einhalten müssten [8]. Das bedeute einen höheren administrativen Aufwand, insbesondere für kleine und mittlere Unternehmen, die nicht in die EU exportieren [8].\n- Die bestehenden Handelshemmnisse für exportierende Schweizer Unternehmen könnten ohne eine Anerkennung kaum beseitigt werden [8]. Ob die EU zu einer solchen Anerkennung bereit wäre, sei derzeit nicht absehbar, und weder die EFTA/EWR-Staaten noch das Vereinigte Königreich hätten sie bisher erhalten [8].\n- Die RDUE sei auch in der WTO stark umstritten. Viele Staaten, darunter die Mercosur-Länder und die Schweiz, hätten Bedenken wegen eines Konflikts mit dem Grundsatz der Inländerbehandlung geäussert, und die Einteilung in Risikostufen werde von einigen als diskriminierend beurteilt [8].\n\nAus diesen Gründen beantragte Parmelin, den Minderheitsantrag Roth Franziska abzulehnen [8].",
+      "insufficient_context": false,
+      "insufficient_reason": null,
+      "best_similarity": 0.5890334493497948,
+      "sources": [
+        "[8] transcript:408632"
+      ],
+      "cited_expected": [
+        "transcript:408632"
+      ],
+      "answer_language": "de",
+      "total_ms": 7329.002999991644,
+      "attempts": 1,
+      "answer_usage": {
+        "model": "claude-sonnet-5-5",
+        "input_tokens": 2,
+        "output_tokens": 921,
+        "cache_creation_input_tokens": 5045,
+        "cache_read_input_tokens": 1746,
+        "latency_ms": 7165.142200014088,
+        "cost_usd": 0.0295686,
+        "backend": "claude-code"
+      },
+      "judge": {
+        "statements": [
+          {
+            "statement": "Bundespräsident Parmelin verwies im Ständerat darauf, dass der Bundesrat 2024 entschieden hat, auf eine autonome Anpassung des Schweizer Rechts an die RDUE zu verzichten.",
+            "citations": [
+              {
+                "number": 8,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Die Schweiz unterstütze das Ziel nachhaltiger Lieferketten, verfüge aber bereits über eine Waldgesetzgebung zum Schutz der eigenen Wälder, weshalb es auf ihrem Gebiet keine Entwaldung gebe.",
+            "citations": [
+              {
+                "number": 8,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Seit 2022 sei es verboten, illegal geschlagenes Holz und daraus hergestellte Produkte in Verkehr zu bringen.",
+            "citations": [
+              {
+                "number": 8,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Die Schweiz setze auf einen Partnerschaftsansatz und unterstütze Projekte für nachhaltige, entwaldungsfreie Lieferketten im Rahmen der wirtschaftlichen Entwicklungszusammenarbeit.",
+            "citations": [
+              {
+                "number": 8,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Hauptproblem einer Anpassung wäre, dass Schweizer Unternehmen ohne Anerkennung durch die EU zwei parallele Regelwerke einhalten müssten.",
+            "citations": [
+              {
+                "number": 8,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Das bedeute einen höheren administrativen Aufwand, insbesondere für KMU, die nicht in die EU exportieren.",
+            "citations": [
+              {
+                "number": 8,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Die bestehenden Handelshemmnisse für exportierende Schweizer Unternehmen könnten ohne Anerkennung kaum beseitigt werden.",
+            "citations": [
+              {
+                "number": 8,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Ob die EU zu einer Anerkennung bereit wäre, sei derzeit nicht absehbar, und weder die EFTA/EWR-Staaten noch das Vereinigte Königreich hätten sie bisher erhalten.",
+            "citations": [
+              {
+                "number": 8,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Die RDUE sei auch in der WTO stark umstritten; viele Staaten, darunter Mercosur-Länder und die Schweiz, hätten Bedenken wegen Konflikts mit der Inländerbehandlung geäussert, und die Risikostufeneinteilung werde von einigen als diskriminierend beurteilt.",
+            "citations": [
+              {
+                "number": 8,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Aus diesen Gründen beantragte Parmelin, den Minderheitsantrag Roth Franziska abzulehnen.",
+            "citations": [
+              {
+                "number": 8,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          }
+        ],
+        "contains_own_evaluation": false,
+        "evaluation_note": ""
+      },
+      "judge_usage": {
+        "model": "claude-sonnet-5-5",
+        "input_tokens": 2,
+        "output_tokens": 1145,
+        "cache_creation_input_tokens": 5810,
+        "cache_read_input_tokens": 1987,
+        "latency_ms": 7270.431599987205,
+        "cost_usd": 0.0348927,
+        "backend": "claude-code"
+      },
+      "citation_accuracy": 1.0,
+      "faithfulness": 1.0,
+      "neutral": true,
+      "error": null,
+      "judge_error": null
+    },
+    {
+      "id": "q17",
+      "language": "de",
+      "tags": [
+        "smoke"
+      ],
+      "answerable": true,
+      "answer": "Der Bundesrat schlug in seiner Botschaft vom 16. Oktober 2024 vor, die 13. AHV-Rente ab 2026 einmal jährlich im Dezember auszuzahlen und sie durch eine Erhöhung der Mehrwertsteuer um 0,7 Prozentpunkte zu finanzieren [5][2]. Der Normalsatz würde von 8,1 auf 8,8 Prozent steigen, der Sondersatz für die Hotellerie von 3,8 auf 4,2 Prozent und der reduzierte Satz von 2,6 auf 2,8 Prozent [5][2]. Zusätzlich sah der Entwurf vor, den Bundesbeitrag an die AHV von 20,2 auf 19,5 Prozent der jährlichen Ausgaben zu senken, um die Belastung des Bundeshaushalts teilweise auszugleichen [1][2]. Damit würde der AHV-Ausgleichsfonds nach Angaben des Bundesrates bis 2030 im Gleichgewicht bleiben [5]. Für die Stabilisierung der AHV nach 2030 will der Bundesrat eine separate Vorlage unterbreiten [2][5]. Ständerat Müller (RL, LU) erwähnte, dass der Bundesrat zuvor in der Vernehmlassung eine Finanzierung ausschliesslich über Lohnbeiträge präsentiert hatte, den Entwurf nach den Rückmeldungen aber auf eine reine Mehrwertsteuerfinanzierung anpasste [8].",
+      "insufficient_context": false,
+      "insufficient_reason": null,
+      "best_similarity": 0.7012735187248291,
+      "sources": [
+        "[5] business:20240073",
+        "[2] transcript:347674",
+        "[1] transcript:361225",
+        "[8] transcript:358179"
+      ],
+      "cited_expected": [
+        "business:20240073"
+      ],
+      "answer_language": "de",
+      "total_ms": 5728.960999986157,
+      "attempts": 1,
+      "answer_usage": {
+        "model": "claude-sonnet-5-5",
+        "input_tokens": 2,
+        "output_tokens": 656,
+        "cache_creation_input_tokens": 7864,
+        "cache_read_input_tokens": 1746,
+        "latency_ms": 5578.329099982511,
+        "cost_usd": 0.038194599999999995,
+        "backend": "claude-code"
+      },
+      "judge": {
+        "statements": [
+          {
+            "statement": "Der Bundesrat schlug in seiner Botschaft vom 16. Oktober 2024 vor, die 13. AHV-Rente ab 2026 einmal jährlich im Dezember auszuzahlen und sie durch eine Erhöhung der Mehrwertsteuer um 0,7 Prozentpunkte zu finanzieren.",
+            "citations": [
+              {
+                "number": 5,
+                "supports": true
+              },
+              {
+                "number": 2,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Der Normalsatz würde von 8,1 auf 8,8 Prozent steigen, der Sondersatz für die Hotellerie von 3,8 auf 4,2 Prozent und der reduzierte Satz von 2,6 auf 2,8 Prozent.",
+            "citations": [
+              {
+                "number": 5,
+                "supports": true
+              },
+              {
+                "number": 2,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Zusätzlich sah der Entwurf vor, den Bundesbeitrag an die AHV von 20,2 auf 19,5 Prozent der jährlichen Ausgaben zu senken, um die Belastung des Bundeshaushalts teilweise auszugleichen.",
+            "citations": [
+              {
+                "number": 1,
+                "supports": true
+              },
+              {
+                "number": 2,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Damit würde der AHV-Ausgleichsfonds nach Angaben des Bundesrates bis 2030 im Gleichgewicht bleiben.",
+            "citations": [
+              {
+                "number": 5,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Für die Stabilisierung der AHV nach 2030 will der Bundesrat eine separate Vorlage unterbreiten.",
+            "citations": [
+              {
+                "number": 2,
+                "supports": true
+              },
+              {
+                "number": 5,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Ständerat Müller (RL, LU) erwähnte, dass der Bundesrat zuvor in der Vernehmlassung eine Finanzierung ausschliesslich über Lohnbeiträge präsentiert hatte, den Entwurf nach den Rückmeldungen aber auf eine reine Mehrwertsteuerfinanzierung anpasste.",
+            "citations": [
+              {
+                "number": 8,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          }
+        ],
+        "contains_own_evaluation": false,
+        "evaluation_note": ""
+      },
+      "judge_usage": {
+        "model": "claude-sonnet-5-5",
+        "input_tokens": 2,
+        "output_tokens": 871,
+        "cache_creation_input_tokens": 8360,
+        "cache_read_input_tokens": 1987,
+        "latency_ms": 6037.598200025968,
+        "cost_usd": 0.0423527,
+        "backend": "claude-code"
+      },
+      "citation_accuracy": 1.0,
+      "faithfulness": 1.0,
+      "neutral": true,
+      "error": null,
+      "judge_error": null
+    },
+    {
+      "id": "q18",
+      "language": "de",
+      "tags": [
+        "filter",
+        "smoke"
+      ],
+      "answerable": true,
+      "answer": "Der SVP-Sprecher Paolo Pamini lehnte sowohl die Volksinitiative als auch den indirekten Gegenvorschlag ab. Er nannte zwei Hauptgründe: Der Gegenvorschlag sei ineffizient und ungerecht [4].\n\nZur Effizienz: Die Beschäftigungseffekte bezeichnete er als «Witz». Der Bundesrat schätze sie auf 10 000 bis 44 000 zusätzliche Vollzeitäquivalente. Das sei im Vergleich zur Zuwanderung und zur Zahl der erwerbsfähigen Frauen sehr wenig [4]. Später nannte er diese Effekte «lächerlich». Die Vorlage lehne die SVP aber im Allgemeinen aus Gerechtigkeitsgründen ab [3].\n\nZur Gerechtigkeit: Die Individualbesteuerung setze einen Anreiz, das Arbeitspensum in etwa fifty-fifty aufzuteilen. Benachteiligt seien Familien mit traditioneller Arbeitsaufteilung und homosexuelle Paare, bei denen nur eine Person arbeitet [1]. Später nannte er zudem Rentnerpaare, bei denen nur eine Person eine Pensionskassenrente bezieht, und alleinerziehende Elternteile mit mittlerem oder höherem Einkommen [6]. Profitieren würden vor allem Doppelverdienerpaare ohne Kinder mit ähnlichem Einkommen [6]. Auch das Bundesgericht stufe die Individualbesteuerung für Einverdiener-Ehepaare als problematisch ein [1][3]. Die Ehe zähle sonst im Zivilrecht, im Sozialversicherungsrecht, im Gesundheitswesen oder bei Stipendien als Einheit [6].\n\nZum Föderalismus: Gegen das Gesetz könne das Referendum ergriffen werden. Dann gäbe es eine Abstimmung ohne Ständemehr, und 26 Kantone müssten ihre Steuersysteme massiv anpassen. Die Finanzdirektorenkonferenz sei deshalb vehement dagegen [1]. Pamini kritisierte, man hätte mit dem Gegenvorschlag die Bundesverfassung ändern sollen. Dann hätte das Ständemehr gegolten [7]. Die Frist von sechs Jahren für das Inkrafttreten nannte er für die Kantone «übertrieben kurz» [3]. Er hielt ausserdem fest, die Vertreter des Gemeindeverbands und der Kantone seien in der Kommission dagegen gewesen [5].\n\nAuch Martin Hübscher (SVP) lehnte das Bundesgesetz später ab. Er nannte es ein Bürokratiemonster, kompliziert und widersprüchlich zur wirtschaftlichen Einheit der Ehe [2].",
+      "insufficient_context": false,
+      "insufficient_reason": null,
+      "best_similarity": 0.6653505962669186,
+      "sources": [
+        "[4] transcript:344169",
+        "[3] transcript:346475",
+        "[1] transcript:344169",
+        "[6] transcript:356303",
+        "[7] transcript:344132",
+        "[5] transcript:346475",
+        "[2] transcript:360263"
+      ],
+      "cited_expected": [
+        "transcript:344169"
+      ],
+      "answer_language": "de",
+      "total_ms": 8390.854499943089,
+      "attempts": 1,
+      "answer_usage": {
+        "model": "claude-sonnet-5-5",
+        "input_tokens": 2,
+        "output_tokens": 1142,
+        "cache_creation_input_tokens": 8081,
+        "cache_read_input_tokens": 1746,
+        "latency_ms": 8165.545199997723,
+        "cost_usd": 0.0439226,
+        "backend": "claude-code"
+      },
+      "judge": {
+        "statements": [
+          {
+            "statement": "Der SVP-Sprecher Paolo Pamini lehnte sowohl die Volksinitiative als auch den indirekten Gegenvorschlag ab.",
+            "citations": [
+              {
+                "number": 4,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Er nannte zwei Hauptgründe: Der Gegenvorschlag sei ineffizient und ungerecht.",
+            "citations": [
+              {
+                "number": 4,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Die Beschäftigungseffekte bezeichnete er als «Witz».",
+            "citations": [
+              {
+                "number": 4,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Der Bundesrat schätze sie auf 10 000 bis 44 000 zusätzliche Vollzeitäquivalente.",
+            "citations": [
+              {
+                "number": 4,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Das sei im Vergleich zur Zuwanderung und zur Zahl der erwerbsfähigen Frauen sehr wenig.",
+            "citations": [
+              {
+                "number": 4,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Später nannte er diese Effekte «lächerlich».",
+            "citations": [
+              {
+                "number": 3,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Die Vorlage lehne die SVP aber im Allgemeinen aus Gerechtigkeitsgründen ab.",
+            "citations": [
+              {
+                "number": 3,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Die Individualbesteuerung setze einen Anreiz, das Arbeitspensum in etwa fifty-fifty aufzuteilen.",
+            "citations": [
+              {
+                "number": 1,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Benachteiligt seien Familien mit traditioneller Arbeitsaufteilung und homosexuelle Paare, bei denen nur eine Person arbeitet.",
+            "citations": [
+              {
+                "number": 1,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Später nannte er zudem Rentnerpaare, bei denen nur eine Person eine Pensionskassenrente bezieht, und alleinerziehende Elternteile mit mittlerem oder höherem Einkommen.",
+            "citations": [
+              {
+                "number": 6,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Profitieren würden vor allem Doppelverdienerpaare ohne Kinder mit ähnlichem Einkommen.",
+            "citations": [
+              {
+                "number": 6,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Auch das Bundesgericht stufe die Individualbesteuerung für Einverdiener-Ehepaare als problematisch ein.",
+            "citations": [
+              {
+                "number": 1,
+                "supports": true
+              },
+              {
+                "number": 3,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Die Ehe zähle sonst im Zivilrecht, im Sozialversicherungsrecht, im Gesundheitswesen oder bei Stipendien als Einheit.",
+            "citations": [
+              {
+                "number": 6,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Gegen das Gesetz könne das Referendum ergriffen werden. Dann gäbe es eine Abstimmung ohne Ständemehr, und 26 Kantone müssten ihre Steuersysteme massiv anpassen.",
+            "citations": [
+              {
+                "number": 1,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Die Finanzdirektorenkonferenz sei deshalb vehement dagegen.",
+            "citations": [
+              {
+                "number": 1,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Pamini kritisierte, man hätte mit dem Gegenvorschlag die Bundesverfassung ändern sollen. Dann hätte das Ständemehr gegolten.",
+            "citations": [
+              {
+                "number": 7,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Die Frist von sechs Jahren für das Inkrafttreten nannte er für die Kantone «übertrieben kurz».",
+            "citations": [
+              {
+                "number": 3,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Er hielt ausserdem fest, die Vertreter des Gemeindeverbands und der Kantone seien in der Kommission dagegen gewesen.",
+            "citations": [
+              {
+                "number": 5,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Auch Martin Hübscher (SVP) lehnte das Bundesgesetz später ab.",
+            "citations": [
+              {
+                "number": 2,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Er nannte es ein Bürokratiemonster, kompliziert und widersprüchlich zur wirtschaftlichen Einheit der Ehe.",
+            "citations": [
+              {
+                "number": 2,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          }
+        ],
+        "contains_own_evaluation": false,
+        "evaluation_note": ""
+      },
+      "judge_usage": {
+        "model": "claude-sonnet-5-5",
+        "input_tokens": 2,
+        "output_tokens": 1715,
+        "cache_creation_input_tokens": 9058,
+        "cache_read_input_tokens": 1987,
+        "latency_ms": 10754.602500004694,
+        "cost_usd": 0.0535847,
+        "backend": "claude-code"
+      },
+      "citation_accuracy": 1.0,
+      "faithfulness": 1.0,
+      "neutral": true,
+      "error": null,
+      "judge_error": null
+    },
+    {
+      "id": "q19",
+      "language": "de",
+      "tags": [
+        "crosslingual",
+        "smoke"
+      ],
+      "answerable": true,
+      "answer": "Im Ständerat begründete Bundesrat Cassis die Ablehnung am 12.03.2026 damit, dass sich die Neutralität in 175 Jahren Verfassungspraxis bewährt habe und gerade deshalb stark sei, weil sie zuverlässig und anpassungsfähig sei [3]. An diesem Erfolgskonzept solle nichts geändert werden, auch nicht mit einem Gegenentwurf [3]. Der Bundesrat sei deshalb überzeugt, dass weder die Initiative noch ein Gegenentwurf im Interesse der Schweiz lägen, und lehne beides ab [3]. Am 18.03.2026 bekräftigte Cassis die Grundsatzhaltung: Ablehnung der Volksinitiative und Verzicht auf einen Gegenentwurf, weil sich der bisherige Weg bewährt habe [5]. Zum Einzelantrag Sommaruga Carlo und zur Minderheit I (Würth) führte er aus, dass Absatz 2 den instrumentellen Charakter der Neutralität betone, die Frage des Umgangs mit der Neutralität als Grundsatz aber nicht vollständig kläre [5]. Bei Annahme der Minderheit I würde dieser zweite Absatz, der aus Sicht des Bundesrates das Ziel der Neutralität umschreibt, wegfallen [5]. Zudem wies er darauf hin, dass man bei einer Detaildiskussion über die Formulierungen, etwa zu Unabhängigkeit und Sicherheit, «in Teufels Küche» komme [5].",
+      "insufficient_context": false,
+      "insufficient_reason": null,
+      "best_similarity": 0.5868647591036845,
+      "sources": [
+        "[3] transcript:371672",
+        "[5] transcript:372738"
+      ],
+      "cited_expected": [],
+      "answer_language": "de",
+      "total_ms": 5950.881299970206,
+      "attempts": 1,
+      "answer_usage": {
+        "model": "claude-sonnet-5-5",
+        "input_tokens": 2,
+        "output_tokens": 664,
+        "cache_creation_input_tokens": 4918,
+        "cache_read_input_tokens": 1746,
+        "latency_ms": 5775.294300052337,
+        "cost_usd": 0.026490599999999996,
+        "backend": "claude-code"
+      },
+      "judge": {
+        "statements": [
+          {
+            "statement": "Im Ständerat begründete Bundesrat Cassis die Ablehnung am 12.03.2026 damit, dass sich die Neutralität in 175 Jahren Verfassungspraxis bewährt habe und gerade deshalb stark sei, weil sie zuverlässig und anpassungsfähig sei.",
+            "citations": [
+              {
+                "number": 3,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "An diesem Erfolgskonzept solle nichts geändert werden, auch nicht mit einem Gegenentwurf.",
+            "citations": [
+              {
+                "number": 3,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Der Bundesrat sei deshalb überzeugt, dass weder die Initiative noch ein Gegenentwurf im Interesse der Schweiz lägen, und lehne beides ab.",
+            "citations": [
+              {
+                "number": 3,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Am 18.03.2026 bekräftigte Cassis die Grundsatzhaltung: Ablehnung der Volksinitiative und Verzicht auf einen Gegenentwurf, weil sich der bisherige Weg bewährt habe.",
+            "citations": [
+              {
+                "number": 5,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Zum Einzelantrag Sommaruga Carlo und zur Minderheit I (Würth) führte er aus, dass Absatz 2 den instrumentellen Charakter der Neutralität betone, die Frage des Umgangs mit der Neutralität als Grundsatz aber nicht vollständig kläre.",
+            "citations": [
+              {
+                "number": 5,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Bei Annahme der Minderheit I würde dieser zweite Absatz, der aus Sicht des Bundesrates das Ziel der Neutralität umschreibt, wegfallen.",
+            "citations": [
+              {
+                "number": 5,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Zudem wies er darauf hin, dass man bei einer Detaildiskussion über die Formulierungen, etwa zu Unabhängigkeit und Sicherheit, «in Teufels Küche» komme.",
+            "citations": [
+              {
+                "number": 5,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          }
+        ],
+        "contains_own_evaluation": false,
+        "evaluation_note": ""
+      },
+      "judge_usage": {
+        "model": "claude-sonnet-5-5",
+        "input_tokens": 2,
+        "output_tokens": 872,
+        "cache_creation_input_tokens": 5425,
+        "cache_read_input_tokens": 1987,
+        "latency_ms": 6115.240900020581,
+        "cost_usd": 0.030622700000000003,
+        "backend": "claude-code"
+      },
+      "citation_accuracy": 1.0,
+      "faithfulness": 1.0,
+      "neutral": true,
+      "error": null,
+      "judge_error": null
+    },
+    {
+      "id": "q26",
+      "language": "de",
+      "tags": [
+        "wertend",
+        "teilkorpus",
+        "smoke"
+      ],
+      "answerable": true,
+      "answer": "Ob die Bilateralen III «gut» sind, bewerte ich nicht. Die Quellen zeigen aber die im Parlament vertretenen Positionen.\n\nBefürwortend: Tiana Moser (GL) beantragt Eintreten und Zustimmung. Sie nennt den gesicherten Zugang zum wichtigsten Markt, der 60 Prozent des Aussenhandels ausmacht [5]. Zudem sieht sie mehr Mitsprache und eine gestärkte Souveränität [6]. Maya Graf (G) hebt die Bedeutung für die Nordwestschweiz hervor und betont, das Parlament habe weiterhin das letzte Wort [7]. Eva Herzog (S) verweist auf Horizon Europe, Erasmus plus und Planungssicherheit für die Exportindustrie. Sie nennt ausserdem ein geregeltes Streitbeilegungsverfahren und eine Non-Regression-Klausel beim Lohnschutz [8]. Pirmin Bischof (M-E) sagt, wirtschaftlich sei die Lage klar. Ohne die Bilateralen gebe es keinen Zugang zum Binnenmarkt mehr, und die Schweiz habe von der Personenfreizügigkeit profitiert. Er hält fest, dass die Schweiz die Bilateralen III nicht gewollt habe, sondern die EU die Spielregeln vorgegeben habe [3].\n\nAblehnend: Martin Schmid (RL) lehnt die Bilateralen III ab, nicht aus Gegnerschaft zu Europa. Er stellt den wirtschaftlichen Nutzen einem institutionellen Gesamtpaket mit langfristigen staatspolitischen Folgen gegenüber. Er räumt Vorteile für einzelne Branchen wie Medtech ein. Für andere, etwa Banken und Versicherungen, gebe es keine Spezialregelung [2].\n\nEine abschliessende Gesamtabstimmung oder ein Ergebnis geht aus den Quellen nicht hervor.",
+      "insufficient_context": false,
+      "insufficient_reason": null,
+      "best_similarity": 0.7290927550467057,
+      "sources": [
+        "[5] transcript:421399",
+        "[6] transcript:421399",
+        "[7] transcript:421776",
+        "[8] transcript:421719",
+        "[3] transcript:421646",
+        "[2] transcript:421741"
+      ],
+      "cited_expected": [],
+      "answer_language": "de",
+      "total_ms": 7595.289400022011,
+      "attempts": 1,
+      "answer_usage": {
+        "model": "claude-sonnet-5-5",
+        "input_tokens": 2,
+        "output_tokens": 833,
+        "cache_creation_input_tokens": 9290,
+        "cache_read_input_tokens": 1746,
+        "latency_ms": 7455.114899959881,
+        "cost_usd": 0.045668600000000004,
+        "backend": "claude-code"
+      },
+      "judge": {
+        "statements": [
+          {
+            "statement": "Tiana Moser (GL) beantragt Eintreten und Zustimmung.",
+            "citations": [
+              {
+                "number": 5,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Sie nennt den gesicherten Zugang zum wichtigsten Markt, der 60 Prozent des Aussenhandels ausmacht [5].",
+            "citations": [
+              {
+                "number": 5,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Zudem sieht sie mehr Mitsprache und eine gestärkte Souveränität [6].",
+            "citations": [
+              {
+                "number": 6,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Maya Graf (G) hebt die Bedeutung für die Nordwestschweiz hervor und betont, das Parlament habe weiterhin das letzte Wort [7].",
+            "citations": [
+              {
+                "number": 7,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Eva Herzog (S) verweist auf Horizon Europe, Erasmus plus und Planungssicherheit für die Exportindustrie.",
+            "citations": [
+              {
+                "number": 8,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Sie nennt ausserdem ein geregeltes Streitbeilegungsverfahren und eine Non-Regression-Klausel beim Lohnschutz [8].",
+            "citations": [
+              {
+                "number": 8,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Pirmin Bischof (M-E) sagt, wirtschaftlich sei die Lage klar. Ohne die Bilateralen gebe es keinen Zugang zum Binnenmarkt mehr, und die Schweiz habe von der Personenfreizügigkeit profitiert.",
+            "citations": [
+              {
+                "number": 3,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Er hält fest, dass die Schweiz die Bilateralen III nicht gewollt habe, sondern die EU die Spielregeln vorgegeben habe [3].",
+            "citations": [
+              {
+                "number": 3,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Martin Schmid (RL) lehnt die Bilateralen III ab, nicht aus Gegnerschaft zu Europa.",
+            "citations": [
+              {
+                "number": 2,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Er stellt den wirtschaftlichen Nutzen einem institutionellen Gesamtpaket mit langfristigen staatspolitischen Folgen gegenüber.",
+            "citations": [
+              {
+                "number": 2,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Er räumt Vorteile für einzelne Branchen wie Medtech ein.",
+            "citations": [
+              {
+                "number": 2,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Für andere, etwa Banken und Versicherungen, gebe es keine Spezialregelung [2].",
+            "citations": [
+              {
+                "number": 2,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          }
+        ],
+        "contains_own_evaluation": false,
+        "evaluation_note": ""
+      },
+      "judge_usage": {
+        "model": "claude-sonnet-5-5",
+        "input_tokens": 2,
+        "output_tokens": 1982,
+        "cache_creation_input_tokens": 9958,
+        "cache_read_input_tokens": 1987,
+        "latency_ms": 13092.440599983092,
+        "cost_usd": 0.0598547,
+        "backend": "claude-code"
+      },
+      "citation_accuracy": 1.0,
+      "faithfulness": 1.0,
+      "neutral": true,
+      "error": null,
+      "judge_error": null
+    },
+    {
+      "id": "q28",
+      "language": "fr",
+      "tags": [
+        "fr",
+        "wertend",
+        "teilkorpus",
+        "smoke"
+      ],
+      "answerable": true,
+      "answer": "Les sources ne permettent pas de dire si c'est une «bonne idée»; elles montrent les positions représentées au Parlement.\n\nLe Conseil fédéral est favorable au projet et y voit des opportunités pour le développement du sport, l'innovation technique, la cohésion sociale, le tourisme et l'image de la Suisse [2]. Il prévoit une contribution fédérale de 200 millions de francs [2].\n\nAu Conseil national, Estelle Revaz (S) a présenté le projet comme une occasion de visibilité internationale et de cohésion nationale. Elle a souligné le modèle décentralisé dans les quatre régions linguistiques, l'usage des infrastructures existantes sans nouvelle construction permanente, un budget de 2,2 milliards de francs et l'absence de garantie de déficit demandée à l'État. Elle a précisé que les coûts de sécurité ne sont pas inclus [6]. Katja Christ (GLP) y voit une grande chance. Elle juge le concept conforme aux exigences de durabilité, de finances et de soutien des cantons, et attend de la transparence et le principe «Built to budget» [3].\n\nAu sein du groupe socialiste, selon Min Li Marti (S), les avis divergent. Le concept est considéré comme une amélioration par rapport aux projets précédents, notamment pour la durabilité. Une partie du groupe y voit une chance pour la Suisse et son sport. Une autre partie reste sceptique envers le CIO et craint des désavantages pour la population et l'environnement. Elle relève aussi des interrogations sur la gouvernance et sur la durabilité financière et écologique. Le groupe a en outre débattu de la soumission de l'arrêté au référendum facultatif [8].\n\nLes sources ne présentent pas d'opposition fondamentale plus détaillée, ni le résultat du vote.",
+      "insufficient_context": false,
+      "insufficient_reason": null,
+      "best_similarity": 0.7382112301462168,
+      "sources": [
+        "[2] business:20260054",
+        "[6] transcript:422704",
+        "[3] transcript:422773",
+        "[8] transcript:422764"
+      ],
+      "cited_expected": [
+        "transcript:422704"
+      ],
+      "answer_language": "fr",
+      "total_ms": 6561.932099983096,
+      "attempts": 1,
+      "answer_usage": {
+        "model": "claude-sonnet-5-5",
+        "input_tokens": 2,
+        "output_tokens": 743,
+        "cache_creation_input_tokens": 6206,
+        "cache_read_input_tokens": 1746,
+        "latency_ms": 6405.950199987274,
+        "cost_usd": 0.0324326,
+        "backend": "claude-code"
+      },
+      "judge": {
+        "statements": [
+          {
+            "statement": "Les sources ne permettent pas de dire si c'est une «bonne idée»; elles montrent les positions représentées au Parlement.",
+            "citations": [],
+            "support": "supported"
+          },
+          {
+            "statement": "Le Conseil fédéral est favorable au projet et y voit des opportunités pour le développement du sport, l'innovation technique, la cohésion sociale, le tourisme et l'image de la Suisse [2].",
+            "citations": [
+              {
+                "number": 2,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Il prévoit une contribution fédérale de 200 millions de francs [2].",
+            "citations": [
+              {
+                "number": 2,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Au Conseil national, Estelle Revaz (S) a présenté le projet comme une occasion de visibilité internationale et de cohésion nationale.",
+            "citations": [
+              {
+                "number": 6,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Elle a souligné le modèle décentralisé dans les quatre régions linguistiques, l'usage des infrastructures existantes sans nouvelle construction permanente, un budget de 2,2 milliards de francs et l'absence de garantie de déficit demandée à l'État.",
+            "citations": [
+              {
+                "number": 6,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Elle a précisé que les coûts de sécurité ne sont pas inclus [6].",
+            "citations": [
+              {
+                "number": 6,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Katja Christ (GLP) y voit une grande chance.",
+            "citations": [
+              {
+                "number": 3,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Elle juge le concept conforme aux exigences de durabilité, de finances et de soutien des cantons, et attend de la transparence et le principe «Built to budget» [3].",
+            "citations": [
+              {
+                "number": 3,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Au sein du groupe socialiste, selon Min Li Marti (S), les avis divergent.",
+            "citations": [
+              {
+                "number": 8,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Le concept est considéré comme une amélioration par rapport aux projets précédents, notamment pour la durabilité.",
+            "citations": [
+              {
+                "number": 8,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Une partie du groupe y voit une chance pour la Suisse et son sport.",
+            "citations": [
+              {
+                "number": 8,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Une autre partie reste sceptique envers le CIO et craint des désavantages pour la population et l'environnement.",
+            "citations": [
+              {
+                "number": 8,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Elle relève aussi des interrogations sur la gouvernance et sur la durabilité financière et écologique.",
+            "citations": [
+              {
+                "number": 8,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Le groupe a en outre débattu de la soumission de l'arrêté au référendum facultatif [8].",
+            "citations": [
+              {
+                "number": 8,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Les sources ne présentent pas d'opposition fondamentale plus détaillée, ni le résultat du vote.",
+            "citations": [],
+            "support": "supported"
+          }
+        ],
+        "contains_own_evaluation": false,
+        "evaluation_note": ""
+      },
+      "judge_usage": {
+        "model": "claude-sonnet-5-5",
+        "input_tokens": 2,
+        "output_tokens": 1193,
+        "cache_creation_input_tokens": 6788,
+        "cache_read_input_tokens": 1987,
+        "latency_ms": 7412.617299996782,
+        "cost_usd": 0.0392847,
+        "backend": "claude-code"
+      },
+      "citation_accuracy": 1.0,
+      "faithfulness": 1.0,
+      "neutral": true,
+      "error": null,
+      "judge_error": null
+    },
+    {
+      "id": "q29",
+      "language": "de",
+      "tags": [
+        "unanswerable",
+        "smoke"
+      ],
+      "answerable": false,
+      "answer": "Zu dieser Frage habe ich in den Debatten und Geschäften des Bundesparlaments keine ausreichende Grundlage gefunden.",
+      "insufficient_context": true,
+      "insufficient_reason": "model",
+      "best_similarity": 0.6652600568222979,
+      "sources": [],
+      "cited_expected": [],
+      "answer_language": "de",
+      "total_ms": 4328.957699995954,
+      "attempts": 1,
+      "answer_usage": {
+        "model": "claude-sonnet-5-5",
+        "input_tokens": 2,
+        "output_tokens": 272,
+        "cache_creation_input_tokens": 8829,
+        "cache_read_input_tokens": 1746,
+        "latency_ms": 4183.049100043718,
+        "cost_usd": 0.0382146,
+        "backend": "claude-code"
+      },
+      "judge": null,
+      "judge_usage": null,
+      "citation_accuracy": null,
+      "faithfulness": null,
+      "neutral": true,
+      "error": null,
+      "judge_error": null
+    },
+    {
+      "id": "q32",
+      "language": "fr",
+      "tags": [
+        "fr",
+        "unanswerable",
+        "smoke"
+      ],
+      "answerable": false,
+      "answer": "Je n'ai pas trouvé de base suffisante pour répondre à cette question dans les débats et les objets du Parlement fédéral.",
+      "insufficient_context": true,
+      "insufficient_reason": "model",
+      "best_similarity": 0.646859922817942,
+      "sources": [],
+      "cited_expected": [],
+      "answer_language": "fr",
+      "total_ms": 2864.291699952446,
+      "attempts": 1,
+      "answer_usage": {
+        "model": "claude-sonnet-5-5",
+        "input_tokens": 2,
+        "output_tokens": 123,
+        "cache_creation_input_tokens": 4833,
+        "cache_read_input_tokens": 1746,
+        "latency_ms": 2714.8802999872714,
+        "cost_usd": 0.020740599999999998,
+        "backend": "claude-code"
+      },
+      "judge": null,
+      "judge_usage": null,
+      "citation_accuracy": null,
+      "faithfulness": null,
+      "neutral": true,
+      "error": null,
+      "judge_error": null
+    }
+  ]
+}
