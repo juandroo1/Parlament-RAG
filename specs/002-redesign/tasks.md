@@ -12,4 +12,4 @@ Immer nur einen Task gleichzeitig bearbeiten. Ein Task ist erst erledigt, wenn d
 - [x] 7.5 Übersetzbare Fehlermeldungen: Header `X-Error-Code` in `POST /ask` (Backend und Tests), Zuordnung in der UI inklusive Wartezeit aus `Retry-After`, auf Deutsch und Französisch (AK-10.3, AK-14.2)
 - [x] 7.6 «So funktioniert's»: Knopf in der Kopfzeile, Dialog als Seitenleiste (Desktop) bzw. Blatt von unten (Handy), Inhalte auf Deutsch und Französisch, Links zu Code und Eval-Ergebnissen (AK-12.1 bis AK-12.3)
 - [x] 7.7 Barrierefreiheit und Qualität: axe-Tests für Startseite, Antwort, Fehler und Dialog, Tastaturbedienung, `prefers-reduced-motion`; Lighthouse mobil hell und dunkel, Grösse des Builds gegen den Ausgangswert (AK-13.1 bis AK-13.3, Qualitätsziele)
-- [ ] 7.8 Abschluss: neue Screenshots (hell, dunkel, Handy) im README, README-Abschnitte zur Web-UI nachführen, offene Fragen der Spec aktualisieren, Demo auf dem Server aktualisieren (Sandro mit Anleitung)
+- [x] 7.8 Abschluss: neue Screenshots (hell, dunkel, Handy) im README, README-Abschnitte zur Web-UI nachführen, offene Fragen der Spec aktualisieren, Demo auf dem Server aktualisieren (Sandro mit Anleitung)

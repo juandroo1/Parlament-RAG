@@ -8,7 +8,14 @@ RAG-Anwendung, die Fragen zu Debatten und Geschäften des Schweizer Bundesparlam
 
 **Demo:** [frag-das-parlament.duckdns.org](https://frag-das-parlament.duckdns.org) (Antworten mit Claude Haiku 5.5, begrenztes Tagesbudget und 10 Fragen pro Stunde)
 
-![Web-UI: Frage mit Beispielen auf Deutsch und Französisch, aufklappbare Filter, Hinweis auf Datenquelle und Lizenz](docs/screenshot.png)
+![Web-UI hell, auf Deutsch: Frage zur Winterstromreserve, Antwort mit Zitat-Marken und der ersten Quelle (Geschäft 24.033)](docs/screenshot.png)
+
+<p>
+  <img src="docs/screenshot-dark.png" alt="Web-UI dunkel, auf Französisch: dieselbe Frage auf Französisch, Antwort mit Quellen" width="62%">
+  <img src="docs/screenshot-mobile.png" alt="Web-UI auf dem Handy: Kopfzeile mit Umschaltern, Suchkarte und Antwort" width="30%">
+</p>
+
+*Echte Antworten der öffentlichen Demo (Claude Haiku 5.5), aufgenommen am 18. November 2026.*
 
 ## Inhalt
 
@@ -33,7 +40,8 @@ RAG-Anwendung, die Fragen zu Debatten und Geschäften des Schweizer Bundesparlam
 - **Antworten:** Claude Sonnet 5.5 antwortet in der Sprache der Frage und belegt jede Aussage mit [n]. Der Server ordnet die Nummern den Quellen zu, erfundene Quellen sind technisch ausgeschlossen. Reichen die Quellen nicht, sagt das System das klar.
 - **Qualität:** 65 von Hand geprüfte Fragen. Zitiergenauigkeit 0.976, Faithfulness 0.979, Neutralität bei wertenden Fragen 1.00, Ablehnungsquote bei unbeantwortbaren Fragen 0.90 bei nur 0.02 falschen Ablehnungen.
 - **Experimente:** 4 Suchverfahren, 4 Index-Varianten und 4 Sprachmodelle gemessen und entschieden, jeder Lauf mit Git-SHA unter [`evals/results/`](evals/results/).
-- **Engineering:** Docker Compose mit drei Services (`db`, `app`, `web`), CI mit Lint, Typen, rund 475 Tests und Smoke-Test des Stacks; Spec-driven Development mit Entscheidungsprotokoll.
+- **Oberfläche:** Deutsch und Französisch umschaltbar, heller und dunkler Modus, für Handy und Desktop, mit einem kurzen Bereich «So funktioniert's». Barrierefrei geprüft mit axe; Lighthouse mobil 100/100/100/100 (Performance, Accessibility, Best Practices, SEO).
+- **Engineering:** Docker Compose mit drei Services (`db`, `app`, `web`), CI mit Lint, Typen, rund 500 Python- und 140 Web-Tests und Smoke-Test des Stacks; Spec-driven Development mit Entscheidungsprotokoll.
 
 ## Architektur
 
@@ -169,6 +177,7 @@ Die wichtigsten Entscheide, jeweils mit dem Grund. Alle Entscheide samt Datum st
 9. **Zwei Zugänge zum LLM.** Container, API und Demo nutzen einen API-Key. Für die eigene Entwicklung geht auch das Claude-Abo über die Claude-Code-CLI, ohne Kosten pro Aufruf. Andere Personen über ein Abo zu bedienen, erlaubt Anthropic nicht.
 10. **Reproduzierbare Evals.** Der Korpus ist auf einen Stichtag eingefroren. Das Goldset hat ein Mensch geprüft, und jeder Lauf speichert Git-SHA, Konfiguration und Korpus-Stand. Die Ergebnisse sind committet und bilden die Historie.
 11. **Docker als Referenz.** Ein Image für API und CLI, Non-Root, Ports nur auf `127.0.0.1`, Schema-Migration beim Start, Modelle im Volume statt im Image. Die CI baut den ganzen Stack und prüft ihn mit einem Smoke-Test.
+12. **Oberfläche ohne zusätzliche Bibliotheken.** Übersetzung und Dark Mode sind kleiner eigener Code: typisierte Wörterbücher (fehlt eine französische Übersetzung, schlägt die Typprüfung fehl) und `data-theme` mit einem Script, das vor dem ersten Zeichnen den Modus setzt. Farben stehen als Tokens an einer Stelle, ein Test rechnet ihre Kontraste nach. Entscheide im [Entscheidungsprotokoll von Spec 002](specs/002-redesign/plan.md#11-entscheidungsprotokoll).
 
 ## Kosten und Latenz
 
@@ -309,7 +318,14 @@ Die Antwort enthält `answer` mit den Belegen [n], `sources` (pro Nummer Dokumen
 
 ### Web-UI
 
-Die Oberfläche (http://127.0.0.1:8080) zeigt Frage mit Beispielen, Filter (Rat, Zeitraum, Fraktion), die Antwort mit klickbaren Belegen [n] und die Quellen mit Redner, Rat, Datum, Geschäftsnummer, Ausschnitt und Link auf parlament.ch, dazu Datenquelle und Lizenz.
+Die Oberfläche (http://127.0.0.1:8080) zeigt Frage mit Beispielen, Filter (Rat, Zeitraum, Fraktion), die Antwort mit klickbaren Zitat-Marken und die Quellen mit Redner, Rat, Datum, Geschäftsnummer, Ausschnitt und Link auf parlament.ch, dazu Datenquelle und Lizenz.
+
+- **Kopfzeile:** Logo, Knopf «So funktioniert's» (Datenquelle, Vorgehen, Grenzen, Datenschutz), Umschalter DE/FR und Darstellung (Hell, Dunkel, wie System). Beide Einstellungen bleiben im Browser gespeichert; ohne Wahl gelten Sprache und Farbschema des Systems.
+- **Sprache:** Die Oberfläche spricht Deutsch oder Französisch, auch die Meldungen der API (über den Fehlercode). Die Antwort kommt immer in der Sprache der Frage.
+- **Erscheinungsbild:** Farben aus dem Logo, eigenständig und ohne Anlehnung an Behördenseiten; der Hinweis «Privates Projekt – keine amtliche Veröffentlichung» steht gleich unter der Kopfzeile. Schriften (Inter, Plus Jakarta Sans) liefert der Server selbst aus, ohne Anfragen an Dritte.
+- **Barrierefreiheit:** Kontraste nach WCAG 2.2 AA in beiden Modi, vollständig per Tastatur bedienbar, Rücksicht auf «Bewegung reduzieren». Gemessen mit Lighthouse (mobil, hell und dunkel je 100 in allen vier Kategorien) und mit axe in den Tests.
+
+Spec, Entwürfe und Entscheide zum Redesign: [`specs/002-redesign/`](specs/002-redesign/spec.md).
 
 ## Evals
 
@@ -388,6 +404,8 @@ npm test             # Vitest
 npm run build        # Typprüfung und Build nach web/dist
 ```
 
+Die Web-Tests prüfen neben den Funktionen auch Barrierefreiheit (axe in allen Zuständen, auf Deutsch und Französisch), die Kontraste der Farb-Tokens, die Tastaturreihenfolge und dass beide Wörterbücher dieselben Texte haben. Logo und Icons entstehen aus den Originalen in [`docs/design/`](docs/design/README.md).
+
 Eine andere API-Adresse setzt `API_TARGET`, z. B. `API_TARGET=http://127.0.0.1:8011 npm run dev`. Im Container liefert der Service `web` die gebaute App über nginx aus (http://127.0.0.1:8080).
 
 ## Datenquelle und Lizenz
@@ -404,7 +422,7 @@ Das Projekt folgt **Spec-driven Development**. Die Quelle der Wahrheit liegt in 
 - [`plan.md`](specs/001-frag-das-parlament/plan.md): Architektur, Stack, Datenmodell, Eval-Konzept und das Entscheidungsprotokoll
 - [`tasks.md`](specs/001-frag-das-parlament/tasks.md): Umsetzungsschritte mit Checkboxen
 
-Spec 001 beschreibt das MVP und ist abgeschlossen. Die nächste Etappe, ein Redesign der Web-UI mit Dark Mode, französischer Oberfläche und Handy-Layout, steht in [`specs/002-redesign/`](specs/002-redesign/spec.md).
+Spec 001 beschreibt das MVP. Die zweite Etappe, das Redesign der Web-UI mit Dark Mode, französischer Oberfläche und Handy-Layout, steht in [`specs/002-redesign/`](specs/002-redesign/spec.md), samt drei Designentwürfen, aus denen Variante A gewählt wurde. Beide Specs sind umgesetzt.
 
 Der Ablauf pro Task:
 

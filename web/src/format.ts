@@ -27,6 +27,39 @@ export function splitCitations(answer: string): Segment[] {
   return segments;
 }
 
+export type Run =
+  | { kind: "text"; text: string }
+  | { kind: "cite"; numbers: number[]; trail: string };
+
+const TRAILING_PUNCTUATION = /^[.,;:!?)»]+/;
+
+/**
+ * Antwort in Läufe für die Anzeige (Task 7.8): Ein Satzzeichen direkt nach einem Zitat gehört zum
+ * Zitat (`trail`), damit es nicht allein an den Anfang der nächsten Zeile rutscht; das Leerzeichen
+ * vor einem Zitat wird geschützt, damit die Marke beim Wort davor bleibt.
+ */
+export function citationRuns(answer: string): Run[] {
+  const segments = splitCitations(answer);
+  const runs: Run[] = [];
+  segments.forEach((segment, index) => {
+    if (segment.kind === "cite") {
+      runs.push({ kind: "cite", numbers: segment.numbers, trail: "" });
+      return;
+    }
+    let text = segment.text;
+    const previous = runs.at(-1);
+    const punctuation =
+      previous?.kind === "cite" ? TRAILING_PUNCTUATION.exec(text) : null;
+    if (previous?.kind === "cite" && punctuation) {
+      previous.trail += punctuation[0];
+      text = text.slice(punctuation[0].length);
+    }
+    if (segments[index + 1]?.kind === "cite") text = text.replace(/ $/, " ");
+    if (text) runs.push({ kind: "text", text });
+  });
+  return runs;
+}
+
 // Kürzel wie in den Daten der Parlamentsdienste; die Namen stehen in den Wörterbüchern (i18n/).
 export const COUNCIL_KEYS = ["NR", "SR", "V"] as const;
 export const PARL_GROUP_KEYS = ["V", "S", "M-E", "RL", "G", "GL"] as const;
