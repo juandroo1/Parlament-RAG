@@ -65,6 +65,10 @@ export class ApiError extends Error {
     readonly kind: ApiErrorKind = "http",
     /** Meldung der API (`detail`) bzw. bei Validierungsfehlern die Liste der Felder. */
     readonly detail: string | null = null,
+    /** Fehlercode aus `X-Error-Code` (Task 7.5), z. B. `rate_limit`. */
+    readonly code: string | null = null,
+    /** Wartezeit in Sekunden aus `Retry-After`. */
+    readonly retryAfter: number | null = null,
   ) {
     super(message);
     this.name = "ApiError";
@@ -83,10 +87,25 @@ export function buildRequest(question: string, filters: Filters): AskRequest {
   return request;
 }
 
-function toError(status: number, body: unknown): ApiError {
+/** Header einer Antwort lesen; Attrappen in Tests haben eventuell keine. */
+function header(response: Response, name: string): string | null {
+  return response.headers?.get?.(name) ?? null;
+}
+
+function toError(response: Response, body: unknown): ApiError {
+  const status = response.status;
   const detail = (body as { detail?: unknown } | null)?.detail;
-  if (typeof detail === "string")
-    return new ApiError(detail, status, "http", detail);
+  if (typeof detail === "string") {
+    const seconds = Number(header(response, "Retry-After"));
+    return new ApiError(
+      detail,
+      status,
+      "http",
+      detail,
+      header(response, "X-Error-Code"),
+      Number.isFinite(seconds) && seconds > 0 ? seconds : null,
+    );
+  }
   if (status === 422 && Array.isArray(detail)) {
     const fields = detail
       .map((item) => (item as { msg?: string }).msg)
@@ -124,6 +143,6 @@ export async function ask(
     );
   }
   const body: unknown = await response.json().catch(() => null);
-  if (!response.ok) throw toError(response.status, body);
+  if (!response.ok) throw toError(response, body);
   return body as AskResponse;
 }

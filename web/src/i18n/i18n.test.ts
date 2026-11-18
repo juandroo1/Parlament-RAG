@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { ApiError } from "../api";
 import { de } from "./de";
-import { errorText } from "./errors";
+import { errorText, minutes } from "./errors";
 import { fr } from "./fr";
 import { readLanguage, saveLanguage, STORAGE_KEY } from "./language";
 
@@ -117,13 +117,46 @@ describe("Fehlermeldungen der Oberfläche", () => {
     );
   });
 
-  it("zeigt Meldungen der API vorerst unverändert (Task 7.5 übersetzt sie)", () => {
-    const fromApi = new ApiError(
-      "Zu viele Fragen",
-      429,
-      "http",
-      "Zu viele Fragen",
+  it("übersetzt Meldungen der API anhand des Fehlercodes (AK-10.3)", () => {
+    const api = (code: string, retryAfter: number | null = null) =>
+      new ApiError("deutsch", 429, "http", "Meldung der API", code, retryAfter);
+    expect(errorText(api("rate_limit", 720), de)).toBe(
+      "Zu viele Fragen in kurzer Zeit. Bitte in 12 Minuten wieder versuchen.",
     );
-    expect(errorText(fromApi, fr)).toBe("Zu viele Fragen");
+    expect(errorText(api("rate_limit", 720), fr)).toBe(
+      "Trop de questions en peu de temps. Veuillez réessayer dans 12 minutes.",
+    );
+    expect(errorText(api("rate_limit", 30), fr)).toContain("dans 1 minute.");
+    expect(errorText(api("daily_budget", 3600), fr)).toMatch(
+      /^Le budget quotidien de la démo est épuisé/,
+    );
+    for (const code of Object.keys(de.errors.codes)) {
+      expect(errorText(api(code), de)).not.toBe("Meldung der API");
+      expect(errorText(api(code), fr)).not.toBe(errorText(api(code), de));
+    }
+  });
+
+  it("zeigt bei unbekanntem oder fehlendem Code die Meldung der API", () => {
+    const unknown = new ApiError("x", 500, "http", "Meldung der API", "neu");
+    expect(errorText(unknown, fr)).toBe("Meldung der API");
+    expect(
+      errorText(
+        new ApiError("x", 500, "http", "Meldung der API", "constructor"),
+        fr,
+      ),
+    ).toBe("Meldung der API");
+    expect(
+      errorText(new ApiError("x", 503, "http", "Meldung der API"), fr),
+    ).toBe("Meldung der API");
+  });
+
+  it("rechnet die Wartezeit in ganze Minuten um", () => {
+    expect([
+      minutes(3599),
+      minutes(3600),
+      minutes(61),
+      minutes(30),
+      minutes(null),
+    ]).toEqual([60, 60, 2, 1, 1]);
   });
 });

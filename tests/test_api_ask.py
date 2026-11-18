@@ -212,26 +212,44 @@ def test_invalid_requests_are_rejected(api: dict[str, Any], payload: dict[str, A
 
 
 @pytest.mark.parametrize(
-    ("error", "http_status", "message"),
+    ("error", "http_status", "message", "code"),
     [
         (
             LLMConfigError("ANTHROPIC_API_KEY fehlt."),
             503,
             "LLM nicht verfügbar: ANTHROPIC_API_KEY fehlt.",
+            "llm_unavailable",
         ),
-        (LLMRefusalError("abgelehnt"), 422, "Das Modell hat die Anfrage abgelehnt."),
-        (LLMOutputError("Zitatregeln verletzt"), 502, "Das Modell lieferte keine gültige Antwort."),
-        (LLMError("Limit (429)"), 503, "LLM vorübergehend nicht verfügbar: Limit (429)"),
+        (
+            LLMRefusalError("abgelehnt"),
+            422,
+            "Das Modell hat die Anfrage abgelehnt.",
+            "model_refused",
+        ),
+        (
+            LLMOutputError("Zitatregeln verletzt"),
+            502,
+            "Das Modell lieferte keine gültige Antwort.",
+            "model_output",
+        ),
+        (
+            LLMError("Limit (429)"),
+            503,
+            "LLM vorübergehend nicht verfügbar: Limit (429)",
+            "llm_unavailable",
+        ),
     ],
 )
 def test_llm_errors_become_clear_http_errors(
-    api: dict[str, Any], error: LLMError, http_status: int, message: str
+    api: dict[str, Any], error: LLMError, http_status: int, message: str, code: str
 ) -> None:
     api["pipeline"] = FakePipeline(error)
     response = api["client"].post("/ask", json={"question": QUESTION})
 
     assert response.status_code == http_status
+    # `detail` bleibt unverändert (AK-14.2); die UI übersetzt anhand des Codes (AK-10.3).
     assert response.json() == {"detail": message}
+    assert response.headers["X-Error-Code"] == code
     assert "X-Request-ID" in response.headers
 
 
@@ -239,6 +257,7 @@ def test_configuration_error_while_building_the_pipeline(api: dict[str, Any]) ->
     api["pipeline"] = LLMConfigError("Claude Code CLI (`claude`) nicht gefunden.")
     response = api["client"].post("/ask", json={"question": QUESTION})
     assert response.status_code == 503 and "nicht gefunden" in response.json()["detail"]
+    assert response.headers["X-Error-Code"] == "llm_unavailable"
 
 
 def test_request_is_logged_with_usage_but_without_question(

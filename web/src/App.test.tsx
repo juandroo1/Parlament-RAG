@@ -323,4 +323,38 @@ describe("App", () => {
     );
     vi.restoreAllMocks();
   });
+
+  it("zeigt das Rate-Limit der API auf Französisch mit Wartezeit (AK-10.3)", async () => {
+    vi.spyOn(navigator, "languages", "get").mockReturnValue(["fr-CH"]);
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({
+        ok: false,
+        status: 429,
+        headers: new Headers({
+          "X-Error-Code": "rate_limit",
+          "Retry-After": "1500",
+        }),
+        json: () =>
+          Promise.resolve({
+            detail: "Zu viele Fragen: Die Demo erlaubt 10 Fragen pro Stunde.",
+          }),
+      }),
+    );
+    const user = userEvent.setup();
+    render(<App />);
+    await user.type(screen.getByLabelText(/Votre question/), "Question ?");
+    await user.click(screen.getByRole("button", { name: "Demander" }));
+    const alert = await screen.findByRole("alert");
+    expect(alert).toHaveTextContent(
+      "Trop de questions en peu de temps. Veuillez réessayer dans 25 minutes.",
+    );
+
+    // Beim Sprachwechsel wechselt die Meldung mit.
+    await user.click(screen.getByRole("button", { name: "Deutsch" }));
+    expect(screen.getByRole("alert")).toHaveTextContent(
+      "Bitte in 25 Minuten wieder versuchen.",
+    );
+    vi.restoreAllMocks();
+  });
 });
