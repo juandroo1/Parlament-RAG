@@ -24,6 +24,7 @@
   --fdp-error-bg: #fdecec;
   --fdp-error-border: #f0a8a8;
   --fdp-error-text: #8f1717;
+  --fdp-overlay: rgb(15 36 63 / 0.45);
   --fdp-shadow-card:
     0 1px 2px rgb(15 36 63 / 0.06), 0 8px 24px rgb(15 36 63 / 0.06);
 }
@@ -51,6 +52,7 @@
     --fdp-error-border: #7a2e35;
     --fdp-error-text: #ffb4ae;
     --fdp-shadow-card: none;
+    --fdp-overlay: rgb(0 0 0 / 0.6);
   }
 }
 
@@ -74,6 +76,7 @@
   --fdp-error-border: #7a2e35;
   --fdp-error-text: #ffb4ae;
   --fdp-shadow-card: none;
+  --fdp-overlay: rgb(0 0 0 / 0.6);
 }
 
 /* Tailwind-Klassen, z. B. bg-surface, text-muted, border-input-border, font-display. */
@@ -96,6 +99,20 @@
   --color-error-border: var(--fdp-error-border);
   --color-error-text: var(--fdp-error-text);
   --shadow-card: var(--fdp-shadow-card);
+  --color-overlay: var(--fdp-overlay);
+  /* «So funktioniert's» (Task 7.6): Blatt von unten (Handy), Seitenleiste von rechts (Desktop). */
+  --animate-sheet-in: fdp-sheet-in 0.22s ease-out;
+  --animate-panel-in: fdp-panel-in 0.22s ease-out;
+  @keyframes fdp-sheet-in {
+    from {
+      transform: translateY(100%);
+    }
+  }
+  @keyframes fdp-panel-in {
+    from {
+      transform: translateX(100%);
+    }
+  }
   --font-sans: "Inter Variable", system-ui, sans-serif;
   --font-display:
     "Plus Jakarta Sans Variable", "Inter Variable", system-ui, sans-serif;
@@ -106,6 +123,11 @@
     background-color: var(--fdp-bg);
     color: var(--fdp-text);
     font-family: var(--font-sans);
+  }
+
+  /* Offener Dialog: Seite dahinter scrollt nicht mit. */
+  html:has(dialog[open]) {
+    overflow: hidden;
   }
 
   /* Sichtbarer Fokus für Tastatur (AK-13.2). */

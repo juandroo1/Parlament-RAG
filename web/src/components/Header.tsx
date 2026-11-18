@@ -3,6 +3,7 @@ import logoDarkWebp from "../assets/logo-dark.webp";
 import logoLightPng from "../assets/logo-light.png";
 import logoLightWebp from "../assets/logo-light.webp";
 import { useI18n } from "../i18n/LanguageProvider";
+import { HowItWorks } from "./HowItWorks";
 import { ShieldIcon } from "./icons";
 import { LanguageToggle } from "./LanguageToggle";
 import { ThemeToggle } from "./ThemeToggle";
@@ -43,6 +44,7 @@ export function Header() {
             </picture>
           </a>
           <div className="flex items-center gap-1.5 sm:gap-2.5">
+            <HowItWorks />
             <LanguageToggle />
             <ThemeToggle />
           </div>
