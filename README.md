@@ -404,6 +404,8 @@ Das Projekt folgt **Spec-driven Development**. Die Quelle der Wahrheit liegt in 
 - [`plan.md`](specs/001-frag-das-parlament/plan.md): Architektur, Stack, Datenmodell, Eval-Konzept und das Entscheidungsprotokoll
 - [`tasks.md`](specs/001-frag-das-parlament/tasks.md): Umsetzungsschritte mit Checkboxen
 
+Spec 001 beschreibt das MVP und ist abgeschlossen. Die nächste Etappe, ein Redesign der Web-UI mit Dark Mode, französischer Oberfläche und Handy-Layout, steht in [`specs/002-redesign/`](specs/002-redesign/spec.md).
+
 Der Ablauf pro Task:
 
 1. Den Task in `tasks.md` lesen, die betroffenen Akzeptanzkriterien zusammenfassen und einen Plan zur Freigabe vorlegen.
