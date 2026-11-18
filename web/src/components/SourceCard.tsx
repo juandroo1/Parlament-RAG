@@ -1,6 +1,7 @@
 import { useState } from "react";
 import type { Source } from "../api";
 import { snippet, sourceContext, sourceTitle } from "../format";
+import { ExternalIcon } from "./icons";
 
 interface Props {
   source: Source;
@@ -17,28 +18,27 @@ export function SourceCard({ source, highlighted }: Props) {
       id={`quelle-${source.number}`}
       tabIndex={-1}
       className={
-        "scroll-mt-6 rounded-lg border p-4 transition-colors duration-700 " +
-        (highlighted
-          ? "border-red-700 bg-red-50 dark:bg-red-950/40"
-          : "border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-900")
+        "scroll-mt-6 rounded-2xl border p-4 transition-colors duration-700 motion-reduce:transition-none sm:p-[18px] " +
+        (highlighted ? "border-accent bg-cite-bg" : "border-border bg-surface")
       }
     >
-      <div className="flex gap-3">
-        <span className="mt-0.5 h-fit rounded bg-slate-100 px-2 py-0.5 text-sm font-semibold text-slate-700 dark:bg-slate-800 dark:text-slate-200">
-          [{source.number}]
+      <div className="flex gap-3 sm:gap-3.5">
+        <span className="flex size-[30px] shrink-0 items-center justify-center rounded-lg bg-cite-bg text-sm font-bold text-accent-text">
+          <span className="sr-only">Quelle </span>
+          {source.number}
         </span>
         <div className="min-w-0 flex-1">
-          <p className="font-medium">{sourceTitle(source)}</p>
-          <p className="text-sm text-slate-600 dark:text-slate-400">{sourceContext(source)}</p>
-          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{source.title}</p>
-          <blockquote className="mt-3 border-l-2 border-slate-300 pl-3 text-sm text-slate-700 dark:border-slate-600 dark:text-slate-300">
+          <p className="font-semibold">{sourceTitle(source)}</p>
+          <p className="mt-0.5 text-sm text-muted">{sourceContext(source)}</p>
+          <p className="mt-0.5 text-sm text-muted">{source.title}</p>
+          <blockquote className="mt-2.5 text-[15px] leading-relaxed italic">
             «{expanded ? source.text : short}»
           </blockquote>
-          <div className="mt-3 flex flex-wrap gap-4 text-sm">
+          <div className="mt-1.5 flex flex-wrap gap-x-5 text-sm">
             {canExpand && (
               <button
                 type="button"
-                className="text-slate-600 hover:underline dark:text-slate-300"
+                className="min-h-11 font-semibold text-muted hover:underline sm:min-h-8"
                 onClick={() => setExpanded((value) => !value)}
               >
                 {expanded ? "Weniger zeigen" : "Ganzen Abschnitt zeigen"}
@@ -48,9 +48,10 @@ export function SourceCard({ source, highlighted }: Props) {
               href={source.url}
               target="_blank"
               rel="noreferrer"
-              className="font-medium text-red-800 hover:underline dark:text-red-300"
+              className="inline-flex min-h-11 items-center gap-1.5 font-semibold text-accent-text hover:underline sm:min-h-8"
             >
-              Originalstelle auf parlament.ch ↗
+              Originalstelle auf parlament.ch
+              <ExternalIcon />
             </a>
           </div>
         </div>

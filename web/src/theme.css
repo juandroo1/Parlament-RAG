@@ -24,6 +24,8 @@
   --fdp-error-bg: #fdecec;
   --fdp-error-border: #f0a8a8;
   --fdp-error-text: #8f1717;
+  --fdp-shadow-card:
+    0 1px 2px rgb(15 36 63 / 0.06), 0 8px 24px rgb(15 36 63 / 0.06);
 }
 
 /* Dunkel: nach der Einstellung des Systems, ausser die Seite ist ausdrücklich hell
@@ -48,6 +50,7 @@
     --fdp-error-bg: #3a1d24;
     --fdp-error-border: #7a2e35;
     --fdp-error-text: #ffb4ae;
+    --fdp-shadow-card: none;
   }
 }
 
@@ -70,6 +73,7 @@
   --fdp-error-bg: #3a1d24;
   --fdp-error-border: #7a2e35;
   --fdp-error-text: #ffb4ae;
+  --fdp-shadow-card: none;
 }
 
 /* Tailwind-Klassen, z. B. bg-surface, text-muted, border-input-border, font-display. */
@@ -91,6 +95,7 @@
   --color-error-bg: var(--fdp-error-bg);
   --color-error-border: var(--fdp-error-border);
   --color-error-text: var(--fdp-error-text);
+  --shadow-card: var(--fdp-shadow-card);
   --font-sans: "Inter Variable", system-ui, sans-serif;
   --font-display:
     "Plus Jakarta Sans Variable", "Inter Variable", system-ui, sans-serif;
@@ -101,5 +106,11 @@
     background-color: var(--fdp-bg);
     color: var(--fdp-text);
     font-family: var(--font-sans);
+  }
+
+  /* Sichtbarer Fokus für Tastatur (AK-13.2). */
+  :focus-visible {
+    outline: 3px solid var(--fdp-accent);
+    outline-offset: 2px;
   }
 }

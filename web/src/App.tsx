@@ -1,7 +1,15 @@
 import { useState } from "react";
-import { ApiError, ask, buildRequest, type AskResponse, type Filters } from "./api";
+import {
+  ApiError,
+  ask,
+  buildRequest,
+  type AskResponse,
+  type Filters,
+} from "./api";
 import { Answer } from "./components/Answer";
 import { AskForm } from "./components/AskForm";
+import { Footer } from "./components/Footer";
+import { Header } from "./components/Header";
 
 type State =
   | { status: "idle" }
@@ -19,35 +27,48 @@ export default function App() {
       setState({ status: "done", result });
     } catch (error) {
       const message =
-        error instanceof ApiError ? error.message : "Unerwarteter Fehler. Bitte erneut versuchen.";
+        error instanceof ApiError
+          ? error.message
+          : "Unerwarteter Fehler. Bitte erneut versuchen.";
       setState({ status: "error", message });
     }
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100">
-      <main className="mx-auto max-w-3xl px-4 py-8 sm:py-12">
-        <header className="mb-8">
-          <h1 className="text-3xl font-bold tracking-tight">Frag das Parlament</h1>
-          <p className="mt-2 text-slate-600 dark:text-slate-400">
-            Fragen zu Debatten und Geschäften des Schweizer Bundesparlaments, beantwortet aus dem
-            Amtlichen Bulletin und Curia Vista. Jede Aussage verweist auf ihre Quelle.
+    <div id="top" className="flex min-h-screen flex-col bg-bg text-text">
+      <Header />
+
+      <main className="mx-auto w-full max-w-[760px] flex-1 px-4 pb-16 sm:px-6">
+        <section
+          aria-labelledby="titel"
+          className="pt-5 sm:pt-9 sm:text-center"
+        >
+          <h1
+            id="titel"
+            className="font-display text-[28px] leading-[1.15] font-extrabold tracking-tight sm:text-[42px]"
+          >
+            Was wurde im Parlament gesagt?
+          </h1>
+          <p className="mt-2 text-[15px] leading-relaxed text-muted sm:mx-auto sm:mt-3.5 sm:max-w-[600px] sm:text-[17px]">
+            Stellen Sie eine Frage auf Deutsch oder Französisch. Die Antwort
+            stützt sich auf das Amtliche Bulletin und Curia Vista, jede Aussage
+            mit Quelle.
           </p>
-        </header>
+        </section>
 
         <AskForm loading={state.status === "loading"} onSubmit={submit} />
 
-        <div className="mt-8">
+        <div className="mt-10 sm:mt-12">
           {state.status === "loading" && (
-            <p role="status" className="animate-pulse text-slate-600 dark:text-slate-400">
-              Quellen werden gesucht und die Antwort wird geschrieben. Das kann 5 bis 15 Sekunden
-              dauern …
+            <p role="status" className="text-muted motion-safe:animate-pulse">
+              Quellen werden gesucht und die Antwort wird geschrieben. Das kann
+              5 bis 15 Sekunden dauern …
             </p>
           )}
           {state.status === "error" && (
             <div
               role="alert"
-              className="rounded-lg border border-red-300 bg-red-50 p-4 text-red-900 dark:border-red-800 dark:bg-red-950/40 dark:text-red-200"
+              className="rounded-xl border border-error-border bg-error-bg p-4 text-error-text"
             >
               {state.message}
             </div>
@@ -56,40 +77,7 @@ export default function App() {
         </div>
       </main>
 
-      <footer className="border-t border-slate-200 dark:border-slate-800">
-        <div className="mx-auto max-w-3xl space-y-2 px-4 py-6 text-sm text-slate-600 dark:text-slate-400">
-          <p>
-            <strong>Quelle:</strong> Parlamentsdienste der Bundesversammlung, Bern. Open Data über
-            den Webservice{" "}
-            <a className="underline" href="https://ws.parlament.ch/odata.svc/" target="_blank" rel="noreferrer">
-              ws.parlament.ch
-            </a>{" "}
-            (Amtliches Bulletin und Curia Vista), Sessionen bis 2. Oktober 2026, heruntergeladen am 12.
-            und 13. November 2026.
-          </p>
-          <p>
-            <strong>Keine amtliche Veröffentlichung:</strong> ein privates Projekt, nicht von den
-            Parlamentsdiensten. Die Antworten erzeugt ein KI-Modell aus den gefundenen Abschnitten.
-            Massgebend sind die verlinkten Originalstellen auf parlament.ch. Das System gibt wieder,
-            was gesagt wurde, und bewertet keine Personen, Parteien oder Vorlagen.
-          </p>
-          <p>
-            Die öffentliche Demo hat ein begrenztes Tagesbudget und eine Grenze von Fragen pro Stunde.
-          </p>
-          <p>
-            Code unter{" "}
-            <a
-              className="underline"
-              href="https://github.com/juandroo1/Parlament-RAG/blob/main/LICENSE"
-              target="_blank"
-              rel="noreferrer"
-            >
-              MIT-Lizenz
-            </a>
-            .
-          </p>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }
