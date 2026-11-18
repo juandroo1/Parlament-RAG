@@ -151,6 +151,13 @@ def test_nginx_proxies_api_to_app_and_serves_spa() -> None:
     assert "location = /healthz" in conf and "listen 8080;" in conf
 
 
+def test_nginx_serves_web_manifest_with_its_media_type() -> None:
+    conf = (WEB / "nginx.conf").read_text(encoding="utf-8")
+    block = re.search(r"location = /manifest\.webmanifest \{([^}]*\{ \}[^}]*)\}", conf)
+    assert block, "Block für das Web-Manifest fehlt"
+    assert "default_type application/manifest+json;" in block.group(1)
+
+
 def test_web_dockerignore_excludes_build_artifacts() -> None:
     entries = (WEB / ".dockerignore").read_text(encoding="utf-8").split()
     assert {"node_modules", "dist"} <= set(entries)

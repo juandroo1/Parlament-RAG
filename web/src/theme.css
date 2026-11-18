@@ -1,0 +1,105 @@
+/* Design-Tokens der Web-UI (Spec 002, Plan 002 Abschnitt 3). Farben aus dem Logo; die Kontraste
+   prüft theme.test.ts. Komponenten verwenden nur die Tailwind-Klassen aus @theme inline, keine
+   Farbwerte. */
+
+@import "@fontsource-variable/inter";
+@import "@fontsource-variable/plus-jakarta-sans";
+
+:root {
+  color-scheme: light;
+  --fdp-bg: #ffffff;
+  --fdp-surface: #f4f6f9;
+  --fdp-surface-2: #e7ecf2;
+  --fdp-border: #d5dde7;
+  --fdp-input-border: #7d8ea3;
+  --fdp-text: #0f243f;
+  --fdp-muted: #4b5c71;
+  --fdp-primary: #0f243f;
+  --fdp-on-primary: #ffffff;
+  --fdp-accent: #da2727;
+  --fdp-accent-text: #c42020;
+  --fdp-cite-bg: #fdecec;
+  --fdp-warn-bg: #fff6e0;
+  --fdp-warn-border: #e2b04a;
+  --fdp-error-bg: #fdecec;
+  --fdp-error-border: #f0a8a8;
+  --fdp-error-text: #8f1717;
+}
+
+/* Dunkel: nach der Einstellung des Systems, ausser die Seite ist ausdrücklich hell
+   (data-theme, Task 7.3). Der Block muss mit dem folgenden übereinstimmen; der Test prüft das. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --fdp-bg: #121622;
+    --fdp-surface: #1a2131;
+    --fdp-surface-2: #252e43;
+    --fdp-border: #34405a;
+    --fdp-input-border: #66779b;
+    --fdp-text: #f4f5f7;
+    --fdp-muted: #aab4c5;
+    --fdp-primary: #f4f5f7;
+    --fdp-on-primary: #121622;
+    --fdp-accent: #e00d0f;
+    --fdp-accent-text: #ff8a85;
+    --fdp-cite-bg: #3a1d24;
+    --fdp-warn-bg: #2e2614;
+    --fdp-warn-border: #8a6a24;
+    --fdp-error-bg: #3a1d24;
+    --fdp-error-border: #7a2e35;
+    --fdp-error-text: #ffb4ae;
+  }
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --fdp-bg: #121622;
+  --fdp-surface: #1a2131;
+  --fdp-surface-2: #252e43;
+  --fdp-border: #34405a;
+  --fdp-input-border: #66779b;
+  --fdp-text: #f4f5f7;
+  --fdp-muted: #aab4c5;
+  --fdp-primary: #f4f5f7;
+  --fdp-on-primary: #121622;
+  --fdp-accent: #e00d0f;
+  --fdp-accent-text: #ff8a85;
+  --fdp-cite-bg: #3a1d24;
+  --fdp-warn-bg: #2e2614;
+  --fdp-warn-border: #8a6a24;
+  --fdp-error-bg: #3a1d24;
+  --fdp-error-border: #7a2e35;
+  --fdp-error-text: #ffb4ae;
+}
+
+/* Tailwind-Klassen, z. B. bg-surface, text-muted, border-input-border, font-display. */
+@theme inline {
+  --color-bg: var(--fdp-bg);
+  --color-surface: var(--fdp-surface);
+  --color-surface-2: var(--fdp-surface-2);
+  --color-border: var(--fdp-border);
+  --color-input-border: var(--fdp-input-border);
+  --color-text: var(--fdp-text);
+  --color-muted: var(--fdp-muted);
+  --color-primary: var(--fdp-primary);
+  --color-on-primary: var(--fdp-on-primary);
+  --color-accent: var(--fdp-accent);
+  --color-accent-text: var(--fdp-accent-text);
+  --color-cite-bg: var(--fdp-cite-bg);
+  --color-warn-bg: var(--fdp-warn-bg);
+  --color-warn-border: var(--fdp-warn-border);
+  --color-error-bg: var(--fdp-error-bg);
+  --color-error-border: var(--fdp-error-border);
+  --color-error-text: var(--fdp-error-text);
+  --font-sans: "Inter Variable", system-ui, sans-serif;
+  --font-display:
+    "Plus Jakarta Sans Variable", "Inter Variable", system-ui, sans-serif;
+}
+
+@layer base {
+  html {
+    background-color: var(--fdp-bg);
+    color: var(--fdp-text);
+    font-family: var(--font-sans);
+  }
+}
