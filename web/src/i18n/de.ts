@@ -109,6 +109,21 @@ export const de = {
     http: (status: number) =>
       `Die Anfrage ist fehlgeschlagen (HTTP ${status}).`,
     unexpected: "Unerwarteter Fehler. Bitte erneut versuchen.",
+    // Meldungen der API nach Fehlercode (X-Error-Code, Task 7.5); `minutes` aus Retry-After.
+    codes: {
+      rate_limit: (minutes: number) =>
+        `Zu viele Fragen in kurzer Zeit. Bitte in ${minutes === 1 ? "1 Minute" : `${minutes} Minuten`} wieder versuchen.`,
+      daily_budget: (_minutes: number) =>
+        "Das Tagesbudget der Demo ist aufgebraucht. Ab Mitternacht (UTC) gibt es neue Fragen; die Suche in den Quellen ist auf parlament.ch jederzeit möglich.",
+      llm_unavailable: (_minutes: number) =>
+        "Das Sprachmodell ist vorübergehend nicht erreichbar. Bitte später erneut versuchen.",
+      unavailable: (_minutes: number) =>
+        "Die Demo ist vorübergehend nicht verfügbar. Bitte später erneut versuchen.",
+      model_refused: (_minutes: number) =>
+        "Das Sprachmodell hat die Anfrage abgelehnt. Versuchen Sie, die Frage anders zu formulieren.",
+      model_output: (_minutes: number) =>
+        "Das Sprachmodell lieferte keine gültige Antwort. Bitte erneut versuchen.",
+    } as Record<string, (minutes: number) => string>,
   },
   footer: {
     sourceLabel: "Quelle:",

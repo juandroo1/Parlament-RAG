@@ -112,6 +112,20 @@ export const fr: Messages = {
       `La saisie n’est pas valable${fields ? `${NBSP}: ${fields}` : "."}`,
     http: (status) => `La requête a échoué (HTTP ${status}).`,
     unexpected: "Erreur inattendue. Veuillez réessayer.",
+    codes: {
+      rate_limit: (minutes) =>
+        `Trop de questions en peu de temps. Veuillez réessayer dans ${minutes === 1 ? "1 minute" : `${minutes} minutes`}.`,
+      daily_budget: () =>
+        `Le budget quotidien de la démo est épuisé. De nouvelles questions seront possibles dès minuit (UTC)${NBSP}; la recherche dans les sources reste possible en tout temps sur parlament.ch.`,
+      llm_unavailable: () =>
+        "Le modèle de langue est momentanément indisponible. Veuillez réessayer plus tard.",
+      unavailable: () =>
+        "La démo est momentanément indisponible. Veuillez réessayer plus tard.",
+      model_refused: () =>
+        "Le modèle de langue a refusé la requête. Essayez de reformuler la question.",
+      model_output: () =>
+        "Le modèle de langue n’a pas fourni de réponse valable. Veuillez réessayer.",
+    },
   },
   footer: {
     sourceLabel: `Source${NBSP}:`,
