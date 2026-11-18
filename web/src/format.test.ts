@@ -140,7 +140,8 @@ describe("auf Französisch", () => {
     };
     expect(usageLine(usage)).toMatch(/7['’]818 Input- und 310 Output-Tokens/);
     expect(usageLine(usage, fr)).toMatch(
-      /7\s818 tokens d'entrée et 310 de sortie/,
+      // Je nach ICU-Daten «7 818» oder «7'818».
+      /7[\s'’]818 tokens d'entrée et 310 de sortie/,
     );
     expect(usageLine({ ...usage, model: null }, fr)).toBe(
       "Aucun appel à l'IA · 6.0 s",
