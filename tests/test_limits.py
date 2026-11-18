@@ -177,6 +177,7 @@ def test_ask_records_cost_and_enforces_rate_limit(
         third = _ask(demo)
     assert third.status_code == 429
     assert int(third.headers["Retry-After"]) == 3600
+    assert third.headers["X-Error-Code"] == "rate_limit"
     assert "X-Request-ID" in third.headers
     assert "2 Fragen pro Stunde" in third.json()["detail"]
     assert len(demo["pipeline"].calls) == 2  # abgelehnt vor der Pipeline
@@ -192,6 +193,7 @@ def test_ask_stops_when_the_daily_budget_is_used(demo: dict[str, Any]) -> None:
     assert response.status_code == 429
     assert "Tagesbudget" in response.json()["detail"]
     assert int(response.headers["Retry-After"]) == 12 * 3600
+    assert response.headers["X-Error-Code"] == "daily_budget"
     assert demo["pipeline"].calls == []
 
 
@@ -203,6 +205,8 @@ def test_ask_rejects_when_usage_cannot_be_read(demo: dict[str, Any]) -> None:
     demo["limits"].cost = CostGuard(BrokenStore(), 3.0, now=lambda: NOW)
     response = _ask(demo)
     assert response.status_code == 503
+    assert response.json() == {"detail": "Die Demo ist vorübergehend nicht verfügbar."}
+    assert response.headers["X-Error-Code"] == "unavailable"
     assert demo["pipeline"].calls == []
 
 

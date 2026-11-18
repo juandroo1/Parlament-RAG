@@ -8,6 +8,9 @@ Pro Anfrage eine Logzeile mit Usage, ohne den Wortlaut der Frage (Datenschutz be
 
 In der Demo (Task 6.3a) prüfen Kostendeckel und Rate-Limit jede Anfrage vor der Pipeline
 (`parlrag.api.limits`); sind sie ausgeschaltet, ändert sich nichts.
+
+Jeder Fehler trägt zusätzlich einen maschinenlesbaren Code im Header `X-Error-Code` (Spec 002,
+Task 7.5): Die Web-UI übersetzt daraus die Meldung, `detail` bleibt für andere Clients deutsch.
 """
 
 import logging
@@ -39,6 +42,16 @@ logger = logging.getLogger("parlrag.api")
 router = APIRouter()
 
 REQUEST_ID_HEADER = "X-Request-ID"
+ERROR_CODE_HEADER = "X-Error-Code"
+
+# Fehlercodes für `X-Error-Code` (Plan 002, Abschnitt 6).
+RATE_LIMIT = "rate_limit"
+DAILY_BUDGET = "daily_budget"
+LLM_UNAVAILABLE = "llm_unavailable"
+UNAVAILABLE = "unavailable"
+MODEL_REFUSED = "model_refused"
+MODEL_OUTPUT = "model_output"
+LIMIT_CODES = {"rate": RATE_LIMIT, "budget": DAILY_BUDGET}
 
 
 @lru_cache(maxsize=1)
@@ -71,14 +84,27 @@ def limits_provider() -> DemoLimits:
     return get_limits()
 
 
-def _error_status(error: LLMError) -> tuple[int, str]:
+def _error_status(error: LLMError) -> tuple[int, str, str]:
+    """HTTP-Status, Meldung (`detail`) und Fehlercode für einen Fehler des LLM."""
     if isinstance(error, LLMConfigError):
-        return status.HTTP_503_SERVICE_UNAVAILABLE, f"LLM nicht verfügbar: {error}"
+        return status.HTTP_503_SERVICE_UNAVAILABLE, f"LLM nicht verfügbar: {error}", LLM_UNAVAILABLE
     if isinstance(error, LLMRefusalError):
-        return status.HTTP_422_UNPROCESSABLE_CONTENT, "Das Modell hat die Anfrage abgelehnt."
+        return (
+            status.HTTP_422_UNPROCESSABLE_CONTENT,
+            "Das Modell hat die Anfrage abgelehnt.",
+            MODEL_REFUSED,
+        )
     if isinstance(error, LLMOutputError):
-        return status.HTTP_502_BAD_GATEWAY, "Das Modell lieferte keine gültige Antwort."
-    return status.HTTP_503_SERVICE_UNAVAILABLE, f"LLM vorübergehend nicht verfügbar: {error}"
+        return (
+            status.HTTP_502_BAD_GATEWAY,
+            "Das Modell lieferte keine gültige Antwort.",
+            MODEL_OUTPUT,
+        )
+    return (
+        status.HTTP_503_SERVICE_UNAVAILABLE,
+        f"LLM vorübergehend nicht verfügbar: {error}",
+        LLM_UNAVAILABLE,
+    )
 
 
 def _log(request_id: str, request: AskRequest, http_status: int, **fields: Any) -> None:
@@ -110,7 +136,7 @@ def ask(
     try:
         result = provide().ask(request.question, request.filters)
     except LLMError as exc:
-        http_status, message = _error_status(exc)
+        http_status, message, code = _error_status(exc)
         latency_ms = (time.perf_counter() - start) * 1000
         _log(
             request_id,
@@ -120,7 +146,9 @@ def ask(
             latency_ms=f"{latency_ms:.0f}",
         )
         raise HTTPException(
-            status_code=http_status, detail=message, headers={REQUEST_ID_HEADER: request_id}
+            status_code=http_status,
+            detail=message,
+            headers={REQUEST_ID_HEADER: request_id, ERROR_CODE_HEADER: code},
         ) from exc
 
     latency_ms = (time.perf_counter() - start) * 1000
@@ -163,7 +191,11 @@ def _admit(limits: DemoLimits, http_request: Request, request: AskRequest, reque
         raise HTTPException(
             status_code=status.HTTP_429_TOO_MANY_REQUESTS,
             detail=exc.message,
-            headers={REQUEST_ID_HEADER: request_id, "Retry-After": str(exc.retry_after)},
+            headers={
+                REQUEST_ID_HEADER: request_id,
+                ERROR_CODE_HEADER: LIMIT_CODES[exc.kind],
+                "Retry-After": str(exc.retry_after),
+            },
         ) from exc
     except SQLAlchemyError as exc:  # Ohne Zähler keine Kostenkontrolle: lieber ablehnen.
         logger.exception("api_usage nicht lesbar")
@@ -171,5 +203,5 @@ def _admit(limits: DemoLimits, http_request: Request, request: AskRequest, reque
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail="Die Demo ist vorübergehend nicht verfügbar.",
-            headers={REQUEST_ID_HEADER: request_id},
+            headers={REQUEST_ID_HEADER: request_id, ERROR_CODE_HEADER: UNAVAILABLE},
         ) from exc
