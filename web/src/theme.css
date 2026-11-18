@@ -125,6 +125,20 @@
     font-family: var(--font-sans);
   }
 
+  /* Weniger Bewegung (AK-13.3): Animationen und Übergänge praktisch aus, auch für Puls,
+     Einblenden des Dialogs und Hervorheben einer Quelle. */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    ::before,
+    ::after,
+    ::backdrop {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+
   /* Offener Dialog: Seite dahinter scrollt nicht mit. */
   html:has(dialog[open]) {
     overflow: hidden;
