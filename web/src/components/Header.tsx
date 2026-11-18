@@ -2,7 +2,9 @@ import logoDarkPng from "../assets/logo-dark.png";
 import logoDarkWebp from "../assets/logo-dark.webp";
 import logoLightPng from "../assets/logo-light.png";
 import logoLightWebp from "../assets/logo-light.webp";
+import { useI18n } from "../i18n/LanguageProvider";
 import { ShieldIcon } from "./icons";
+import { LanguageToggle } from "./LanguageToggle";
 import { ThemeToggle } from "./ThemeToggle";
 
 // Logo-Dateien: 276 × 104 px, angezeigt mit 52 px (Desktop) bzw. 38 px Höhe (Handy).
@@ -10,6 +12,7 @@ const LOGO = "h-[38px] w-auto sm:h-[52px]";
 
 /** Kopfzeile mit Logo (hell/dunkel), Umschaltern und dem Hinweis «Privates Projekt» (AK-8.1, AK-8.2). */
 export function Header() {
+  const { t } = useI18n();
   return (
     <header>
       <div className="border-b border-border">
@@ -40,6 +43,7 @@ export function Header() {
             </picture>
           </a>
           <div className="flex items-center gap-1.5 sm:gap-2.5">
+            <LanguageToggle />
             <ThemeToggle />
           </div>
         </div>
@@ -47,7 +51,7 @@ export function Header() {
       <div className="mx-auto max-w-[760px] px-4 pt-3 sm:px-6 sm:pt-5">
         <p className="inline-flex items-center gap-2 rounded-full border border-border bg-surface px-3 py-1.5 text-xs text-muted sm:text-[13px]">
           <ShieldIcon />
-          Privates Projekt – keine amtliche Veröffentlichung
+          {t.notice}
         </p>
       </div>
     </header>

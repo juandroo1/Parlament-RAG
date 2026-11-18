@@ -1,21 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import type { AskResponse } from "../api";
 import { splitCitations, usageLine } from "../format";
+import { useI18n } from "../i18n/LanguageProvider";
 import { SourceCard } from "./SourceCard";
 
-const REASONS: Record<string, string> = {
-  no_hits: "Die Suche fand keine passenden Abschnitte.",
-  low_similarity: "Die gefundenen Abschnitte passen zu wenig zur Frage.",
-  model: "Die gefundenen Abschnitte beantworten die Frage nicht.",
-};
-
-function sourceCount(count: number): string {
-  return count === 1
-    ? "KI-Antwort aus 1 Quelle"
-    : `KI-Antwort aus ${count} Quellen`;
-}
-
 export function Answer({ result }: { result: AskResponse }) {
+  const { t } = useI18n();
   const [highlighted, setHighlighted] = useState<number | null>(null);
   const timer = useRef<number | undefined>(undefined);
   const numbers = new Set(result.sources.map((source) => source.number));
@@ -43,16 +33,16 @@ export function Answer({ result }: { result: AskResponse }) {
         className="rounded-2xl border border-warn-border bg-warn-bg p-5"
       >
         <h2 className="font-display text-lg font-extrabold">
-          Keine ausreichende Grundlage
+          {t.answer.insufficientTitle}
         </h2>
         <p className="mt-2">{result.answer}</p>
-        {result.insufficient_reason && REASONS[result.insufficient_reason] && (
-          <p className="mt-2 text-sm text-muted">
-            {REASONS[result.insufficient_reason]} Versuchen Sie eine konkretere
-            Frage oder andere Filter.
-          </p>
-        )}
-        <p className="mt-3 text-xs text-muted">{usageLine(result.usage)}</p>
+        {result.insufficient_reason &&
+          t.answer.reasons[result.insufficient_reason] && (
+            <p className="mt-2 text-sm text-muted">
+              {t.answer.reasons[result.insufficient_reason]} {t.answer.tryAgain}
+            </p>
+          )}
+        <p className="mt-3 text-xs text-muted">{usageLine(result.usage, t)}</p>
       </section>
     );
   }
@@ -62,10 +52,10 @@ export function Answer({ result }: { result: AskResponse }) {
       <div>
         <div className="flex flex-wrap items-center gap-2.5">
           <h2 className="font-display text-[22px] font-extrabold sm:text-2xl">
-            Antwort
+            {t.answer.title}
           </h2>
           <span className="rounded-full bg-surface-2 px-2.5 py-1 text-xs text-muted sm:text-[13px]">
-            {sourceCount(result.sources.length)}
+            {t.answer.badge(result.sources.length)}
           </span>
         </div>
         <p className="mt-3 max-w-[62ch] text-[17px] leading-[1.75] whitespace-pre-line sm:mt-4 sm:text-lg">
@@ -79,7 +69,7 @@ export function Answer({ result }: { result: AskResponse }) {
                     <a
                       key={number}
                       href={`#quelle-${number}`}
-                      aria-label={`Quelle ${number}`}
+                      aria-label={t.answer.citation(number)}
                       className="mx-0.5 inline-block min-w-6 rounded-md bg-cite-bg px-1.5 text-center align-[1px] text-[13px] leading-6 font-bold text-accent-text no-underline hover:underline"
                       onClick={(event) => {
                         event.preventDefault();
@@ -101,10 +91,12 @@ export function Answer({ result }: { result: AskResponse }) {
             ),
           )}
         </p>
-        <p className="mt-3 text-xs text-muted">{usageLine(result.usage)}</p>
+        <p className="mt-3 text-xs text-muted">{usageLine(result.usage, t)}</p>
       </div>
       <div>
-        <h2 className="font-display text-xl font-extrabold">Quellen</h2>
+        <h2 className="font-display text-xl font-extrabold">
+          {t.answer.sources}
+        </h2>
         <ol className="mt-3.5 space-y-3">
           {result.sources.map((source) => (
             <SourceCard

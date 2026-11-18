@@ -1,13 +1,8 @@
 import { useId, useState } from "react";
 import type { Council, Filters } from "../api";
-import { COUNCILS, PARL_GROUPS } from "../format";
+import { COUNCIL_KEYS, PARL_GROUP_KEYS } from "../format";
+import { useI18n } from "../i18n/LanguageProvider";
 import { ArrowIcon, FilterIcon } from "./icons";
-
-const EXAMPLES = [
-  "Was sagte Bundesrat Rösti zum Kühlwasser der Kernkraftwerke während der Hitzewelle?",
-  "Qu'a dit le Conseil fédéral sur la 13e rente AVS au Conseil des Etats ?",
-  "Weshalb lehnte der Bundesrat die Landschaftsinitiative ab?",
-];
 
 interface Props {
   loading: boolean;
@@ -19,6 +14,7 @@ const field =
   "focus:border-primary focus:outline-none";
 
 export function AskForm({ loading, onSubmit }: Props) {
+  const { t } = useI18n();
   const [question, setQuestion] = useState("");
   const [filters, setFilters] = useState<Filters>({});
   const [showFilters, setShowFilters] = useState(false);
@@ -41,10 +37,8 @@ export function AskForm({ loading, onSubmit }: Props) {
         htmlFor={`${id}-q`}
         className="mb-1.5 block text-sm font-semibold sm:mb-2 sm:text-[15px]"
       >
-        Ihre Frage{" "}
-        <span className="font-normal text-muted">
-          (Deutsch oder Französisch)
-        </span>
+        {t.form.label}{" "}
+        <span className="font-normal text-muted">{t.form.hint}</span>
       </label>
       <textarea
         id={`${id}-q`}
@@ -52,7 +46,7 @@ export function AskForm({ loading, onSubmit }: Props) {
         rows={3}
         maxLength={500}
         value={question}
-        placeholder="z. B. Was sagte der Bundesrat zur Motion …?"
+        placeholder={t.form.placeholder}
         onChange={(event) => setQuestion(event.target.value)}
         onKeyDown={(event) => {
           if (event.key === "Enter" && (event.ctrlKey || event.metaKey)) {
@@ -63,17 +57,18 @@ export function AskForm({ loading, onSubmit }: Props) {
 
       <div className="mt-3">
         <span id={`${id}-ex`} className="text-[13px] text-muted">
-          Beispiele:
+          {t.form.examples}
         </span>
         <ul
           aria-labelledby={`${id}-ex`}
           className="-mx-3.5 mt-1.5 flex gap-2 overflow-x-auto px-3.5 pb-1 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0"
         >
-          {EXAMPLES.map((example) => (
+          {t.form.exampleQuestions.map(({ text: example, lang }) => (
             <li key={example} className="shrink-0 sm:shrink">
               <button
                 type="button"
                 className="min-h-11 max-w-[260px] rounded-xl border border-border bg-bg px-3.5 py-1.5 text-left text-sm hover:border-primary sm:min-h-9 sm:max-w-none sm:pointer-coarse:min-h-11 sm:rounded-full sm:px-3 sm:py-1 sm:text-[13px]"
+                lang={lang}
                 onClick={() => setQuestion(example)}
               >
                 {example.length > 60 ? `${example.slice(0, 58)}…` : example}
@@ -88,9 +83,11 @@ export function AskForm({ loading, onSubmit }: Props) {
           id={`${id}-filters`}
           className="mt-4 grid gap-3.5 rounded-xl border border-border p-3.5 sm:grid-cols-2 sm:p-4"
         >
-          <legend className="px-1.5 text-[13px] font-semibold">Filter</legend>
+          <legend className="px-1.5 text-[13px] font-semibold">
+            {t.form.filter}
+          </legend>
           <label className="block text-[13px] font-semibold">
-            <span className="mb-1.5 block">Rat</span>
+            <span className="mb-1.5 block">{t.form.council}</span>
             <select
               className={`${field} h-11`}
               value={filters.council ?? ""}
@@ -98,37 +95,36 @@ export function AskForm({ loading, onSubmit }: Props) {
                 update({ council: event.target.value as Council | "" })
               }
             >
-              <option value="">Alle Räte</option>
-              {Object.entries(COUNCILS).map(([value, label]) => (
+              <option value="">{t.form.allCouncils}</option>
+              {COUNCIL_KEYS.map((value) => (
                 <option key={value} value={value}>
-                  {label}
+                  {t.councils[value]}
                 </option>
               ))}
             </select>
           </label>
           <label className="block text-[13px] font-semibold">
-            <span className="mb-1.5 block">Fraktion</span>
+            <span className="mb-1.5 block">{t.form.group}</span>
             <select
               className={`${field} h-11`}
               value={filters.parl_group ?? ""}
               onChange={(event) => update({ parl_group: event.target.value })}
             >
-              <option value="">Alle Fraktionen</option>
-              {PARL_GROUPS.map(([value, label]) => (
+              <option value="">{t.form.allGroups}</option>
+              {PARL_GROUP_KEYS.map((value) => (
                 <option key={value} value={value}>
-                  {label}
+                  {t.parlGroups[value]}
                 </option>
               ))}
             </select>
             {filters.parl_group && (
               <span className="mt-1.5 block text-xs font-normal text-muted">
-                Mit Fraktionsfilter werden nur Voten durchsucht, keine
-                Geschäftstexte.
+                {t.form.groupNote}
               </span>
             )}
           </label>
           <label className="block text-[13px] font-semibold">
-            <span className="mb-1.5 block">Von</span>
+            <span className="mb-1.5 block">{t.form.from}</span>
             <input
               type="date"
               className={`${field} h-11`}
@@ -137,7 +133,7 @@ export function AskForm({ loading, onSubmit }: Props) {
             />
           </label>
           <label className="block text-[13px] font-semibold">
-            <span className="mb-1.5 block">Bis</span>
+            <span className="mb-1.5 block">{t.form.to}</span>
             <input
               type="date"
               className={`${field} h-11`}
@@ -157,14 +153,15 @@ export function AskForm({ loading, onSubmit }: Props) {
           onClick={() => setShowFilters((value) => !value)}
         >
           <FilterIcon />
-          Filter{activeFilters > 0 ? ` (${activeFilters} aktiv)` : ""}
+          {t.form.filter}
+          {activeFilters > 0 ? ` (${t.form.activeFilters(activeFilters)})` : ""}
         </button>
         <button
           type="submit"
           disabled={tooShort || loading}
           className="inline-flex min-h-12 flex-1 items-center justify-center gap-2.5 rounded-xl bg-primary px-5 text-base font-bold text-on-primary hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50 sm:flex-none sm:px-6"
         >
-          {loading ? "Suche läuft …" : "Fragen"}
+          {loading ? t.form.searching : t.form.submit}
           {!loading && <ArrowIcon />}
         </button>
       </div>
