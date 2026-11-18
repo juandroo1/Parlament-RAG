@@ -17,6 +17,31 @@
       content="#121622"
       media="(prefers-color-scheme: dark)"
     />
+    <script>
+      // Dunkler Modus vor dem ersten Zeichnen (Spec 002, AK-9.3); Logik wie src/theme/preference.ts.
+      (function () {
+        var pref = "system";
+        try {
+          var saved = localStorage.getItem("fdp-theme");
+          if (saved === "light" || saved === "dark") pref = saved;
+        } catch (e) {}
+        var dark =
+          pref === "dark" ||
+          (pref === "system" &&
+            !!window.matchMedia &&
+            window.matchMedia("(prefers-color-scheme: dark)").matches);
+        document.documentElement.setAttribute(
+          "data-theme",
+          dark ? "dark" : "light",
+        );
+        if (pref !== "system") {
+          var metas = document.querySelectorAll('meta[name="theme-color"]');
+          for (var i = 0; i < metas.length; i++) {
+            metas[i].setAttribute("content", dark ? "#121622" : "#ffffff");
+          }
+        }
+      })();
+    </script>
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/manifest.webmanifest" />

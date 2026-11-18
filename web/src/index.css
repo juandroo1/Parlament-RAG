@@ -1,4 +1,5 @@
 @import "tailwindcss";
 @import "./theme.css";
 
-@custom-variant dark (@media (prefers-color-scheme: dark));
+/* dark: folgt data-theme auf <html> (Task 7.3, gesetzt vom Script in index.html und useTheme). */
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
