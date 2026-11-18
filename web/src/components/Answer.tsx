@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import type { AskResponse } from "../api";
-import { splitCitations, usageLine } from "../format";
+import { citationRuns, usageLine } from "../format";
 import { useI18n } from "../i18n/LanguageProvider";
 import { SourceCard } from "./SourceCard";
 
@@ -59,11 +59,11 @@ export function Answer({ result }: { result: AskResponse }) {
           </span>
         </div>
         <p className="mt-3 max-w-[62ch] text-[17px] leading-[1.75] whitespace-pre-line sm:mt-4 sm:text-lg">
-          {splitCitations(result.answer).map((segment, index) =>
+          {citationRuns(result.answer).map((segment, index) =>
             segment.kind === "text" ? (
               <span key={index}>{segment.text}</span>
             ) : (
-              <span key={index}>
+              <span key={index} className="whitespace-nowrap">
                 {segment.numbers.map((number) =>
                   numbers.has(number) ? (
                     <a
@@ -87,6 +87,7 @@ export function Answer({ result }: { result: AskResponse }) {
                     </span>
                   ),
                 )}
+                {segment.trail}
               </span>
             ),
           )}

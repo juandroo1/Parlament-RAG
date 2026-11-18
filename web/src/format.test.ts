@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import type { Source, Usage } from "./api";
 import { SPEECH } from "./test/fixtures";
 import {
+  citationRuns,
   formatDate,
   snippet,
   sourceContext,
@@ -146,5 +147,27 @@ describe("auf Französisch", () => {
     expect(usageLine({ ...usage, model: null }, fr)).toBe(
       "Aucun appel à l’IA · 6.0 s",
     );
+  });
+});
+
+describe("citationRuns", () => {
+  it("hängt Satzzeichen an das Zitat und schützt das Leerzeichen davor", () => {
+    expect(
+      citationRuns("Strom fehlt [7]. Wie die Reserve [7][8], so auch [2]"),
+    ).toEqual([
+      { kind: "text", text: "Strom fehlt " },
+      { kind: "cite", numbers: [7], trail: "." },
+      { kind: "text", text: " Wie die Reserve " },
+      { kind: "cite", numbers: [7], trail: "" },
+      { kind: "cite", numbers: [8], trail: "," },
+      { kind: "text", text: " so auch " },
+      { kind: "cite", numbers: [2], trail: "" },
+    ]);
+  });
+
+  it("lässt Text ohne Zitate unverändert", () => {
+    expect(citationRuns("Kein Zitat.")).toEqual([
+      { kind: "text", text: "Kein Zitat." },
+    ]);
   });
 });
