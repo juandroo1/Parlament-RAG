@@ -1,4 +1,4 @@
-Lies `CLAUDE.md` sowie `specs/001-frag-das-parlament/spec.md`, `plan.md` und `tasks.md`.
+Lies `CLAUDE.md` und die dort genannte aktive Spec (`spec.md`, `plan.md` und `tasks.md`), dazu `spec.md` und `plan.md` von Spec 001 als Grundlage. Ist noch keine Spec aktiv oder hat sie noch keine `tasks.md`: anhalten und melden.
 
 Bearbeite den Task $ARGUMENTS. Ist nichts angegeben, nimm den ersten offenen Task in `tasks.md`.
 

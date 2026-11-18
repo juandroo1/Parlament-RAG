@@ -6,7 +6,12 @@ RAG-Anwendung, die Fragen zu Debatten und Geschäften des Schweizer Bundesparlam
 
 ## Arbeitsweise: Spec-driven Development
 
-Die Quelle der Wahrheit liegt in `specs/001-frag-das-parlament/`:
+Die Quelle der Wahrheit liegt in `specs/`. Jedes Vorhaben hat einen eigenen Ordner:
+
+- `specs/001-frag-das-parlament/`: MVP, abgeschlossen. Architektur, Leitplanken und Akzeptanzkriterien gelten weiter.
+- `specs/002-redesign/`: Redesign der Web-UI (Dark Mode, DE/FR, Handy und Desktop). **Aktive Spec.**
+
+Jeder Ordner enthält:
 
 - `spec.md` beschreibt das Was und Warum: Anforderungen, Akzeptanzkriterien, Nicht-Ziele.
 - `plan.md` beschreibt das Wie: Architektur, Stack, Datenmodell, Entscheidungsprotokoll.
@@ -14,10 +19,10 @@ Die Quelle der Wahrheit liegt in `specs/001-frag-das-parlament/`:
 
 Regeln:
 
-1. Vor jeder Aufgabe `spec.md`, `plan.md` und den betroffenen Task in `tasks.md` lesen.
+1. Vor jeder Aufgabe `spec.md`, `plan.md` und den betroffenen Task in `tasks.md` der aktiven Spec lesen, dazu `spec.md` und `plan.md` von Spec 001 als Grundlage.
 2. Immer nur einen Task bearbeiten. Danach die Checkbox abhaken und in zwei, drei Sätzen zusammenfassen, was gemacht wurde.
 3. Wenn eine Anforderung unklar ist oder der Plan nicht aufgeht: anhalten und nachfragen. Nie stillschweigend vom Plan abweichen. Eine Abweichung wird zuerst im Entscheidungsprotokoll von `plan.md` festgehalten und erst danach umgesetzt.
-4. Nichts bauen, was nicht in `spec.md` steht. Ideen für später kommen in `spec.md` unter «Offene Fragen».
+4. Nichts bauen, was nicht in `spec.md` steht. Ideen für später kommen in die `spec.md` der aktiven Spec unter «Offene Fragen».
 5. Zu jedem Task gehören Tests, die seine Akzeptanzkriterien prüfen.
 
 ## Befehle
@@ -97,6 +102,7 @@ evals/
 tests/
   fixtures/      echte OData-Antworten als JSON
 specs/001-frag-das-parlament/
+specs/002-redesign/
 web/             React-UI (Phase 5)
 Dockerfile
 docker-compose.yml

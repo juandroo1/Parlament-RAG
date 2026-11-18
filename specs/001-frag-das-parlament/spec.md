@@ -109,6 +109,6 @@ Goldset (Endstand MVP): mindestens 65 Fragen, davon 40 auf Deutsch und 10 auf Fr
 - Reranker mit GPU oder als API-Dienst? Der Cross-Encoder bge-reranker-v2-m3 hebt Recall@10 auf 0.826 (sprachübergreifend 0.800), braucht auf der CPU aber rund 28 s pro Suche und bleibt deshalb ausgeschaltet (Task 6.1a, plan.md, Entscheidungsprotokoll).
 - Mehrturn-Gespräche (Folgefragen) für eine spätere Version?
 - Bessere Volltextsuche für eine hybride Suche: Gewichtung mit IDF bzw. BM25 (z. B. eigene Gewichtung oder eine Postgres-Erweiterung) und gewichtetes RRF. Die Baseline in Task 3.3 zeigt, dass die heutige Volltextsuche (ODER-Abfrage, `ts_rank_cd` ohne IDF) das Retrieval verschlechtert; Standard ist deshalb die Vektorsuche.
-- Oberfläche auch auf Französisch (Umschalter DE/FR)? Die Web-UI (Task 5.2) ist auf Deutsch; Fragen und Antworten funktionieren in beiden Sprachen.
+- Oberfläche auch auf Französisch (Umschalter DE/FR)? Die Web-UI (Task 5.2) ist auf Deutsch; Fragen und Antworten funktionieren in beiden Sprachen. Aufgenommen in [Spec 002](../002-redesign/spec.md) (US-10).
 - Seitenzahl im Amtlichen Bulletin (Platzhalter `[PAGE n]` im Votum) als zusätzliche Quellenangabe in einer späteren Version?
 - Deployment unter Linux (Task 6.3): Der Container-User (UID 10001) darf im Bind-Mount `./data/raw` eventuell nicht schreiben. Lösung beim Deployment festlegen (Besitzrechte des Ordners oder benanntes Volume). Gelöst in Task 6.3a: In der Produktion ist der Rohdaten-Cache ein benanntes Volume; die Demo braucht keinen Ingest.
