@@ -31,7 +31,7 @@ Die Farben stehen als CSS-Variablen in `web/src/theme.css`, einmal für hell und
 | `surface` | `#f4f6f9` | `#1a2131` | Suchkarte, Quellen, Footer |
 | `surface-2` | `#e7ecf2` | `#252e43` | Badges |
 | `border` | `#d5dde7` | `#34405a` | Rahmen, Trennlinien |
-| `input-border` | `#b7c3d2` | `#4a5878` | Eingabefelder (3:1 zum Hintergrund) |
+| `input-border` | `#7d8ea3` | `#66779b` | Eingabefelder (3:1 zum Hintergrund) |
 | `text` | `#0f243f` | `#f4f5f7` | Text, Überschriften |
 | `muted` | `#4b5c71` | `#aab4c5` | Nebentext |
 | `primary` / `on-primary` | `#0f243f` / `#ffffff` | `#f4f5f7` / `#121622` | Knopf «Fragen», aktive Umschalter |
@@ -39,7 +39,7 @@ Die Farben stehen als CSS-Variablen in `web/src/theme.css`, einmal für hell und
 | `accent-text` | `#c42020` | `#ff8a85` | Zitate, Links in Rot |
 | `cite-bg` | `#fdecec` | `#3a1d24` | Hintergrund der Zitat-Marken |
 
-Für die Zustände «keine Grundlage» (bisher Amber) und Fehler (bisher Rot) kommen in Task 7.1 je zwei Tokens dazu. Ein Test rechnet die Kontraste aller Paare aus Text- und Hintergrund-Tokens nach (AK-13.4, AK-9.4).
+Für die Zustände «keine Grundlage» (`warn-bg`, `warn-border`) und Fehler (`error-bg`, `error-border`, `error-text`) gibt es eigene Tokens (Task 7.1). Ein Test rechnet die Kontraste aller Paare aus Text- und Hintergrund-Tokens nach (AK-13.4, AK-9.4).
 
 ## 4. Dunkler Modus
 
@@ -110,7 +110,7 @@ public/                Favicon, Apple-Touch-Icon, Web-Manifest
   - axe auf Startseite, Antwort, Fehler und Dialog (AK-13.1), über `axe-core` als Dev-Abhängigkeit. jsdom kann keine Kontraste rechnen; die deckt der Token-Test ab.
 - **Backend:** Tests für `X-Error-Code` in jedem Fehlerfall.
 - **Lighthouse:** lokal gegen den `web`-Container, mobil, hell und dunkel (Qualitätsziele der Spec). Ergebnis in die PR-Beschreibung von Task 7.7 und ins README; nicht in der CI.
-- **Grösse des Builds:** Ausgangswert vor dem Redesign (Build vom 17.11.2026): JavaScript 232 KB, CSS 16 KB, ohne gzip. Task 7.1 misst die gzip-Werte als Basis; Ziel höchstens 20 % mehr (ohne Schrift- und Bilddateien, die separat gemessen werden).
+- **Grösse des Builds:** Ausgangswert vor dem Redesign (gemessen in Task 7.1, `vite build`): JavaScript 232.4 kB (gzip 73.2 kB), CSS 15.8 kB (gzip 4.0 kB), zusammen **77.2 kB gzip**. Ziel: höchstens 20 % mehr, also 92.6 kB gzip. Schriften und Bilder werden separat gemessen. Nach Task 7.1: JavaScript gzip 73.2 kB, CSS gzip 7.1 kB (die `@font-face`-Regeln aller Zeichensätze), zusammen 80.3 kB (+4 %). Für Deutsch und Französisch lädt der Browser nur die lateinischen Schriftdateien: Inter 48 kB und Plus Jakarta Sans 27 kB (WOFF2); die übrigen Zeichensätze liegen im Build, werden aber nur bei Bedarf geladen.
 
 ## 10. Risiken
 
@@ -131,3 +131,4 @@ public/                Favicon, Apple-Touch-Icon, Web-Manifest
 | 2026-11-18 | Entwurf **A «Klar»** gewählt (gegen B «Band» und C «Bulletin»). | Sandro. Ruhig, gut lesbar, auf dem Handy am kompaktesten; Rot nur als Akzent. |
 | 2026-11-18 | Übersetzung und Dark Mode als eigener Code (typisierte Wörterbücher, `data-theme`), keine Bibliotheken. | Zwei Sprachen und drei Modi rechtfertigen keine Abhängigkeit; fehlende Übersetzungen fängt der Typ ab. |
 | 2026-11-18 | Fehlercodes als Header `X-Error-Code`, `detail` bleibt. | Übersetzbare Meldungen ohne Bruch der API für andere Clients. |
+| 2026-11-18 | Task 7.1: Rahmen der Eingabefelder dunkler als im Prototyp (`#7d8ea3` hell, `#66779b` dunkel), weil `#b7c3d2` bzw. `#4a5878` die 3:1 für Bedienelemente verfehlten (Kontrasttest). nginx liefert `manifest.webmanifest` mit eigenem Block als `application/manifest+json` aus, weil `mime.types` die Endung nicht kennt. Logo und Icons erzeugt `docs/design/make-assets.mjs` einmalig mit `sharp`, das nur vorübergehend installiert wird. | Kontrastziel der Spec (AK-9.4, AK-13.4); keine Bildwerkzeuge im Build. |
