@@ -1,10 +1,15 @@
 import { describe, expect, it, vi } from "vitest";
 import { ask, buildRequest } from "./api";
 
-function respond(status: number, body: unknown) {
+function respond(
+  status: number,
+  body: unknown,
+  headers: Record<string, string> = {},
+) {
   return vi.fn().mockResolvedValue({
     ok: status >= 200 && status < 300,
     status,
+    headers: new Headers(headers),
     json: () => Promise.resolve(body),
   });
 }
@@ -74,6 +79,32 @@ describe("ask", () => {
     await expect(ask({ question: "Frage?" }, fetchMock)).rejects.toMatchObject({
       kind: "network",
       status: null,
+    });
+  });
+
+  it("liest Fehlercode und Wartezeit aus den Headern (Task 7.5)", async () => {
+    const fetchMock = respond(
+      429,
+      { detail: "Zu viele Fragen: Die Demo erlaubt 10 Fragen pro Stunde." },
+      { "X-Error-Code": "rate_limit", "Retry-After": "720" },
+    );
+    await expect(ask({ question: "Frage?" }, fetchMock)).rejects.toMatchObject({
+      status: 429,
+      code: "rate_limit",
+      retryAfter: 720,
+      detail: "Zu viele Fragen: Die Demo erlaubt 10 Fragen pro Stunde.",
+    });
+  });
+
+  it("kommt ohne Header aus", async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: false,
+      status: 503,
+      json: () => Promise.resolve({ detail: "kaputt" }),
+    });
+    await expect(ask({ question: "Frage?" }, fetchMock)).rejects.toMatchObject({
+      code: null,
+      retryAfter: null,
     });
   });
 });
