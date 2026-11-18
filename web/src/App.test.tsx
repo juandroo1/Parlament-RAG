@@ -216,7 +216,9 @@ describe("App", () => {
       screen.getByRole("link", { name: "MIT-Lizenz" }),
     ).toBeInTheDocument();
     expect(
-      screen.getByText(/bewertet keine Personen, Parteien oder Vorlagen/),
+      within(screen.getByRole("contentinfo")).getByText(
+        /bewertet keine Personen, Parteien oder Vorlagen/,
+      ),
     ).toBeInTheDocument();
   });
 

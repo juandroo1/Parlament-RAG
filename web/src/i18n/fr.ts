@@ -127,6 +127,35 @@ export const fr: Messages = {
         "Le modèle de langue n’a pas fourni de réponse valable. Veuillez réessayer.",
     },
   },
+  howItWorks: {
+    button: "Comment ça marche",
+    title: "Comment ça marche",
+    close: "Fermer",
+    sections: [
+      {
+        title: "Ce que fait ce site",
+        text: "Vous posez une question sur les débats ou les objets du Parlement fédéral. Le site cherche les passages pertinents dans les procès-verbaux et les résume en indiquant les sources.",
+      },
+      {
+        title: "D’où viennent les données",
+        text: "Bulletin officiel (procès-verbaux) et Curia Vista (objets), données ouvertes des Services du Parlement de l’Assemblée fédérale. Sessions de décembre 2023 à octobre 2026, en français et en allemand.",
+      },
+      {
+        title: "Comment naît une réponse",
+        text: `Une recherche trouve les passages les plus pertinents, y compris dans l’autre langue. Un modèle d’IA rédige la réponse uniquement à partir de ces passages${NBSP}; chaque affirmation porte un numéro qui renvoie à sa source. Si les sources ne suffisent pas, le site le dit.`,
+      },
+      {
+        title: "Limites",
+        text: "L’IA peut se tromper ou simplifier. Seul le passage original sur parlament.ch fait foi. Le site restitue ce qui a été dit et n’évalue ni personnes, ni partis, ni objets.",
+      },
+      {
+        title: "Protection des données et limites de la démo",
+        text: "Vos questions ne sont pas enregistrées. La démo publique dispose d’un budget quotidien et permet 10 questions par heure.",
+      },
+    ],
+    linkCode: "Code sur GitHub",
+    linkEvals: "Résultats des évaluations",
+  },
   footer: {
     sourceLabel: `Source${NBSP}:`,
     sourceBefore:

@@ -125,6 +125,36 @@ export const de = {
         "Das Sprachmodell lieferte keine gültige Antwort. Bitte erneut versuchen.",
     } as Record<string, (minutes: number) => string>,
   },
+  // Bereich «So funktioniert's» (US-12).
+  howItWorks: {
+    button: "So funktioniert's",
+    title: "So funktioniert's",
+    close: "Schliessen",
+    sections: [
+      {
+        title: "Was die Seite macht",
+        text: "Sie stellen eine Frage zu Debatten oder Geschäften des Bundesparlaments. Die Seite sucht passende Stellen in den Protokollen und fasst sie mit Quellenangaben zusammen.",
+      },
+      {
+        title: "Woher die Daten stammen",
+        text: "Amtliches Bulletin (Wortprotokolle) und Curia Vista (Geschäfte), Open Data der Parlamentsdienste der Bundesversammlung. Sessionen von Dezember 2023 bis Oktober 2026, auf Deutsch und Französisch.",
+      },
+      {
+        title: "Wie eine Antwort entsteht",
+        text: "Eine Suche findet die passendsten Abschnitte, auch in der anderen Sprache. Ein KI-Modell schreibt die Antwort nur aus diesen Abschnitten; jede Aussage trägt eine Nummer, die zur Quelle führt. Reichen die Quellen nicht, sagt die Seite das.",
+      },
+      {
+        title: "Grenzen",
+        text: "Die KI kann sich irren oder etwas verkürzen. Massgebend ist immer die Originalstelle auf parlament.ch. Die Seite gibt wieder, was gesagt wurde, und bewertet keine Personen, Parteien oder Vorlagen.",
+      },
+      {
+        title: "Datenschutz und Grenzen der Demo",
+        text: "Ihre Fragen werden nicht gespeichert. Die öffentliche Demo hat ein Tagesbudget und erlaubt 10 Fragen pro Stunde.",
+      },
+    ],
+    linkCode: "Code auf GitHub",
+    linkEvals: "Eval-Ergebnisse",
+  },
   footer: {
     sourceLabel: "Quelle:",
     sourceBefore:
