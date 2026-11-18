@@ -55,10 +55,16 @@ export interface AskRequest {
   };
 }
 
+/** Art des Fehlers; die Oberfläche formuliert daraus die Meldung in ihrer Sprache (Task 7.4). */
+export type ApiErrorKind = "network" | "validation" | "http";
+
 export class ApiError extends Error {
   constructor(
     message: string,
     readonly status: number | null,
+    readonly kind: ApiErrorKind = "http",
+    /** Meldung der API (`detail`) bzw. bei Validierungsfehlern die Liste der Felder. */
+    readonly detail: string | null = null,
   ) {
     super(message);
     this.name = "ApiError";
@@ -77,17 +83,26 @@ export function buildRequest(question: string, filters: Filters): AskRequest {
   return request;
 }
 
-function errorMessage(status: number, body: unknown): string {
+function toError(status: number, body: unknown): ApiError {
   const detail = (body as { detail?: unknown } | null)?.detail;
-  if (typeof detail === "string") return detail;
+  if (typeof detail === "string")
+    return new ApiError(detail, status, "http", detail);
   if (status === 422 && Array.isArray(detail)) {
     const fields = detail
       .map((item) => (item as { msg?: string }).msg)
       .filter(Boolean)
       .join("; ");
-    return `Die Eingabe ist ungültig${fields ? `: ${fields}` : "."}`;
+    return new ApiError(
+      `Die Eingabe ist ungültig${fields ? `: ${fields}` : "."}`,
+      status,
+      "validation",
+      fields,
+    );
   }
-  return `Die Anfrage ist fehlgeschlagen (HTTP ${status}).`;
+  return new ApiError(
+    `Die Anfrage ist fehlgeschlagen (HTTP ${status}).`,
+    status,
+  );
 }
 
 export async function ask(
@@ -102,9 +117,13 @@ export async function ask(
       body: JSON.stringify(request),
     });
   } catch {
-    throw new ApiError("Die API ist nicht erreichbar. Läuft der Server?", null);
+    throw new ApiError(
+      "Die API ist nicht erreichbar. Läuft der Server?",
+      null,
+      "network",
+    );
   }
   const body: unknown = await response.json().catch(() => null);
-  if (!response.ok) throw new ApiError(errorMessage(response.status, body), response.status);
+  if (!response.ok) throw toError(response.status, body);
   return body as AskResponse;
 }
