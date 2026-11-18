@@ -235,7 +235,7 @@ describe("App", () => {
     expect(document.documentElement.lang).toBe("fr");
     expect(window.localStorage.getItem("fdp-lang")).toBe("fr");
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(
-      "Qu'a-t-on dit au Parlement",
+      "Qu’a-t-on dit au Parlement",
     );
     expect(
       screen.getByText(/Projet privé – pas une publication officielle/),
@@ -266,7 +266,7 @@ describe("App", () => {
       }),
     ).toHaveLength(2);
     expect(
-      screen.getByText(/Services du Parlement de l'Assemblée fédérale, Berne/),
+      screen.getByText(/Services du Parlement de l’Assemblée fédérale, Berne/),
     ).toBeInTheDocument();
     expect(
       screen.getByText(/téléchargées les 12 et 13 novembre 2026/),
@@ -319,7 +319,7 @@ describe("App", () => {
     await user.type(screen.getByLabelText(/Votre question/), "Question ?");
     await user.click(screen.getByRole("button", { name: "Demander" }));
     expect(await screen.findByRole("alert")).toHaveTextContent(
-      "L'API n'est pas joignable",
+      "L’API n’est pas joignable",
     );
     vi.restoreAllMocks();
   });

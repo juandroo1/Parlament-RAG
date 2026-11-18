@@ -1,5 +1,6 @@
 // Texte der Oberfläche auf Französisch (Spec 002, US-10). Typ wie de.ts (AK-10.5).
 // Vor «?», «:» und «;» steht ein geschütztes Leerzeichen, damit das Zeichen nicht allein umbricht.
+// Apostroph typografisch («’»), wie in der Romandie empfohlen (Guide du typographe romand).
 
 import type { Messages } from "./de";
 
@@ -20,21 +21,21 @@ export const fr: Messages = {
     current: (name) => `Affichage${NBSP}: ${name}`,
   },
   hero: {
-    title: `Qu'a-t-on dit au Parlement${NBSP}?`,
-    lead: "Posez une question en français ou en allemand. La réponse s'appuie sur le Bulletin officiel et Curia Vista, chaque affirmation avec sa source.",
+    title: `Qu’a-t-on dit au Parlement${NBSP}?`,
+    lead: "Posez une question en français ou en allemand. La réponse s’appuie sur le Bulletin officiel et Curia Vista, chaque affirmation avec sa source.",
   },
   form: {
     label: "Votre question",
     hint: "(français ou allemand)",
-    placeholder: `p. ex. Qu'a dit le Conseil fédéral sur la motion …${NBSP}?`,
+    placeholder: `p. ex. Qu’a dit le Conseil fédéral sur la motion …${NBSP}?`,
     examples: `Exemples${NBSP}:`,
     exampleQuestions: [
       {
-        text: `Qu'a dit le Conseil fédéral sur la 13e rente AVS au Conseil des Etats${NBSP}?`,
+        text: `Qu’a dit le Conseil fédéral sur la 13e rente AVS au Conseil des Etats${NBSP}?`,
         lang: "fr",
       },
       {
-        text: `Pourquoi le Conseil fédéral a-t-il rejeté l'initiative paysage${NBSP}?`,
+        text: `Pourquoi le Conseil fédéral a-t-il rejeté l’initiative paysage${NBSP}?`,
         lang: "fr",
       },
       {
@@ -62,17 +63,17 @@ export const fr: Messages = {
     sources: "Sources",
     badge: (count) =>
       count === 1
-        ? "Réponse IA tirée d'une source"
+        ? "Réponse IA tirée d’une source"
         : `Réponse IA tirée de ${count} sources`,
     citation: (number) => `Source ${number}`,
     insufficientTitle: "Pas de base suffisante",
     reasons: {
-      no_hits: "La recherche n'a trouvé aucun passage pertinent.",
+      no_hits: "La recherche n’a trouvé aucun passage pertinent.",
       low_similarity:
         "Les passages trouvés correspondent trop peu à la question.",
       model: "Les passages trouvés ne répondent pas à la question.",
     },
-    tryAgain: "Essayez une question plus précise ou d'autres filtres.",
+    tryAgain: "Essayez une question plus précise ou d’autres filtres.",
   },
   source: {
     label: "Source",
@@ -85,12 +86,12 @@ export const fr: Messages = {
     original: "Passage original sur parlament.ch",
   },
   usage: {
-    noModel: "Aucun appel à l'IA",
+    noModel: "Aucun appel à l’IA",
     tokens: (input, output) =>
-      `${input} tokens d'entrée et ${output} de sortie`,
+      `${input} tokens d’entrée et ${output} de sortie`,
     costUnknown: "Coût inconnu",
     costEstimated: (cost) =>
-      `≈ ${cost} USD estimés, inclus dans l'abonnement Claude`,
+      `≈ ${cost} USD estimés, inclus dans l’abonnement Claude`,
   },
   councils: {
     NR: "Conseil national",
@@ -98,30 +99,30 @@ export const fr: Messages = {
     V: "Assemblée fédérale (Chambres réunies)",
   },
   parlGroups: {
-    V: "Groupe de l'Union démocratique du centre",
+    V: "Groupe de l’Union démocratique du centre",
     S: "Groupe socialiste",
     "M-E": "Groupe du Centre",
     RL: "Groupe libéral-radical",
     G: "Groupe des VERT-E-S",
-    GL: "Groupe vert'libéral",
+    GL: "Groupe vert’libéral",
   },
   errors: {
-    network: `L'API n'est pas joignable. Le serveur fonctionne-t-il${NBSP}?`,
+    network: `L’API n’est pas joignable. Le serveur fonctionne-t-il${NBSP}?`,
     invalid: (fields) =>
-      `La saisie n'est pas valable${fields ? `${NBSP}: ${fields}` : "."}`,
+      `La saisie n’est pas valable${fields ? `${NBSP}: ${fields}` : "."}`,
     http: (status) => `La requête a échoué (HTTP ${status}).`,
     unexpected: "Erreur inattendue. Veuillez réessayer.",
   },
   footer: {
     sourceLabel: `Source${NBSP}:`,
     sourceBefore:
-      "Services du Parlement de l'Assemblée fédérale, Berne. Données ouvertes via le service web",
+      "Services du Parlement de l’Assemblée fédérale, Berne. Données ouvertes via le service web",
     sourceAfter:
-      "(Bulletin officiel et Curia Vista), sessions jusqu'au 2 octobre 2026, téléchargées les 12 et 13 novembre 2026.",
+      "(Bulletin officiel et Curia Vista), sessions jusqu’au 2 octobre 2026, téléchargées les 12 et 13 novembre 2026.",
     notOfficialLabel: `Pas une publication officielle${NBSP}:`,
     notOfficial:
-      "un projet privé, qui n'émane pas des Services du Parlement. Les réponses sont rédigées par un modèle d'IA à partir des passages trouvés. Seuls les passages originaux liés sur parlament.ch font foi. Le système restitue ce qui a été dit et n'évalue ni personnes, ni partis, ni objets.",
-    demo: "La démo publique dispose d'un budget quotidien limité et d'un nombre limité de questions par heure.",
+      "un projet privé, qui n’émane pas des Services du Parlement. Les réponses sont rédigées par un modèle d’IA à partir des passages trouvés. Seuls les passages originaux liés sur parlament.ch font foi. Le système restitue ce qui a été dit et n’évalue ni personnes, ni partis, ni objets.",
+    demo: "La démo publique dispose d’un budget quotidien limité et d’un nombre limité de questions par heure.",
     codeBefore: "Code sous",
     license: "licence MIT",
     codeAfter: ".",

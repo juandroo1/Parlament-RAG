@@ -44,7 +44,7 @@ describe("Wörterbücher", () => {
   it("übersetzt Texte mit Werten", () => {
     expect(de.answer.badge(1)).toBe("KI-Antwort aus 1 Quelle");
     expect(de.answer.badge(3)).toBe("KI-Antwort aus 3 Quellen");
-    expect(fr.answer.badge(1)).toBe("Réponse IA tirée d'une source");
+    expect(fr.answer.badge(1)).toBe("Réponse IA tirée d’une source");
     expect(fr.answer.badge(3)).toBe("Réponse IA tirée de 3 sources");
     expect(fr.form.activeFilters(2)).toBe("2 actifs");
   });
@@ -104,10 +104,10 @@ describe("Fehlermeldungen der Oberfläche", () => {
     expect(errorText(network, de)).toBe(
       "Die API ist nicht erreichbar. Läuft der Server?",
     );
-    expect(errorText(network, fr)).toMatch(/^L'API n'est pas joignable/);
+    expect(errorText(network, fr)).toMatch(/^L’API n’est pas joignable/);
     const invalid = new ApiError("x", 422, "validation", "String too short");
     expect(errorText(invalid, fr)).toBe(
-      "La saisie n'est pas valable : String too short",
+      "La saisie n’est pas valable : String too short",
     );
     expect(errorText(new ApiError("x", 502), fr)).toBe(
       "La requête a échoué (HTTP 502).",

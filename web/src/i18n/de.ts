@@ -31,7 +31,7 @@ export const de = {
         lang: "de",
       },
       {
-        text: "Qu'a dit le Conseil fédéral sur la 13e rente AVS au Conseil des Etats ?",
+        text: "Qu’a dit le Conseil fédéral sur la 13e rente AVS au Conseil des Etats ?",
         lang: "fr",
       },
       {
