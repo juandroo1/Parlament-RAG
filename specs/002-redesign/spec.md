@@ -1,6 +1,6 @@
 # Spec 002 – Redesign der Web-UI
 
-Status: Entwurf · Version 0.1
+Status: Freigegeben · Version 0.2
 
 Baut auf [Spec 001](../001-frag-das-parlament/spec.md) auf. Architektur, Daten, Leitplanken und alle Akzeptanzkriterien von Spec 001 gelten weiter; diese Spec ändert nur die Web-UI. User Stories und Akzeptanzkriterien sind fortlaufend nummeriert (ab US-8), damit die Bezeichnungen im ganzen Projekt eindeutig bleiben.
 
@@ -38,7 +38,7 @@ Die Funktionen bleiben gleich: Frage stellen, Antwort mit klickbaren Zitaten, Qu
 
   Grautöne, Flächen und Zustände werden daraus abgeleitet und als Design-Tokens an einer Stelle definiert.
 - **Eigenständig, nicht amtlich:** Die Nutzungsbedingungen der Parlamentsdienste verlangen, dass die Nutzung nicht den Eindruck einer amtlichen Veröffentlichung erweckt. Die UI ahmt deshalb keine Behördenseite nach. Das Logo verwendet das Schweizerkreuz dekorativ zusammen mit Sprechblase und eigenem Namen, nicht das Wappen der Eidgenossenschaft.
-- **Vorgehen:** Vor `plan.md` und `tasks.md` entstehen zwei bis drei Designentwürfe als klickbarer Prototyp. Sandro wählt einen aus; der Entscheid kommt ins Entscheidungsprotokoll.
+- **Vorgehen:** Vor `plan.md` und `tasks.md` entstanden drei Designentwürfe als klickbarer Prototyp (A «Klar», B «Band», C «Bulletin»). Gewählt ist A; Beschreibung in [plan.md](plan.md), Abschnitt 2.
 
 ## 5. User Stories und Akzeptanzkriterien
 
