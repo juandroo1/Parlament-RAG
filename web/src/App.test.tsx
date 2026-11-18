@@ -219,4 +219,108 @@ describe("App", () => {
       screen.getByText(/bewertet keine Personen, Parteien oder Vorlagen/),
     ).toBeInTheDocument();
   });
+
+  it("wechselt die ganze Oberfläche auf Französisch (AK-10.1)", async () => {
+    mockFetch(200, ANSWERED);
+    const user = await askQuestion();
+    await screen.findByRole("heading", { name: "Antwort" });
+
+    await user.click(
+      within(screen.getByRole("group", { name: "Sprache" })).getByRole(
+        "button",
+        { name: "Français" },
+      ),
+    );
+
+    expect(document.documentElement.lang).toBe("fr");
+    expect(window.localStorage.getItem("fdp-lang")).toBe("fr");
+    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(
+      "Qu'a-t-on dit au Parlement",
+    );
+    expect(
+      screen.getByText(/Projet privé – pas une publication officielle/),
+    ).toBeInTheDocument();
+    expect(screen.getByLabelText(/Votre question/)).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Demander" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "Réponse" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("Réponse IA tirée de 2 sources"),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Source 1" })).toBeInTheDocument();
+    expect(
+      screen.getByText("Rösti Albert (Conseil fédéral)"),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("Conseil national · 30.09.2026 · 26.9022"),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("Objet 25.3906 · Stellungnahme des Bundesrates"),
+    ).toBeInTheDocument();
+    expect(
+      screen.getAllByRole("link", {
+        name: /Passage original sur parlament.ch/,
+      }),
+    ).toHaveLength(2);
+    expect(
+      screen.getByText(/Services du Parlement de l'Assemblée fédérale, Berne/),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/téléchargées les 12 et 13 novembre 2026/),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("link", { name: "licence MIT" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("group", { name: "Affichage" }),
+    ).toBeInTheDocument();
+    // Die Antwort selbst bleibt in der Sprache der Frage (AK-10.4).
+    expect(
+      screen.getByText(/Rösti betonte den Winterstrom/),
+    ).toBeInTheDocument();
+    // Ohne deutsche Reste in der Oberfläche (ausser Antwort und Daten der Quellen).
+    for (const word of [
+      "Fragen",
+      "Quellen",
+      "Beispiele:",
+      "Filter",
+      "Originalstelle",
+    ]) {
+      expect(
+        screen.queryByRole("button", { name: word }),
+      ).not.toBeInTheDocument();
+    }
+  });
+
+  it("startet auf Französisch, wenn der Browser Französisch bevorzugt (AK-10.2)", () => {
+    vi.spyOn(navigator, "languages", "get").mockReturnValue(["fr-CH", "de-CH"]);
+    render(<App />);
+    expect(document.documentElement.lang).toBe("fr");
+    expect(document.title).toBe("Frag das Parlament");
+    expect(screen.getByRole("button", { name: "Français" })).toHaveAttribute(
+      "aria-pressed",
+      "true",
+    );
+    expect(screen.getByText(/^Exemples/)).toBeInTheDocument();
+    vi.restoreAllMocks();
+  });
+
+  it("zeigt Fehler der App in der gewählten Sprache", async () => {
+    vi.spyOn(navigator, "languages", "get").mockReturnValue(["fr"]);
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockRejectedValue(new TypeError("Failed to fetch")),
+    );
+    const user = userEvent.setup();
+    render(<App />);
+    await user.type(screen.getByLabelText(/Votre question/), "Question ?");
+    await user.click(screen.getByRole("button", { name: "Demander" }));
+    expect(await screen.findByRole("alert")).toHaveTextContent(
+      "L'API n'est pas joignable",
+    );
+    vi.restoreAllMocks();
+  });
 });
