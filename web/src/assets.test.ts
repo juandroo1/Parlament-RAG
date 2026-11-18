@@ -60,6 +60,14 @@ describe("Icons und Manifest", () => {
   });
 });
 
+describe("robots.txt", () => {
+  it("erlaubt Suchmaschinen die Startseite (Lighthouse SEO, Task 7.7)", () => {
+    const robots = readFileSync(`${WEB}public/robots.txt`, "utf-8");
+    expect(robots).toMatch(/^User-agent: \*$/m);
+    expect(robots).toMatch(/^Allow: \/$/m);
+  });
+});
+
 describe("Logo der Kopfzeile", () => {
   it.each(["light", "dark"])(
     "liegt als kleine WebP- und PNG-Datei vor (%s)",
