@@ -56,6 +56,16 @@ def test_readme_covers_portfolio_sections() -> None:
     assert "](docs/screenshot.png)" in README
 
 
+def test_screenshots_of_the_redesign_exist() -> None:
+    """Task 7.8: hell, dunkel und Handy; HTML-Bilder prüft der Link-Test nicht."""
+    sources = re.findall(r'<img src="([^"]+)"', README)
+    assert sources == ["docs/screenshot-dark.png", "docs/screenshot-mobile.png"]
+    for name in ["docs/screenshot.png", *sources]:
+        path = ROOT / name
+        assert path.exists(), name
+        assert path.stat().st_size < 300_000, name
+
+
 def test_demo_link_is_prominent() -> None:
     """Task 6.3b: Der Link zur öffentlichen Demo steht oben, vor dem Inhaltsverzeichnis."""
     demo = "https://frag-das-parlament.duckdns.org"
