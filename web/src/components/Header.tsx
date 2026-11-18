@@ -3,11 +3,12 @@ import logoDarkWebp from "../assets/logo-dark.webp";
 import logoLightPng from "../assets/logo-light.png";
 import logoLightWebp from "../assets/logo-light.webp";
 import { ShieldIcon } from "./icons";
+import { ThemeToggle } from "./ThemeToggle";
 
 // Logo-Dateien: 276 × 104 px, angezeigt mit 52 px (Desktop) bzw. 38 px Höhe (Handy).
 const LOGO = "h-[38px] w-auto sm:h-[52px]";
 
-/** Kopfzeile mit Logo (hell/dunkel) und dem Hinweis «Privates Projekt» (AK-8.1, AK-8.2). */
+/** Kopfzeile mit Logo (hell/dunkel), Umschaltern und dem Hinweis «Privates Projekt» (AK-8.1, AK-8.2). */
 export function Header() {
   return (
     <header>
@@ -38,6 +39,9 @@ export function Header() {
               />
             </picture>
           </a>
+          <div className="flex items-center gap-1.5 sm:gap-2.5">
+            <ThemeToggle />
+          </div>
         </div>
       </div>
       <div className="mx-auto max-w-[760px] px-4 pt-3 sm:px-6 sm:pt-5">

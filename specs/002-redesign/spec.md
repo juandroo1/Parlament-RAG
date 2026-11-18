@@ -110,7 +110,7 @@ Als Nutzerin will ich alles weiterhin tun können, was die bisherige Oberfläche
 | Lighthouse Best Practices | Mobil | ≥ 95 |
 | axe | Verstösse in den Web-Tests | 0 |
 | Kontrast | Farb-Tokens, beide Modi | WCAG 2.2 AA |
-| Grösse | JavaScript und CSS des Builds (gzip) | gemessen; höchstens 20 % mehr als vor dem Redesign |
+| Grösse | JavaScript und CSS des Builds (gzip) | gemessen; Richtwert höchstens 20 % mehr als vor dem Redesign. Qualität geht vor: Eine Überschreitung ist erlaubt, wird aber begründet (plan.md, Entscheidungsprotokoll) |
 | Logo | Ausgelieferte Grösse der Logodateien | optimiert (WebP/PNG statt JPEG in Originalgrösse), gemessen |
 
 ## 7. Nicht-Ziele
