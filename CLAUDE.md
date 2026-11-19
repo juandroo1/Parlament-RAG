@@ -9,9 +9,9 @@ RAG-Anwendung, die Fragen zu Debatten und Geschäften des Schweizer Bundesparlam
 Die Quelle der Wahrheit liegt in `specs/`. Jedes Vorhaben hat einen eigenen Ordner:
 
 - `specs/001-frag-das-parlament/`: MVP, abgeschlossen. Architektur, Leitplanken und Akzeptanzkriterien gelten weiter.
-- `specs/002-redesign/`: Redesign der Web-UI (Dark Mode, DE/FR, Handy und Desktop), **aktive Spec** (Version 1.1, Ergänzung Filter).
+- `specs/002-redesign/`: Redesign der Web-UI (Dark Mode, DE/FR, Handy und Desktop), abgeschlossen (Version 1.1 mit Ergänzung Filter).
 
-Ein neues Vorhaben beginnt mit einem neuen Ordner `specs/003-…/` (zuerst `spec.md`, nach Freigabe `plan.md` und `tasks.md`); er wird hier als aktive Spec eingetragen.
+Zurzeit ist keine Spec aktiv. Ein neues Vorhaben beginnt mit einem neuen Ordner `specs/003-…/` (zuerst `spec.md`, nach Freigabe `plan.md` und `tasks.md`); er wird hier als aktive Spec eingetragen.
 
 Jeder Ordner enthält:
 

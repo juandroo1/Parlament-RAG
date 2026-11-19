@@ -1,6 +1,6 @@
 # Spec 002 – Redesign der Web-UI
 
-Status: In Umsetzung · Version 1.1 (Ergänzung Filter, Task 7.9)
+Status: Umgesetzt · Version 1.1 (Ergänzung Filter, Task 7.9)
 
 Baut auf [Spec 001](../001-frag-das-parlament/spec.md) auf. Architektur, Daten, Leitplanken und alle Akzeptanzkriterien von Spec 001 gelten weiter; diese Spec ändert nur die Web-UI. User Stories und Akzeptanzkriterien sind fortlaufend nummeriert (ab US-8), damit die Bezeichnungen im ganzen Projekt eindeutig bleiben.
 
