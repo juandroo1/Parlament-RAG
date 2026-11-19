@@ -37,6 +37,12 @@ export const FilterIcon = () => (
   </Icon>
 );
 
+export const ChevronIcon = () => (
+  <Icon size={16}>
+    <path d="M6 9l6 6 6-6" />
+  </Icon>
+);
+
 export const ExternalIcon = () => (
   <Icon size={15}>
     <path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5" />

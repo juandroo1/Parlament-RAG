@@ -77,6 +77,19 @@ describe.each(["de-CH", "fr-CH"])(
       await expectAccessible();
     });
 
+    it("Filter gesetzt und wieder zugeklappt (AK-15.4)", async () => {
+      const user = setup();
+      const pill = screen.getByRole("button", { name: /^(Filter|Filtres)/ });
+      await user.click(pill);
+      await user.selectOptions(
+        screen.getByRole("combobox", { name: /^(Rat|Conseil)$/ }),
+        "NR",
+      );
+      await expectAccessible();
+      await user.click(pill);
+      await expectAccessible();
+    });
+
     it("Antwort mit Quellen", async () => {
       respond(200, ANSWERED);
       const user = setup();
