@@ -77,6 +77,19 @@ describe.each(["de-CH", "fr-CH"])(
       await expectAccessible();
     });
 
+    it("Filter gesetzt und wieder zugeklappt (AK-15.4)", async () => {
+      const user = setup();
+      const pill = screen.getByRole("button", { name: /^(Filter|Filtres)/ });
+      await user.click(pill);
+      await user.selectOptions(
+        screen.getByRole("combobox", { name: /^(Rat|Conseil)$/ }),
+        "NR",
+      );
+      await expectAccessible();
+      await user.click(pill);
+      await expectAccessible();
+    });
+
     it("Antwort mit Quellen", async () => {
       respond(200, ANSWERED);
       const user = setup();
@@ -122,9 +135,12 @@ describe("Tastatur (AK-13.2)", () => {
     const user = userEvent.setup();
     render(<App />);
     const order: string[] = [];
-    for (let i = 0; i < 14; i++) {
+    while (order.length < 14) {
       await user.tab();
       const element = document.activeElement as HTMLElement;
+      // jsdom und user-event kennen «inert» nicht; der Browser überspringt den zugeklappten
+      // Filterbereich (mit Edge geprüft, Task 7.9). Hier deshalb ausdrücklich übersprungen.
+      if (element.closest("[inert]")) continue;
       order.push(
         element.getAttribute("aria-label") ??
           element.querySelector("img")?.getAttribute("alt") ??

@@ -16,4 +16,4 @@ Immer nur einen Task gleichzeitig bearbeiten. Ein Task ist erst erledigt, wenn d
 
 ## Phase 7 – Ergänzung (Version 1.1)
 
-- [ ] 7.9 Filter nach Entwurf B: Knopf als Pille in der Zeile der Beispielfragen mit Pfeil und Zahl der aktiven Filter, Animation beim Auf- und Zuklappen (ohne bei reduzierter Bewegung), am Desktop vier Felder in einer Zeile; Tests (Bedienung, axe mit offenen Filtern), Prüfung mit Edge bei 360, 768 und 1440 px hell und dunkel, Screenshots im README falls sich die Startseite sichtbar ändert; danach Spec 002 wieder als umgesetzt markieren (AK-15.1 bis AK-15.4)
+- [x] 7.9 Filter: Pfeil am Knopf «Filter», der beim Öffnen dreht, und Animation beim Auf- und Zuklappen (ohne bei reduzierter Bewegung); Aussehen sonst wie Variante A (der Umbau nach Entwurf B wurde nach Ansicht verworfen), der Bereich klappt unterhalb von «Filter» und «Fragen» auf; Tests (Bedienung, axe mit gesetzten Filtern), Prüfung mit Edge bei 360, 768 und 1440 px hell und dunkel, neue Screenshots im README; Spec 002 wieder als umgesetzt markiert (AK-15.1 bis AK-15.4)

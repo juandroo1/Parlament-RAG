@@ -1,6 +1,6 @@
 # Spec 002 – Redesign der Web-UI
 
-Status: In Umsetzung · Version 1.1 (Ergänzung Filter, Task 7.9)
+Status: Umgesetzt · Version 1.1 (Ergänzung Filter, Task 7.9)
 
 Baut auf [Spec 001](../001-frag-das-parlament/spec.md) auf. Architektur, Daten, Leitplanken und alle Akzeptanzkriterien von Spec 001 gelten weiter; diese Spec ändert nur die Web-UI. User Stories und Akzeptanzkriterien sind fortlaufend nummeriert (ab US-8), damit die Bezeichnungen im ganzen Projekt eindeutig bleiben.
 
@@ -104,9 +104,9 @@ Als Nutzerin will ich alles weiterhin tun können, was die bisherige Oberfläche
 ### US-15 Filter (Ergänzung, Version 1.1)
 Als Nutzerin will ich die Filter bei Bedarf schnell aufklappen, ohne dass sie sonst Platz brauchen.
 
-- AK-15.1: Der Knopf «Filter» steht als Pille in der Zeile der Beispielfragen (wie im Entwurf B «Band»), nicht mehr neben dem Knopf «Fragen». Er zeigt einen Pfeil, der beim Öffnen dreht, und die Zahl der aktiven Filter. Auf Touch-Geräten ist er mindestens 44 × 44 px gross (AK-11.1).
+- AK-15.1: Der Knopf «Filter» bleibt wie in Variante A neben dem Knopf «Fragen» und nennt die Zahl der aktiven Filter. Neu zeigt er einen Pfeil, der beim Öffnen dreht. Auf Touch-Geräten ist er mindestens 44 × 44 px gross (AK-11.1).
 - AK-15.2: Der Filterbereich klappt mit einer kurzen Animation auf und zu; bei `prefers-reduced-motion` ohne Animation (AK-13.3). Zugeklappt ist er für Tastatur und Screenreader nicht erreichbar; `aria-expanded` und `aria-controls` bleiben.
-- AK-15.3: Am Desktop stehen Rat, Fraktion, Von und Bis in einer Zeile, auf dem Handy untereinander. Kein horizontales Scrollen von 360 px bis 1440 px.
+- AK-15.3: Der Filterbereich klappt unterhalb der Zeile mit «Filter» und «Fragen» auf. Die Anordnung der Felder bleibt wie in Variante A: am Desktop zwei pro Zeile, auf dem Handy untereinander. Mit aktiven Filtern bleiben «Filter» und «Fragen» ab 360 px einzeilig nebeneinander. Kein horizontales Scrollen von 360 px bis 1440 px.
 - AK-15.4: Die Filter wirken wie bisher (AK-14.1); axe meldet keine Verstösse, auch mit offenen Filtern (AK-13.1).
 
 ## 6. Qualitätsziele
