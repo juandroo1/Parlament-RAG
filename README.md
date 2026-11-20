@@ -318,7 +318,7 @@ Die Antwort enthält `answer` mit den Belegen [n], `sources` (pro Nummer Dokumen
 
 ### Web-UI
 
-Die Oberfläche (http://127.0.0.1:8080) zeigt Frage mit Beispielen, aufklappbare Filter (Rat, Fraktion, Zeitraum; die Zahl der aktiven Filter steht auf dem Knopf), die Antwort mit klickbaren Zitat-Marken und die Quellen mit Redner, Rat, Datum, Geschäftsnummer, Ausschnitt und Link auf parlament.ch, dazu Datenquelle und Lizenz.
+Die Oberfläche (http://127.0.0.1:8080) zeigt Frage mit Beispielen, aufklappbare Filter (Rat, Fraktion, Zeitraum), die Antwort mit klickbaren Zitat-Marken und die Quellen mit Redner, Rat, Datum, Geschäftsnummer, Ausschnitt und Link auf parlament.ch, dazu Datenquelle und Lizenz.
 
 - **Kopfzeile:** Logo, Knopf «So funktioniert's» (Datenquelle, Vorgehen, Grenzen, Datenschutz), Umschalter DE/FR und Darstellung (Hell, Dunkel, wie System). Beide Einstellungen bleiben im Browser gespeichert; ohne Wahl gelten Sprache und Farbschema des Systems.
 - **Sprache:** Die Oberfläche spricht Deutsch oder Französisch, auch die Meldungen der API (über den Fehlercode). Die Antwort kommt immer in der Sprache der Frage.
