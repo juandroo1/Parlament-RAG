@@ -135,9 +135,12 @@ describe("Tastatur (AK-13.2)", () => {
     const user = userEvent.setup();
     render(<App />);
     const order: string[] = [];
-    for (let i = 0; i < 14; i++) {
+    while (order.length < 14) {
       await user.tab();
       const element = document.activeElement as HTMLElement;
+      // jsdom und user-event kennen «inert» nicht; der Browser überspringt den zugeklappten
+      // Filterbereich (mit Edge geprüft, Task 7.9). Hier deshalb ausdrücklich übersprungen.
+      if (element.closest("[inert]")) continue;
       order.push(
         element.getAttribute("aria-label") ??
           element.querySelector("img")?.getAttribute("alt") ??

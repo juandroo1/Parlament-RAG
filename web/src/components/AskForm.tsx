@@ -55,19 +55,13 @@ export function AskForm({ loading, onSubmit }: Props) {
         }}
       />
 
-      {/* Beispiele und Filter-Pille (Entwurf B, AK-15.1). Die Pille steht rechts neben «Beispiele:»,
-          die Beispiele darunter über die volle Breite (Handy: zum Wischen). Das Grid ordnet an, die
-          Reihenfolge im HTML bleibt Beispiele → Filter → Fragen. */}
-      <div className="mt-3 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 gap-y-1.5">
-        <span
-          id={`${id}-ex`}
-          className="col-start-1 row-start-1 text-[13px] text-muted"
-        >
+      <div className="mt-3">
+        <span id={`${id}-ex`} className="text-[13px] text-muted">
           {t.form.examples}
         </span>
         <ul
           aria-labelledby={`${id}-ex`}
-          className="col-span-2 row-start-2 -mx-3.5 flex gap-2 overflow-x-auto px-3.5 pb-1 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 sm:pb-0"
+          className="-mx-3.5 mt-1.5 flex gap-2 overflow-x-auto px-3.5 pb-1 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0"
         >
           {t.form.exampleQuestions.map(({ text: example, lang }) => (
             <li key={example} className="shrink-0 sm:shrink">
@@ -82,34 +76,6 @@ export function AskForm({ loading, onSubmit }: Props) {
             </li>
           ))}
         </ul>
-        <button
-          type="button"
-          aria-expanded={showFilters}
-          aria-controls={`${id}-filters`}
-          className={`col-start-2 row-start-1 inline-flex min-h-11 items-center gap-2 justify-self-end rounded-full border bg-bg px-3.5 text-sm font-semibold hover:border-primary sm:min-h-9 sm:pointer-coarse:min-h-11 sm:px-3 sm:text-[13px] ${showFilters ? "border-primary" : "border-border"}`}
-          onClick={() => setShowFilters((value) => !value)}
-        >
-          <FilterIcon />
-          {t.form.filter}
-          {activeFilters > 0 && (
-            <>
-              <span
-                aria-hidden="true"
-                className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1.5 text-xs font-bold text-on-primary"
-              >
-                {activeFilters}
-              </span>
-              <span className="sr-only">
-                , {t.form.activeFilters(activeFilters)}
-              </span>
-            </>
-          )}
-          <span
-            className={`transition-transform duration-200 ${showFilters ? "rotate-180" : ""}`}
-          >
-            <ChevronIcon />
-          </span>
-        </button>
       </div>
 
       {/* Auf- und Zuklappen mit Grid-Zeilen 0fr ↔ 1fr (AK-15.2); bei reduzierter Bewegung schaltet die
@@ -122,71 +88,87 @@ export function AskForm({ loading, onSubmit }: Props) {
         <div className="min-h-0 overflow-hidden" inert={!showFilters}>
           <fieldset
             id={`${id}-filters`}
-            className="mt-4 grid gap-3.5 rounded-xl border border-border p-3.5 sm:grid-cols-2 sm:p-4 md:grid-cols-[minmax(0,1.3fr)_minmax(0,1.3fr)_minmax(0,1fr)_minmax(0,1fr)]"
+            className="mt-4 grid gap-3.5 rounded-xl border border-border p-3.5 sm:grid-cols-2 sm:p-4"
           >
-              <legend className="px-1.5 text-[13px] font-semibold">
-                {t.form.filter}
-              </legend>
-              <label className="block text-[13px] font-semibold">
-                <span className="mb-1.5 block">{t.form.council}</span>
-                <select
-                  className={`${field} h-11`}
-                  value={filters.council ?? ""}
-                  onChange={(event) =>
-                    update({ council: event.target.value as Council | "" })
-                  }
-                >
-                  <option value="">{t.form.allCouncils}</option>
-                  {COUNCIL_KEYS.map((value) => (
-                    <option key={value} value={value}>
-                      {t.councils[value]}
-                    </option>
-                  ))}
-                </select>
-              </label>
-              <label className="block text-[13px] font-semibold">
-                <span className="mb-1.5 block">{t.form.group}</span>
-                <select
-                  className={`${field} h-11`}
-                  value={filters.parl_group ?? ""}
-                  onChange={(event) => update({ parl_group: event.target.value })}
-                >
-                  <option value="">{t.form.allGroups}</option>
-                  {PARL_GROUP_KEYS.map((value) => (
-                    <option key={value} value={value}>
-                      {t.parlGroups[value]}
-                    </option>
-                  ))}
-                </select>
-                {filters.parl_group && (
-                  <span className="mt-1.5 block text-xs font-normal text-muted">
-                    {t.form.groupNote}
-                  </span>
-                )}
-              </label>
-              <label className="block text-[13px] font-semibold">
-                <span className="mb-1.5 block">{t.form.from}</span>
-                <input
-                  type="date"
-                  className={`${field} h-11`}
-                  value={filters.date_from ?? ""}
-                  onChange={(event) => update({ date_from: event.target.value })}
-                />
-              </label>
-              <label className="block text-[13px] font-semibold">
-                <span className="mb-1.5 block">{t.form.to}</span>
-                <input
-                  type="date"
-                  className={`${field} h-11`}
-                  value={filters.date_to ?? ""}
-                  onChange={(event) => update({ date_to: event.target.value })}
-                />
-              </label>
+            <legend className="px-1.5 text-[13px] font-semibold">
+              {t.form.filter}
+            </legend>
+            <label className="block text-[13px] font-semibold">
+              <span className="mb-1.5 block">{t.form.council}</span>
+              <select
+                className={`${field} h-11`}
+                value={filters.council ?? ""}
+                onChange={(event) =>
+                  update({ council: event.target.value as Council | "" })
+                }
+              >
+                <option value="">{t.form.allCouncils}</option>
+                {COUNCIL_KEYS.map((value) => (
+                  <option key={value} value={value}>
+                    {t.councils[value]}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="block text-[13px] font-semibold">
+              <span className="mb-1.5 block">{t.form.group}</span>
+              <select
+                className={`${field} h-11`}
+                value={filters.parl_group ?? ""}
+                onChange={(event) => update({ parl_group: event.target.value })}
+              >
+                <option value="">{t.form.allGroups}</option>
+                {PARL_GROUP_KEYS.map((value) => (
+                  <option key={value} value={value}>
+                    {t.parlGroups[value]}
+                  </option>
+                ))}
+              </select>
+              {filters.parl_group && (
+                <span className="mt-1.5 block text-xs font-normal text-muted">
+                  {t.form.groupNote}
+                </span>
+              )}
+            </label>
+            <label className="block text-[13px] font-semibold">
+              <span className="mb-1.5 block">{t.form.from}</span>
+              <input
+                type="date"
+                className={`${field} h-11`}
+                value={filters.date_from ?? ""}
+                onChange={(event) => update({ date_from: event.target.value })}
+              />
+            </label>
+            <label className="block text-[13px] font-semibold">
+              <span className="mb-1.5 block">{t.form.to}</span>
+              <input
+                type="date"
+                className={`${field} h-11`}
+                value={filters.date_to ?? ""}
+                onChange={(event) => update({ date_to: event.target.value })}
+              />
+            </label>
           </fieldset>
         </div>
       </div>
 
-      <div className="mt-3 flex sm:mt-4 sm:justify-end">
+      <div className="mt-3 flex items-center gap-2 sm:mt-4 sm:justify-between">
+        <button
+          type="button"
+          aria-expanded={showFilters}
+          aria-controls={`${id}-filters`}
+          className="inline-flex min-h-12 items-center gap-2 rounded-xl border border-border bg-bg px-3.5 text-[15px] font-semibold sm:min-h-11 sm:border-0 sm:bg-transparent sm:px-3 sm:text-sm"
+          onClick={() => setShowFilters((value) => !value)}
+        >
+          <FilterIcon />
+          {t.form.filter}
+          {activeFilters > 0 ? ` (${t.form.activeFilters(activeFilters)})` : ""}
+          <span
+            className={`transition-transform duration-200 ${showFilters ? "rotate-180" : ""}`}
+          >
+            <ChevronIcon />
+          </span>
+        </button>
         <button
           type="submit"
           disabled={tooShort || loading}
