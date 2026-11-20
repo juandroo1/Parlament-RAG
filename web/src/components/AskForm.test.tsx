@@ -50,6 +50,11 @@ describe("Filter (US-15)", () => {
     await user.click(toggle);
     await user.selectOptions(screen.getByLabelText("Rat"), "NR");
     expect(toggle).toHaveAccessibleName("Filter (1 aktiv)");
+    // Auf dem Handy sichtbar nur «(1)», damit der Knopf mit Pfeil einzeilig bleibt.
+    const short = toggle.querySelector("span[aria-hidden='true']");
+    expect(short).toHaveTextContent("(1)");
+    expect(short).toHaveClass("sm:hidden");
+    expect(toggle).toHaveClass("whitespace-nowrap");
     await user.selectOptions(screen.getByLabelText(/Fraktion/), "G");
     expect(toggle).toHaveAccessibleName("Filter (2 aktiv)");
     await user.selectOptions(screen.getByLabelText("Rat"), "");
@@ -63,14 +68,14 @@ describe("Filter (US-15)", () => {
     expect(toggle).toHaveAccessibleName("Filtres (1 actif)");
   });
 
-  it("bleibt wie in Variante A neben «Fragen», mit Pfeil (AK-15.1, AK-15.3)", () => {
+  it("steht neben «Fragen», mit Pfeil, und klappt darunter auf (AK-15.1, AK-15.3)", () => {
     const { toggle } = setup();
     const submit = screen.getByRole("button", { name: "Fragen" });
     expect(toggle.parentElement).toBe(submit.parentElement);
-    // Der Filterbereich steht über der Zeile mit Filter und «Fragen».
+    // Der Filterbereich klappt unterhalb der Zeile mit Filter und «Fragen» auf.
     const fieldset = screen.getByRole("group", { name: "Filter", hidden: true });
     const after = Node.DOCUMENT_POSITION_FOLLOWING;
-    expect(fieldset.compareDocumentPosition(toggle) & after).toBeTruthy();
+    expect(submit.compareDocumentPosition(fieldset) & after).toBeTruthy();
     // Handy eine Spalte, ab 640 px zwei.
     expect(fieldset.className).toMatch(/sm:grid-cols-2/);
     // Pfeil dreht beim Öffnen: Klasse am Wrapper des Symbols.

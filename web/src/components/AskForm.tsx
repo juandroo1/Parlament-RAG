@@ -78,9 +78,48 @@ export function AskForm({ loading, onSubmit }: Props) {
         </ul>
       </div>
 
-      {/* Auf- und Zuklappen mit Grid-Zeilen 0fr ↔ 1fr (AK-15.2); bei reduzierter Bewegung schaltet die
-          globale Regel in theme.css den Übergang ab. Zugeklappt ist der Bereich «inert»: weder per
-          Tastatur noch für Screenreader erreichbar. */}
+      <div className="mt-3 flex flex-wrap items-center gap-2 sm:mt-4 sm:justify-between">
+        <button
+          type="button"
+          aria-expanded={showFilters}
+          aria-controls={`${id}-filters`}
+          className="inline-flex min-h-12 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-xl border border-border bg-bg px-3 text-[15px] font-semibold sm:min-h-11 sm:gap-2 sm:border-0 sm:bg-transparent sm:text-sm"
+          onClick={() => setShowFilters((value) => !value)}
+        >
+          <FilterIcon />
+          {t.form.filter}
+          {activeFilters > 0 && (
+            // Auf dem Handy nur «(2)», damit der Knopf einzeilig bleibt; Screenreader hören immer «(2 aktiv)».
+            <>
+              {" "}
+              <span aria-hidden="true" className="sm:hidden">
+                ({activeFilters})
+              </span>
+              <span className="max-sm:sr-only">
+                ({t.form.activeFilters(activeFilters)})
+              </span>
+            </>
+          )}
+          <span
+            className={`transition-transform duration-200 ${showFilters ? "rotate-180" : ""}`}
+          >
+            <ChevronIcon />
+          </span>
+        </button>
+        <button
+          type="submit"
+          disabled={tooShort || loading}
+          className="inline-flex min-h-12 flex-1 items-center justify-center gap-2.5 rounded-xl bg-primary px-4 text-base font-bold text-on-primary hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50 sm:flex-none sm:px-6"
+        >
+          {loading ? t.form.searching : t.form.submit}
+          {!loading && <ArrowIcon />}
+        </button>
+      </div>
+
+      {/* Klappt unterhalb der Zeile mit «Filter» und «Fragen» auf (AK-15.3), auch im HTML danach,
+          damit die Tab-Reihenfolge der Anzeige folgt. Grid-Zeilen 0fr ↔ 1fr (AK-15.2); bei reduzierter
+          Bewegung schaltet die globale Regel in theme.css den Übergang ab. Zugeklappt ist der Bereich
+          «inert»: weder per Tastatur noch für Screenreader erreichbar. */}
       <div
         data-testid="filter-panel"
         className={`grid transition-[grid-template-rows] duration-200 ease-out ${showFilters ? "grid-rows-[1fr]" : "grid-rows-[0fr]"}`}
@@ -150,33 +189,6 @@ export function AskForm({ loading, onSubmit }: Props) {
             </label>
           </fieldset>
         </div>
-      </div>
-
-      <div className="mt-3 flex items-center gap-2 sm:mt-4 sm:justify-between">
-        <button
-          type="button"
-          aria-expanded={showFilters}
-          aria-controls={`${id}-filters`}
-          className="inline-flex min-h-12 items-center gap-2 rounded-xl border border-border bg-bg px-3.5 text-[15px] font-semibold sm:min-h-11 sm:border-0 sm:bg-transparent sm:px-3 sm:text-sm"
-          onClick={() => setShowFilters((value) => !value)}
-        >
-          <FilterIcon />
-          {t.form.filter}
-          {activeFilters > 0 ? ` (${t.form.activeFilters(activeFilters)})` : ""}
-          <span
-            className={`transition-transform duration-200 ${showFilters ? "rotate-180" : ""}`}
-          >
-            <ChevronIcon />
-          </span>
-        </button>
-        <button
-          type="submit"
-          disabled={tooShort || loading}
-          className="inline-flex min-h-12 flex-1 items-center justify-center gap-2.5 rounded-xl bg-primary px-5 text-base font-bold text-on-primary hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50 sm:flex-none sm:px-6"
-        >
-          {loading ? t.form.searching : t.form.submit}
-          {!loading && <ArrowIcon />}
-        </button>
       </div>
     </form>
   );
