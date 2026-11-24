@@ -285,6 +285,8 @@ def test_ask_prints_answer_and_passes_options(fake_pipeline: FakePipeline) -> No
             "2026-09-01",
             "--parl-group",
             "M-E",
+            "--speaker",
+            "Rösti Albert",
             "--mode",
             "hybrid",
         ],
@@ -294,7 +296,7 @@ def test_ask_prints_answer_and_passes_options(fake_pipeline: FakePipeline) -> No
     (call,) = fake_pipeline.calls
     assert call["mode"] == "hybrid" and fake_pipeline.warmed == ["hybrid"]
     assert call["filters"] == SearchFilters(
-        council="NR", date_from=dt.date(2026, 9, 1), parl_group="M-E"
+        council="NR", date_from=dt.date(2026, 9, 1), parl_group="M-E", speaker="Rösti Albert"
     )
     assert "Quellen:" in result.output and "https://www.parlament.ch/votum12" in result.output
     assert "Embedding-Modell vorher geladen in 7.1 s" in result.output

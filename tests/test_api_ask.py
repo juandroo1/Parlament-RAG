@@ -150,13 +150,18 @@ def test_ask_returns_answer_sources_and_usage(api: dict[str, Any]) -> None:
 
 
 def test_filters_are_passed_to_the_pipeline(api: dict[str, Any]) -> None:
-    filters = {"council": "SR", "date_from": "2026-09-01", "parl_group": "RL"}
+    filters = {
+        "council": "SR",
+        "date_from": "2026-09-01",
+        "parl_group": "RL",
+        "speaker": "Michel Matthias",
+    }
     response = api["client"].post("/ask", json={"question": QUESTION, "filters": filters})
 
     assert response.status_code == 200
     (call,) = api["pipeline"].calls
     assert call["filters"] == SearchFilters(
-        council="SR", date_from=dt.date(2026, 9, 1), parl_group="RL"
+        council="SR", date_from=dt.date(2026, 9, 1), parl_group="RL", speaker="Michel Matthias"
     )
     assert call["question"] == QUESTION
 

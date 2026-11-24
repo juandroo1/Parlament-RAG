@@ -291,10 +291,11 @@ Laufzeiten und Grössen im Detail: [`plan.md`, Abschnitt 3](specs/001-frag-das-p
 docker compose run --rm app parlrag search "Was sagte der Bundesrat zu den PFAS-Grenzwerten?"
 docker compose run --rm app parlrag search "PFAS" --mode fulltext --council SR --top 5
 docker compose run --rm app parlrag search "PFAS" --parl-group RL --date-from 2026-09-01 --date-to 2026-09-30
+docker compose run --rm app parlrag search "Stalking im Strafgesetzbuch" --speaker "Funiciello Tamara"
 docker compose run --rm app parlrag search "PFAS" --json
 ```
 
-Standard ist die Vektorsuche (`--mode vector`, einstellbar über `RETRIEVAL_MODE` in `.env`). `fulltext` nutzt nur die Volltextsuche, `hybrid` kombiniert beide mit Reciprocal Rank Fusion. Ein Reranker lässt sich mit `RETRIEVAL_RERANK=true` zuschalten. Filter wirken vor der Suche. Jeder Treffer zeigt die Dokument-ID im Goldset-Format (`transcript:418982`), die Scores, Redner und Fraktion bzw. Geschäftsnummer, Rat, Datum, einen Ausschnitt und den Link auf parlament.ch.
+Standard ist die Vektorsuche (`--mode vector`, einstellbar über `RETRIEVAL_MODE` in `.env`). `fulltext` nutzt nur die Volltextsuche, `hybrid` kombiniert beide mit Reciprocal Rank Fusion. Ein Reranker lässt sich mit `RETRIEVAL_RERANK=true` zuschalten. Filter wirken vor der Suche. `--speaker` sucht nur in den Voten einer Person, mit dem Namen wie in den Daten («Nachname Vorname»); Geschäftstexte fallen dann weg, wie beim Fraktionsfilter. Jeder Treffer zeigt die Dokument-ID im Goldset-Format (`transcript:418982`), die Scores, Redner und Fraktion bzw. Geschäftsnummer, Rat, Datum, einen Ausschnitt und den Link auf parlament.ch.
 
 ### Fragen stellen
 
@@ -315,6 +316,8 @@ curl -X POST http://127.0.0.1:8000/ask -H "Content-Type: application/json"   -d 
 ```
 
 Die Antwort enthält `answer` mit den Belegen [n], `sources` (pro Nummer Dokument-ID, Redner, Fraktion, Kanton, Rat, Datum, Geschäftsnummern, Abschnitt, Ausschnitt und Link), `insufficient_context` mit Grund und `usage` (Modell, Input- und Output-Tokens, Kosten in USD, Dauer der Anfrage). Die Filter sind dieselben wie bei `search`. Fehlt der API-Key oder ist das LLM nicht erreichbar, antwortet die API mit 503 und einer Meldung, bei einer ungültigen Antwort des Modells mit 502, bei einer Ablehnung durch das Modell mit 422. Jede Antwort trägt den Header `X-Request-ID`, jeder Fehler zusätzlich einen Code im Header `X-Error-Code` (`llm_unavailable`, `model_output`, `model_refused`, in der Demo `rate_limit`, `daily_budget` und `unavailable`); daraus formuliert die Web-UI die Meldung auf Deutsch oder Französisch. Pro Anfrage schreibt die API eine Logzeile `ask_request` mit Tokens, Kosten und Dauer, ohne den Wortlaut der Frage.
+
+`GET /speakers` liefert alle Personen mit Voten (Name, jüngste Fraktion, Kanton und Rat, `federal_council`, Zahl der Voten), alphabetisch und mit `Cache-Control: max-age=600`. Der Name ist der Wert für den Filter `speaker` (`"filters": {"speaker": "Funiciello Tamara"}`).
 
 ### Web-UI
 

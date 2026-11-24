@@ -16,7 +16,7 @@ Eine Zeile pro Frage, geprüft durch `parlrag.evals.GoldenItem`:
 |---|---|
 | `id` | `q01` bis `q80`, stabil; neue Fragen bekommen neue Nummern (v1: `q01` bis `q33`, v2: bis `q65`, v3: bis `q80`) |
 | `language` | Sprache der Frage, `de` oder `fr` |
-| `filters` | optional, wie in `parlrag search` bzw. `POST /ask`: `council`, `date_from`, `date_to`, `parl_group` |
+| `filters` | optional, wie in `parlrag search` bzw. `POST /ask`: `council`, `date_from`, `date_to`, `parl_group`, `speaker` |
 | `expected_source_ids` | erwartete Dokumente als `<source_type>:<source_id>`, also ein Votum (`transcript:<ID>`) oder ein Geschäftstext (`business:<ID>`), nie Chunks. Bei Geschäften gilt die ID für beide Sprachen |
 | `answerable` | `false` nur bei unbeantwortbaren Fragen; dann ohne Quellen |
 | `notes` | kurze Begründung, warum genau diese Quellen |

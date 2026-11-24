@@ -50,6 +50,7 @@ def satisfies(hit: SearchHit, filters: SearchFilters) -> bool:
             (filters.council is None or hit.council == filters.council)
             and ((filters.date_from is None and filters.date_to is None) or dates_ok)
             and (filters.parl_group is None or hit.parl_group == filters.parl_group)
+            and (filters.speaker is None or hit.speaker_name == filters.speaker)
         )
     in_range = any(
         (filters.date_from or dt.date.min) <= day <= (filters.date_to or dt.date.max)
@@ -59,6 +60,7 @@ def satisfies(hit: SearchHit, filters: SearchFilters) -> bool:
         (filters.council is None or filters.council in hit.debate_councils)
         and ((filters.date_from is None and filters.date_to is None) or in_range)
         and filters.parl_group is None
+        and filters.speaker is None
     )
 
 
@@ -173,6 +175,8 @@ FILTERS = [
     SearchFilters(date_from=dt.date(2026, 9, 1), date_to=dt.date(2026, 9, 30)),
     SearchFilters(parl_group="RL"),
     SearchFilters(parl_group="M-E", council="SR"),
+    SearchFilters(speaker="Michel Matthias"),
+    SearchFilters(speaker="Michel Matthias", council="SR", date_from=dt.date(2026, 9, 1)),
 ]
 
 
@@ -201,6 +205,32 @@ def test_parl_group_filter_excludes_businesses(indexed: tuple[Engine, FakeEmbedd
     assert hits
     assert {hit.source_type for hit in hits} == {"transcript"}
     assert {hit.speaker_name for hit in hits} == {"Michel Matthias"}
+
+
+def test_speaker_filter_returns_only_speeches_of_that_person(
+    indexed: tuple[Engine, FakeEmbedder],
+) -> None:
+    """AK-18.2, AK-18.3: nur Voten dieser Person, keine Geschäftstexte."""
+    search = retriever(indexed)
+    speakers = {hit.speaker_name for hit in search.search("PFAS", mode="vector", top_n=50)}
+    assert len(speakers - {None}) >= 2  # ungefiltert mehrere Personen
+
+    for mode in ("vector", "fulltext", "hybrid"):
+        hits = search.search("PFAS", SearchFilters(speaker="Michel Matthias"), mode=mode)
+        assert hits, mode
+        assert {hit.source_type for hit in hits} == {"transcript"}
+        assert {hit.speaker_name for hit in hits} == {"Michel Matthias"}
+
+    assert search.search("PFAS", SearchFilters(speaker="Niemand Nemo"), mode="vector") == []
+
+
+def test_speaker_filter_is_validated() -> None:
+    assert SearchFilters(speaker="  Michel Matthias ").speaker == "Michel Matthias"
+    with pytest.raises(ValidationError):
+        SearchFilters(speaker="   ")
+    with pytest.raises(ValidationError):
+        SearchFilters(speaker="x" * 101)
+    assert SearchFilters(speaker="Rösti Albert").sql_params()["speaker"] == "Rösti Albert"
 
 
 def test_filters_apply_before_the_search(indexed: tuple[Engine, FakeEmbedder]) -> None:
