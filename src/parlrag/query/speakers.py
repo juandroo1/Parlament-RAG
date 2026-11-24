@@ -7,7 +7,7 @@ für den Filter `speaker`.
 
 import unicodedata
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 from sqlalchemy import Connection, text
 
 # Funktionen im Bundesrat: Mitglied, Bundespräsident/in, Vizepräsident/in (je M/F).
@@ -25,6 +25,8 @@ ORDER BY speaker_name, date DESC, sort_order DESC NULLS LAST
 
 class Speaker(BaseModel):
     """Eine Person mit Voten; Angaben aus dem jüngsten Votum."""
+
+    model_config = ConfigDict(frozen=True)
 
     name: str = Field(description="Wie in den Daten, «Nachname Vorname»; Wert für `speaker`.")
     parl_group: str | None = Field(description="Fraktion, z. B. S, RL; null beim Bundesrat.")
