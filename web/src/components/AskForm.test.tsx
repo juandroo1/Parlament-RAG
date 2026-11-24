@@ -73,7 +73,10 @@ describe("Filter (US-15)", () => {
     const submit = screen.getByRole("button", { name: "Fragen" });
     expect(toggle.parentElement).toBe(submit.parentElement);
     // Der Filterbereich klappt unterhalb der Zeile mit Filter und «Fragen» auf.
-    const fieldset = screen.getByRole("group", { name: "Filter", hidden: true });
+    const fieldset = screen.getByRole("group", {
+      name: "Filter",
+      hidden: true,
+    });
     const after = Node.DOCUMENT_POSITION_FOLLOWING;
     expect(submit.compareDocumentPosition(fieldset) & after).toBeTruthy();
     // Handy eine Spalte, ab 640 px zwei.

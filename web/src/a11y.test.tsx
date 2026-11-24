@@ -7,7 +7,13 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import type { AskResponse } from "./api";
 import App from "./App";
 import { expectAccessible } from "./test/axe";
-import { SPEECH } from "./test/fixtures";
+import {
+  AMBIGUOUS,
+  DETECTED_ANSWER,
+  OUT_OF_RANGE,
+  SPEECH,
+  apiMock,
+} from "./test/fixtures";
 
 const ANSWERED: AskResponse = {
   answer: "Rösti betonte den Winterstrom [1]. Unbekannt [7].",
@@ -95,6 +101,41 @@ describe.each(["de-CH", "fr-CH"])(
       const user = setup();
       await ask(user);
       await screen.findByRole("link", { name: /^(Quelle|Source) 1$/ });
+      await expectAccessible();
+    });
+
+    it("erkannte Filter und Kandidaten (Spec 003)", async () => {
+      vi.stubGlobal(
+        "fetch",
+        apiMock({ ...AMBIGUOUS, filters: DETECTED_ANSWER.filters }),
+      );
+      const user = setup();
+      await ask(user);
+      await screen.findByRole("link", { name: /^(Quelle|Source) 1$/ });
+      await expectAccessible();
+    });
+
+    it("Zeitraum ausserhalb der Daten (Spec 003)", async () => {
+      vi.stubGlobal("fetch", apiMock(OUT_OF_RANGE));
+      const user = setup();
+      await ask(user);
+      await screen.findByRole("heading", {
+        name: /^(Keine Daten zu diesem Zeitraum|Aucune donnée pour cette période)$/,
+      });
+      await expectAccessible();
+    });
+
+    it("Feld «Person» mit Vorschlägen (Spec 003)", async () => {
+      vi.stubGlobal("fetch", apiMock(DETECTED_ANSWER));
+      const user = setup();
+      await user.click(
+        screen.getByRole("button", { name: /^(Filter|Filtres)/ }),
+      );
+      await user.type(
+        screen.getByRole("combobox", { name: /^(Person|Personne)$/ }),
+        "mül",
+      );
+      await screen.findAllByRole("option");
       await expectAccessible();
     });
 

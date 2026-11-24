@@ -1,6 +1,7 @@
 import "@testing-library/jest-dom/vitest";
 import { cleanup } from "@testing-library/react";
 import { afterEach } from "vitest";
+import { resetSpeakers } from "../api";
 import { installDialog } from "./dialog";
 import { installMatchMedia, systemTheme } from "./matchMedia";
 
@@ -19,4 +20,5 @@ afterEach(() => {
   window.localStorage.clear();
   systemTheme.reset();
   document.documentElement.removeAttribute("data-theme");
+  resetSpeakers(); // Personenliste wird pro Sitzung zwischengespeichert (Spec 003)
 });

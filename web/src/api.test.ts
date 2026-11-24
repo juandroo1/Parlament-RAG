@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
-import { ask, buildRequest } from "./api";
+import { ask, buildRequest, fetchSpeakers, filtersFrom } from "./api";
+import { SPEAKERS, applied } from "./test/fixtures";
 
 function respond(
   status: number,
@@ -106,5 +107,45 @@ describe("ask", () => {
       code: null,
       retryAfter: null,
     });
+  });
+});
+
+describe("Person und Zeitraum (Spec 003)", () => {
+  it("schickt Person und ausgeschaltete Erkennung mit", () => {
+    expect(buildRequest("Frage?", { speaker: "Funiciello Tamara" }, false)).toEqual({
+      question: "Frage?",
+      filters: { speaker: "Funiciello Tamara" },
+      detect: false,
+    });
+    // Standard: Erkennung an, das Feld fehlt in der Anfrage
+    expect(buildRequest("Frage?", {})).toEqual({ question: "Frage?" });
+  });
+
+  it("macht aus angewandten Filtern neue Filter ohne die entfernten", () => {
+    const filters = applied({
+      council: "SR",
+      speaker: "Rösti Albert",
+      date_from: "2025-01-01",
+      date_to: "2025-12-31",
+    }).applied;
+    expect(filtersFrom(filters, ["date_from", "date_to"])).toEqual({
+      council: "SR",
+      speaker: "Rösti Albert",
+    });
+    expect(filtersFrom(filters, ["speaker"])).toEqual({
+      council: "SR",
+      date_from: "2025-01-01",
+      date_to: "2025-12-31",
+    });
+  });
+
+  it("lädt die Personen einmal und nach einem Fehler erneut", async () => {
+    const failing = respond(503, { detail: "x" });
+    await expect(fetchSpeakers(failing)).rejects.toThrow();
+    const working = respond(200, SPEAKERS);
+    expect(await fetchSpeakers(working)).toEqual(SPEAKERS);
+    expect(await fetchSpeakers(working)).toEqual(SPEAKERS);
+    expect(working).toHaveBeenCalledTimes(1);
+    expect(working).toHaveBeenCalledWith("/api/speakers");
   });
 });
