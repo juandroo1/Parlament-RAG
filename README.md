@@ -424,6 +424,17 @@ Die Web-Tests prüfen neben den Funktionen auch Barrierefreiheit (axe in allen Z
 
 Eine andere API-Adresse setzt `API_TARGET`, z. B. `API_TARGET=http://127.0.0.1:8011 npm run dev`. Im Container liefert der Service `web` die gebaute App über nginx aus (http://127.0.0.1:8080).
 
+**Mit dem eigenen Claude-Abo testen** (nur lokal, ohne API-Key, AK-6.3): Die API läuft dann nicht im Container, sondern lokal und ruft das Modell über die Claude-Code-CLI auf (Haiku 5.5, `LLM_BACKEND=claude-code`). Voraussetzungen wie für die Evals: `uv sync`, Claude Code angemeldet, Datenbank im Container.
+
+```powershell
+docker compose up -d db
+docker compose stop app web       # Port 8000 freigeben
+.\scripts\dev-api.ps1             # API mit Claude-Abo auf http://127.0.0.1:8000
+cd web; npm run dev               # zweites Terminal: http://127.0.0.1:5173
+```
+
+Das Skript nimmt den Interpreter aus `.venv\pyvenv.cfg` statt `uv run`, damit es auch läuft, wenn Windows `.venv\Scripts\python.exe` sperrt. Ohne den Container zu stoppen geht es auf einem anderen Port: `.\scripts\dev-api.ps1 -Port 8011` und `$env:API_TARGET="http://127.0.0.1:8011"; npm run dev`. Ein anderes Modell wählt `-Model claude-sonnet-5-5`.
+
 ## Datenquelle und Lizenz
 
 - Daten: Quelle Parlamentsdienste der Bundesversammlung, Bern. Open Data über den Webservice [ws.parlament.ch](https://ws.parlament.ch/odata.svc/) (Amtliches Bulletin, Curia Vista), Sessionen bis 2. Oktober 2026, heruntergeladen am 12. und 13. November 2026. Es gelten die [Nutzungsbedingungen der Parlamentsdienste](https://www.parlament.ch/de/%C3%BCber-das-parlament/fakten-und-zahlen/open-data-web-services): Quelle nennen, keinen Eindruck einer amtlichen Veröffentlichung erwecken, die Daten inhaltlich nicht verändern und das Datum des Downloads angeben. Dieses Projekt ist keine amtliche Veröffentlichung.
