@@ -32,7 +32,7 @@ Eine Zeile pro Frage, geprüft durch `parlrag.evals.GoldenItem`:
 | `wertend` | Frage verlangt eine Bewertung (AK-7.1) | 5 |
 | `teilkorpus` | Quellen in der Herbstsession 2026 (Session 5215), dem Teilkorpus für Experimente | 23 |
 | `smoke` | gehört zur Smoke-Suite (`parlrag eval --suite smoke`); unverändert seit v1, damit Smoke-Läufe vergleichbar bleiben | 15 |
-| `person-zeit` | Frage nennt eine Person und/oder einen Zeitraum (Spec 003, US-19); darunter ein mehrdeutiger Name («Müller») und ein Name im Titel («Initiative Funiciello») | 15 (11 beantwortbar, 4 ausserhalb) |
+| `person-zeit` | Frage nennt eine Person und/oder einen Zeitraum (Spec 003, US-19); darunter ein mehrdeutiger Name («Müller») und ein Name im Titel («Initiative Funiciello») | 17 (11 beantwortbar, 6 ausserhalb) |
 | `ausserhalb` | Zeitraum liegt ausserhalb des Datenbestands (Voten vom 4. Dezember 2023 bis 2. Oktober 2026); immer unbeantwortbar, erwartet ist der Hinweis `out_of_range` ohne LLM-Aufruf (AK-16.1) | 6 |
 
 Zusammensetzung: 47 beantwortbare Fragen auf Deutsch, 14 auf Französisch, 14 unbeantwortbare und 5 wertende. Die Fragen aus v2 verteilen sich über die Sessionen von Dezember 2023 bis Oktober 2026; mehrere beziehen sich nur auf Geschäftstexte. Die Fragen aus v3 betreffen meist Themen, zu denen dieselbe Person in mehreren Sessionen sprach (z. B. die jährliche Staatsrechnung), damit Person und Zeitraum über die richtige Quelle entscheiden.
