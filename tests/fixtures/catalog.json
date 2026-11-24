@@ -1,0 +1,2292 @@
+{
+ "_source": "Export der lokalen Datenbank (Korpus bis 2026-10-02) für Tests ohne Datenbank (Task 8.3)",
+ "first": "2023-12-04",
+ "last": "2026-10-02",
+ "sessions": [
+  {
+   "id": 5201,
+   "first": "2023-12-04",
+   "last": "2023-12-22"
+  },
+  {
+   "id": 5202,
+   "first": "2024-02-26",
+   "last": "2024-03-15"
+  },
+  {
+   "id": 5203,
+   "first": "2024-04-15",
+   "last": "2024-04-17"
+  },
+  {
+   "id": 5204,
+   "first": "2024-05-27",
+   "last": "2024-06-14"
+  },
+  {
+   "id": 5205,
+   "first": "2024-09-09",
+   "last": "2024-09-27"
+  },
+  {
+   "id": 5206,
+   "first": "2024-12-02",
+   "last": "2024-12-20"
+  },
+  {
+   "id": 5207,
+   "first": "2025-03-03",
+   "last": "2025-03-21"
+  },
+  {
+   "id": 5208,
+   "first": "2025-05-05",
+   "last": "2025-05-07"
+  },
+  {
+   "id": 5209,
+   "first": "2025-06-02",
+   "last": "2025-06-20"
+  },
+  {
+   "id": 5210,
+   "first": "2025-09-08",
+   "last": "2025-09-26"
+  },
+  {
+   "id": 5211,
+   "first": "2025-12-01",
+   "last": "2025-12-19"
+  },
+  {
+   "id": 5212,
+   "first": "2026-03-02",
+   "last": "2026-03-20"
+  },
+  {
+   "id": 5213,
+   "first": "2026-04-27",
+   "last": "2026-04-30"
+  },
+  {
+   "id": 5214,
+   "first": "2026-06-01",
+   "last": "2026-06-19"
+  },
+  {
+   "id": 5215,
+   "first": "2026-09-14",
+   "last": "2026-10-02"
+  }
+ ],
+ "speakers": [
+  {
+   "name": "Addor Jean-Luc",
+   "parl_group": "V",
+   "canton": "VS",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 162
+  },
+  {
+   "name": "Aebischer Matthias",
+   "parl_group": "S",
+   "canton": "BE",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 13
+  },
+  {
+   "name": "Aellen Cyril",
+   "parl_group": "RL",
+   "canton": "GE",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 76
+  },
+  {
+   "name": "Aeschi Thomas",
+   "parl_group": "V",
+   "canton": "ZG",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 92
+  },
+  {
+   "name": "Alijaj Islam",
+   "parl_group": "S",
+   "canton": "ZH",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 17
+  },
+  {
+   "name": "Amaudruz Céline",
+   "parl_group": "V",
+   "canton": "GE",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 59
+  },
+  {
+   "name": "Amherd Viola",
+   "parl_group": null,
+   "canton": "VS",
+   "council": "SR",
+   "federal_council": true,
+   "votes": 173
+  },
+  {
+   "name": "Amoos Emmanuel",
+   "parl_group": "S",
+   "canton": "VS",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 114
+  },
+  {
+   "name": "Andrey Gerhard",
+   "parl_group": "G",
+   "canton": "FR",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 128
+  },
+  {
+   "name": "Arslan Sibel",
+   "parl_group": "G",
+   "canton": "BS",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 94
+  },
+  {
+   "name": "Badertscher Christine",
+   "parl_group": "G",
+   "canton": "BE",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 52
+  },
+  {
+   "name": "Badran Jacqueline",
+   "parl_group": "S",
+   "canton": "ZH",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 154
+  },
+  {
+   "name": "Bally Maya",
+   "parl_group": "M-E",
+   "canton": "AG",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 40
+  },
+  {
+   "name": "Balmer Bettina",
+   "parl_group": "RL",
+   "canton": "ZH",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 41
+  },
+  {
+   "name": "Barandun Nicole",
+   "parl_group": "M-E",
+   "canton": "ZH",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 61
+  },
+  {
+   "name": "Baumann Kilian",
+   "parl_group": "G",
+   "canton": "BE",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 28
+  },
+  {
+   "name": "Baume-Schneider Elisabeth",
+   "parl_group": null,
+   "canton": "JU",
+   "council": "SR",
+   "federal_council": true,
+   "votes": 1148
+  },
+  {
+   "name": "Bäumle Martin",
+   "parl_group": "GL",
+   "canton": "ZH",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 80
+  },
+  {
+   "name": "Bendahan Samuel",
+   "parl_group": "S",
+   "canton": "VD",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 69
+  },
+  {
+   "name": "Berli Rudi",
+   "parl_group": "G",
+   "canton": "GE",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 31
+  },
+  {
+   "name": "Berset Alain",
+   "parl_group": null,
+   "canton": "FR",
+   "council": "SR",
+   "federal_council": true,
+   "votes": 15
+  },
+  {
+   "name": "Bertschy Kathrin",
+   "parl_group": "GL",
+   "canton": "BE",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 61
+  },
+  {
+   "name": "Binder-Keller Marianne",
+   "parl_group": "M-E",
+   "canton": "AG",
+   "council": "SR",
+   "federal_council": false,
+   "votes": 106
+  },
+  {
+   "name": "Bircher Martina",
+   "parl_group": "V",
+   "canton": "AG",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 26
+  },
+  {
+   "name": "Bischof Pirmin",
+   "parl_group": "M-E",
+   "canton": "SO",
+   "council": "SR",
+   "federal_council": false,
+   "votes": 99
+  },
+  {
+   "name": "Bläsi Thomas",
+   "parl_group": "V",
+   "canton": "GE",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 69
+  },
+  {
+   "name": "Blunschy Dominik",
+   "parl_group": "M-E",
+   "canton": "SZ",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 40
+  },
+  {
+   "name": "Bregy Philipp Matthias",
+   "parl_group": "M-E",
+   "canton": "VS",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 211
+  },
+  {
+   "name": "Brenzikofer Florence",
+   "parl_group": "G",
+   "canton": "BL",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 89
+  },
+  {
+   "name": "Brizzi Simona",
+   "parl_group": "S",
+   "canton": "AG",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 38
+  },
+  {
+   "name": "Broulis Pascal",
+   "parl_group": "RL",
+   "canton": "VD",
+   "council": "SR",
+   "federal_council": false,
+   "votes": 144
+  },
+  {
+   "name": "Brüngger Severin",
+   "parl_group": "RL",
+   "canton": "SH",
+   "council": "SR",
+   "federal_council": false,
+   "votes": 23
+  },
+  {
+   "name": "Büchel Roland Rino",
+   "parl_group": "V",
+   "canton": "SG",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 144
+  },
+  {
+   "name": "Buffat Michaël",
+   "parl_group": "V",
+   "canton": "VD",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 42
+  },
+  {
+   "name": "Bühler Manfred",
+   "parl_group": "V",
+   "canton": "BE",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 104
+  },
+  {
+   "name": "Bullakaj Arbër",
+   "parl_group": "S",
+   "canton": "SG",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 7
+  },
+  {
+   "name": "Bulliard-Marbach Christine",
+   "parl_group": "M-E",
+   "canton": "FR",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 57
+  },
+  {
+   "name": "Burgherr Thomas",
+   "parl_group": "V",
+   "canton": "AG",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 69
+  },
+  {
+   "name": "Bürgi Roman",
+   "parl_group": "V",
+   "canton": "SZ",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 27
+  },
+  {
+   "name": "Bürgin Yvonne",
+   "parl_group": "M-E",
+   "canton": "ZH",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 35
+  },
+  {
+   "name": "Burkart Thierry",
+   "parl_group": "RL",
+   "canton": "AG",
+   "council": "SR",
+   "federal_council": false,
+   "votes": 141
+  },
+  {
+   "name": "Calame Didier",
+   "parl_group": "V",
+   "canton": "NE",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 28
+  },
+  {
+   "name": "Candan Hasan",
+   "parl_group": "S",
+   "canton": "LU",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 95
+  },
+  {
+   "name": "Candinas Martin",
+   "parl_group": "M-E",
+   "canton": "GR",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 53
+  },
+  {
+   "name": "Caroni Andrea",
+   "parl_group": "RL",
+   "canton": "AR",
+   "council": "SR",
+   "federal_council": false,
+   "votes": 122
+  },
+  {
+   "name": "Cassis Ignazio",
+   "parl_group": null,
+   "canton": "TI",
+   "council": "SR",
+   "federal_council": true,
+   "votes": 274
+  },
+  {
+   "name": "Chappuis Isabelle",
+   "parl_group": "M-E",
+   "canton": "VD",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 37
+  },
+  {
+   "name": "Chassot Isabelle",
+   "parl_group": "M-E",
+   "canton": "FR",
+   "council": "SR",
+   "federal_council": false,
+   "votes": 113
+  },
+  {
+   "name": "Chiesa Marco",
+   "parl_group": "V",
+   "canton": "TI",
+   "council": "SR",
+   "federal_council": false,
+   "votes": 14
+  },
+  {
+   "name": "Chollet Clarence",
+   "parl_group": "G",
+   "canton": "NE",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 23
+  },
+  {
+   "name": "Christ Katja",
+   "parl_group": "GL",
+   "canton": "BS",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 45
+  },
+  {
+   "name": "Clivaz Christophe",
+   "parl_group": "G",
+   "canton": "VS",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 106
+  },
+  {
+   "name": "Cottier Damien",
+   "parl_group": "RL",
+   "canton": "NE",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 97
+  },
+  {
+   "name": "Crevoisier Crelier Mathilde",
+   "parl_group": "S",
+   "canton": "JU",
+   "council": "SR",
+   "federal_council": false,
+   "votes": 186
+  },
+  {
+   "name": "Crottaz Brigitte",
+   "parl_group": "S",
+   "canton": "VD",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 81
+  },
+  {
+   "name": "Dandrès Christian",
+   "parl_group": "S",
+   "canton": "GE",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 84
+  },
+  {
+   "name": "de Courten Thomas",
+   "parl_group": "V",
+   "canton": "BL",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 70
+  },
+  {
+   "name": "de Meuron Andrea",
+   "parl_group": "G",
+   "canton": "BE",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 4
+  },
+  {
+   "name": "de Montmollin Simone",
+   "parl_group": "RL",
+   "canton": "GE",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 57
+  },
+  {
+   "name": "de Quattro Jacqueline",
+   "parl_group": "RL",
+   "canton": "VD",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 48
+  },
+  {
+   "name": "De Ventura Linda",
+   "parl_group": "S",
+   "canton": "SH",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 51
+  },
+  {
+   "name": "Dettling Marcel",
+   "parl_group": "V",
+   "canton": "SZ",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 36
+  },
+  {
+   "name": "Dittli Josef",
+   "parl_group": "RL",
+   "canton": "UR",
+   "council": "SR",
+   "federal_council": false,
+   "votes": 111
+  },
+  {
+   "name": "Dobler Loïc",
+   "parl_group": "S",
+   "canton": "JU",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 8
+  },
+  {
+   "name": "Dobler Marcel",
+   "parl_group": "RL",
+   "canton": "SG",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 39
+  },
+  {
+   "name": "Docourt Martine",
+   "parl_group": "S",
+   "canton": "NE",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 54
+  },
+  {
+   "name": "Dünki-Bättig Michèle",
+   "parl_group": "S",
+   "canton": "ZH",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 6
+  },
+  {
+   "name": "Durrer Regina",
+   "parl_group": "M-E",
+   "canton": "NW",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 21
+  },
+  {
+   "name": "Durrer-Knobel Regina",
+   "parl_group": "M-E",
+   "canton": "NW",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 15
+  },
+  {
+   "name": "Egger Mike",
+   "parl_group": "V",
+   "canton": "SG",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 132
+  },
+  {
+   "name": "Engler Stefan",
+   "parl_group": "M-E",
+   "canton": "GR",
+   "council": "SR",
+   "federal_council": false,
+   "votes": 102
+  },
+  {
+   "name": "Ettlin Erich",
+   "parl_group": "M-E",
+   "canton": "OW",
+   "council": "SR",
+   "federal_council": false,
+   "votes": 225
+  },
+  {
+   "name": "Farinelli Alex",
+   "parl_group": "RL",
+   "canton": "TI",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 28
+  },
+  {
+   "name": "Fässler Daniel",
+   "parl_group": "M-E",
+   "canton": "AI",
+   "council": "SR",
+   "federal_council": false,
+   "votes": 271
+  },
+  {
+   "name": "Fehlmann Rielle Laurence",
+   "parl_group": "S",
+   "canton": "GE",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 88
+  },
+  {
+   "name": "Fehr Düsel Nina",
+   "parl_group": "V",
+   "canton": "ZH",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 54
+  },
+  {
+   "name": "Feller Olivier",
+   "parl_group": "RL",
+   "canton": "VD",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 89
+  },
+  {
+   "name": "Fischer Benjamin",
+   "parl_group": "V",
+   "canton": "ZH",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 81
+  },
+  {
+   "name": "Fivaz Fabien",
+   "parl_group": "G",
+   "canton": "NE",
+   "council": "SR",
+   "federal_council": false,
+   "votes": 113
+  },
+  {
+   "name": "Flach Beat",
+   "parl_group": "GL",
+   "canton": "AG",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 183
+  },
+  {
+   "name": "Fonio Giorgio",
+   "parl_group": "M-E",
+   "canton": "TI",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 6
+  },
+  {
+   "name": "Freymond Sylvain",
+   "parl_group": "V",
+   "canton": "VD",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 34
+  },
+  {
+   "name": "Fridez Pierre-Alain",
+   "parl_group": "S",
+   "canton": "JU",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 63
+  },
+  {
+   "name": "Friedl Claudia",
+   "parl_group": "S",
+   "canton": "SG",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 70
+  },
+  {
+   "name": "Friedli Esther",
+   "parl_group": "V",
+   "canton": "SG",
+   "council": "SR",
+   "federal_council": false,
+   "votes": 148
+  },
+  {
+   "name": "Funiciello Tamara",
+   "parl_group": "S",
+   "canton": "BE",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 119
+  },
+  {
+   "name": "Gafner Andreas",
+   "parl_group": "V",
+   "canton": "BE",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 53
+  },
+  {
+   "name": "Gaillard Benoît",
+   "parl_group": "S",
+   "canton": "VD",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 40
+  },
+  {
+   "name": "Gantenbein Laura",
+   "parl_group": "G",
+   "canton": "SO",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 8
+  },
+  {
+   "name": "Gapany Johanna",
+   "parl_group": "RL",
+   "canton": "FR",
+   "council": "SR",
+   "federal_council": false,
+   "votes": 72
+  },
+  {
+   "name": "Gartmann Walter",
+   "parl_group": "V",
+   "canton": "SG",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 44
+  },
+  {
+   "name": "Germann Hannes",
+   "parl_group": "V",
+   "canton": "SH",
+   "council": "SR",
+   "federal_council": false,
+   "votes": 144
+  },
+  {
+   "name": "Giacometti Anna",
+   "parl_group": "RL",
+   "canton": "GR",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 48
+  },
+  {
+   "name": "Gianini Simone",
+   "parl_group": "RL",
+   "canton": "TI",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 18
+  },
+  {
+   "name": "Giezendanner Benjamin",
+   "parl_group": "V",
+   "canton": "AG",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 51
+  },
+  {
+   "name": "Girod Bastien",
+   "parl_group": "G",
+   "canton": "ZH",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 32
+  },
+  {
+   "name": "Glarner Andreas",
+   "parl_group": "V",
+   "canton": "AG",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 98
+  },
+  {
+   "name": "Glättli Balthasar",
+   "parl_group": "G",
+   "canton": "ZH",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 168
+  },
+  {
+   "name": "Glur Christian",
+   "parl_group": "V",
+   "canton": "AG",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 11
+  },
+  {
+   "name": "Gmür-Schönenberger Andrea",
+   "parl_group": "M-E",
+   "canton": "LU",
+   "council": "SR",
+   "federal_council": false,
+   "votes": 212
+  },
+  {
+   "name": "Gobet Nadine",
+   "parl_group": "RL",
+   "canton": "FR",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 21
+  },
+  {
+   "name": "Golay Roger",
+   "parl_group": "V",
+   "canton": "GE",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 57
+  },
+  {
+   "name": "Gössi Petra",
+   "parl_group": "RL",
+   "canton": "SZ",
+   "council": "SR",
+   "federal_council": false,
+   "votes": 40
+  },
+  {
+   "name": "Götte Michael",
+   "parl_group": "V",
+   "canton": "SG",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 108
+  },
+  {
+   "name": "Graber Michael",
+   "parl_group": "V",
+   "canton": "VS",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 88
+  },
+  {
+   "name": "Graf Maya",
+   "parl_group": "G",
+   "canton": "BL",
+   "council": "SR",
+   "federal_council": false,
+   "votes": 113
+  },
+  {
+   "name": "Gredig Corina",
+   "parl_group": "GL",
+   "canton": "ZH",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 101
+  },
+  {
+   "name": "Grossen Jürg",
+   "parl_group": "GL",
+   "canton": "BE",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 83
+  },
+  {
+   "name": "Grüter Franz",
+   "parl_group": "V",
+   "canton": "LU",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 39
+  },
+  {
+   "name": "Gugger Niklaus-Samuel",
+   "parl_group": "M-E",
+   "canton": "ZH",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 34
+  },
+  {
+   "name": "Guggisberg Lars",
+   "parl_group": "V",
+   "canton": "BE",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 82
+  },
+  {
+   "name": "Gutjahr Diana",
+   "parl_group": "V",
+   "canton": "TG",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 58
+  },
+  {
+   "name": "Gysi Barbara",
+   "parl_group": "S",
+   "canton": "SG",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 130
+  },
+  {
+   "name": "Gysin Greta",
+   "parl_group": "G",
+   "canton": "TI",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 14
+  },
+  {
+   "name": "Haab Martin",
+   "parl_group": "V",
+   "canton": "ZH",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 28
+  },
+  {
+   "name": "Häberli-Koller Brigitte",
+   "parl_group": "M-E",
+   "canton": "TG",
+   "council": "SR",
+   "federal_council": false,
+   "votes": 64
+  },
+  {
+   "name": "Hässig Patrick",
+   "parl_group": "GL",
+   "canton": "ZH",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 109
+  },
+  {
+   "name": "Heer Alfred",
+   "parl_group": "V",
+   "canton": "ZH",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 12
+  },
+  {
+   "name": "Hegglin Peter",
+   "parl_group": "M-E",
+   "canton": "ZG",
+   "council": "SR",
+   "federal_council": false,
+   "votes": 155
+  },
+  {
+   "name": "Heimgartner Stefanie",
+   "parl_group": "V",
+   "canton": "AG",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 46
+  },
+  {
+   "name": "Herzog Eva",
+   "parl_group": "S",
+   "canton": "BS",
+   "council": "SR",
+   "federal_council": false,
+   "votes": 113
+  },
+  {
+   "name": "Hess Erich",
+   "parl_group": "V",
+   "canton": "BE",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 66
+  },
+  {
+   "name": "Hess Lorenz",
+   "parl_group": "M-E",
+   "canton": "BE",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 37
+  },
+  {
+   "name": "Huber Alois",
+   "parl_group": "V",
+   "canton": "AG",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 35
+  },
+  {
+   "name": "Hübscher Martin",
+   "parl_group": "V",
+   "canton": "ZH",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 91
+  },
+  {
+   "name": "Hug Roman",
+   "parl_group": "V",
+   "canton": "GR",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 26
+  },
+  {
+   "name": "Hurni Baptiste",
+   "parl_group": "S",
+   "canton": "NE",
+   "council": "SR",
+   "federal_council": false,
+   "votes": 148
+  },
+  {
+   "name": "Hurter Thomas",
+   "parl_group": "V",
+   "canton": "SH",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 83
+  },
+  {
+   "name": "Imark Christian",
+   "parl_group": "V",
+   "canton": "SO",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 98
+  },
+  {
+   "name": "Jaccoud Jessica",
+   "parl_group": "S",
+   "canton": "VD",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 48
+  },
+  {
+   "name": "Jans Beat",
+   "parl_group": null,
+   "canton": "BS",
+   "council": "SR",
+   "federal_council": true,
+   "votes": 931
+  },
+  {
+   "name": "Jauslin Matthias Samuel",
+   "parl_group": "GL",
+   "canton": "AG",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 124
+  },
+  {
+   "name": "Jositsch Daniel",
+   "parl_group": "FRAKTIONSLOS",
+   "canton": "ZH",
+   "council": "SR",
+   "federal_council": false,
+   "votes": 170
+  },
+  {
+   "name": "Jost Marc",
+   "parl_group": "M-E",
+   "canton": "BE",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 73
+  },
+  {
+   "name": "Juillard Charles",
+   "parl_group": "M-E",
+   "canton": "JU",
+   "council": "SR",
+   "federal_council": false,
+   "votes": 138
+  },
+  {
+   "name": "Kälin Irène",
+   "parl_group": "G",
+   "canton": "AG",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 45
+  },
+  {
+   "name": "Kamerzin Sidney",
+   "parl_group": "M-E",
+   "canton": "VS",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 81
+  },
+  {
+   "name": "Kaufmann Pius",
+   "parl_group": "M-E",
+   "canton": "LU",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 42
+  },
+  {
+   "name": "Keller-Sutter Karin",
+   "parl_group": null,
+   "canton": "SG",
+   "council": "NR",
+   "federal_council": true,
+   "votes": 714
+  },
+  {
+   "name": "Klopfenstein Broggini Delphine",
+   "parl_group": "G",
+   "canton": "GE",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 138
+  },
+  {
+   "name": "Knutti Thomas",
+   "parl_group": "V",
+   "canton": "BE",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 128
+  },
+  {
+   "name": "Kolly Nicolas",
+   "parl_group": "V",
+   "canton": "FR",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 67
+  },
+  {
+   "name": "Kutter Philipp",
+   "parl_group": "M-E",
+   "canton": "ZH",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 18
+  },
+  {
+   "name": "Locher Miriam",
+   "parl_group": "S",
+   "canton": "BL",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 7
+  },
+  {
+   "name": "Lohr Christian",
+   "parl_group": "M-E",
+   "canton": "TG",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 26
+  },
+  {
+   "name": "Mahaim Raphaël",
+   "parl_group": "G",
+   "canton": "VD",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 129
+  },
+  {
+   "name": "Maillard Pierre-Yves",
+   "parl_group": "S",
+   "canton": "VD",
+   "council": "SR",
+   "federal_council": false,
+   "votes": 130
+  },
+  {
+   "name": "Maitre Vincent",
+   "parl_group": "M-E",
+   "canton": "GE",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 44
+  },
+  {
+   "name": "Maret Marianne",
+   "parl_group": "M-E",
+   "canton": "VS",
+   "council": "SR",
+   "federal_council": false,
+   "votes": 64
+  },
+  {
+   "name": "Marti Min Li",
+   "parl_group": "S",
+   "canton": "ZH",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 74
+  },
+  {
+   "name": "Marti Samira",
+   "parl_group": "S",
+   "canton": "BL",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 55
+  },
+  {
+   "name": "Martullo-Blocher Magdalena",
+   "parl_group": "V",
+   "canton": "GR",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 3
+  },
+  {
+   "name": "Masshardt Nadine",
+   "parl_group": "S",
+   "canton": "BE",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 37
+  },
+  {
+   "name": "Matter Thomas",
+   "parl_group": "V",
+   "canton": "ZH",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 52
+  },
+  {
+   "name": "Meier Andreas",
+   "parl_group": "M-E",
+   "canton": "AG",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 51
+  },
+  {
+   "name": "Mettler Melanie",
+   "parl_group": "GL",
+   "canton": "BE",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 23
+  },
+  {
+   "name": "Meyer Mattea",
+   "parl_group": "S",
+   "canton": "ZH",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 36
+  },
+  {
+   "name": "Michaud Gigon Sophie",
+   "parl_group": "G",
+   "canton": "VD",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 160
+  },
+  {
+   "name": "Michel Matthias",
+   "parl_group": "RL",
+   "canton": "ZG",
+   "council": "SR",
+   "federal_council": false,
+   "votes": 183
+  },
+  {
+   "name": "Michel Simon",
+   "parl_group": "RL",
+   "canton": "SO",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 14
+  },
+  {
+   "name": "Molina Fabian",
+   "parl_group": "S",
+   "canton": "ZH",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 245
+  },
+  {
+   "name": "Moser Tiana Angelina",
+   "parl_group": "GL",
+   "canton": "ZH",
+   "council": "SR",
+   "federal_council": false,
+   "votes": 77
+  },
+  {
+   "name": "Mühlemann Benjamin",
+   "parl_group": "RL",
+   "canton": "GL",
+   "council": "SR",
+   "federal_council": false,
+   "votes": 58
+  },
+  {
+   "name": "Müller Damian",
+   "parl_group": "RL",
+   "canton": "LU",
+   "council": "SR",
+   "federal_council": false,
+   "votes": 173
+  },
+  {
+   "name": "Müller Leo",
+   "parl_group": "M-E",
+   "canton": "LU",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 82
+  },
+  {
+   "name": "Müller-Altermatt Stefan",
+   "parl_group": "M-E",
+   "canton": "SO",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 86
+  },
+  {
+   "name": "Munz Martina",
+   "parl_group": "S",
+   "canton": "SH",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 47
+  },
+  {
+   "name": "Nantermod Philippe",
+   "parl_group": "RL",
+   "canton": "VS",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 96
+  },
+  {
+   "name": "Nause Reto",
+   "parl_group": "M-E",
+   "canton": "BE",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 89
+  },
+  {
+   "name": "Nicolet Jacques",
+   "parl_group": "V",
+   "canton": "VD",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 153
+  },
+  {
+   "name": "Nordmann Roger",
+   "parl_group": "S",
+   "canton": "VD",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 34
+  },
+  {
+   "name": "Nussbaumer Eric",
+   "parl_group": "S",
+   "canton": "BL",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 60
+  },
+  {
+   "name": "Paganini Nicolò",
+   "parl_group": null,
+   "canton": "SG",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 115
+  },
+  {
+   "name": "Page Pierre-André",
+   "parl_group": "V",
+   "canton": "FR",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 61
+  },
+  {
+   "name": "Pahud Yvan",
+   "parl_group": "V",
+   "canton": "VD",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 78
+  },
+  {
+   "name": "Pamini Paolo",
+   "parl_group": "V",
+   "canton": "TI",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 102
+  },
+  {
+   "name": "Parmelin Guy",
+   "parl_group": null,
+   "canton": "VD",
+   "council": "SR",
+   "federal_council": true,
+   "votes": 856
+  },
+  {
+   "name": "Pfister Gerhard",
+   "parl_group": "M-E",
+   "canton": "ZG",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 68
+  },
+  {
+   "name": "Pfister Martin",
+   "parl_group": null,
+   "canton": "ZG",
+   "council": "NR",
+   "federal_council": true,
+   "votes": 342
+  },
+  {
+   "name": "Piller Carrard Valérie",
+   "parl_group": "S",
+   "canton": "FR",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 77
+  },
+  {
+   "name": "Poggia Mauro",
+   "parl_group": "V",
+   "canton": "GE",
+   "council": "SR",
+   "federal_council": false,
+   "votes": 96
+  },
+  {
+   "name": "Porchet Léonore",
+   "parl_group": "G",
+   "canton": "VD",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 127
+  },
+  {
+   "name": "Portmann Barbara",
+   "parl_group": "GL",
+   "canton": "AG",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 9
+  },
+  {
+   "name": "Portmann Hans-Peter",
+   "parl_group": "RL",
+   "canton": "ZH",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 104
+  },
+  {
+   "name": "Prelicz-Huber Katharina",
+   "parl_group": "G",
+   "canton": "ZH",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 100
+  },
+  {
+   "name": "Pult Jon",
+   "parl_group": "S",
+   "canton": "GR",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 97
+  },
+  {
+   "name": "Quadri Lorenzo",
+   "parl_group": "V",
+   "canton": "TI",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 3
+  },
+  {
+   "name": "Rechsteiner Thomas",
+   "parl_group": "M-E",
+   "canton": "AI",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 88
+  },
+  {
+   "name": "Regazzi Fabio",
+   "parl_group": "M-E",
+   "canton": "TI",
+   "council": "SR",
+   "federal_council": false,
+   "votes": 113
+  },
+  {
+   "name": "Reimann Lukas",
+   "parl_group": "V",
+   "canton": "SG",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 67
+  },
+  {
+   "name": "Revaz Estelle",
+   "parl_group": "S",
+   "canton": "GE",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 44
+  },
+  {
+   "name": "Rieder Beat",
+   "parl_group": "M-E",
+   "canton": "VS",
+   "council": "SR",
+   "federal_council": false,
+   "votes": 317
+  },
+  {
+   "name": "Riem Katja",
+   "parl_group": "V",
+   "canton": "BE",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 53
+  },
+  {
+   "name": "Riner Christoph",
+   "parl_group": "V",
+   "canton": "AG",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 40
+  },
+  {
+   "name": "Riniker Maja",
+   "parl_group": "RL",
+   "canton": "AG",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 66
+  },
+  {
+   "name": "Ritter Markus",
+   "parl_group": "M-E",
+   "canton": "SG",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 71
+  },
+  {
+   "name": "Roduit Benjamin",
+   "parl_group": "M-E",
+   "canton": "VS",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 206
+  },
+  {
+   "name": "Rosenwasser Anna",
+   "parl_group": "S",
+   "canton": "ZH",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 26
+  },
+  {
+   "name": "Rossi Viktor",
+   "parl_group": null,
+   "canton": "BE",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 104
+  },
+  {
+   "name": "Rösti Albert",
+   "parl_group": null,
+   "canton": "BE",
+   "council": "SR",
+   "federal_council": true,
+   "votes": 1218
+  },
+  {
+   "name": "Roth David",
+   "parl_group": "S",
+   "canton": "LU",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 107
+  },
+  {
+   "name": "Roth Franziska",
+   "parl_group": "S",
+   "canton": "SO",
+   "council": "SR",
+   "federal_council": false,
+   "votes": 120
+  },
+  {
+   "name": "Roth Pasquier Marie-France",
+   "parl_group": "M-E",
+   "canton": "FR",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 47
+  },
+  {
+   "name": "Ruch Daniel",
+   "parl_group": "RL",
+   "canton": "VD",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 3
+  },
+  {
+   "name": "Rüegger Monika",
+   "parl_group": "V",
+   "canton": "OW",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 65
+  },
+  {
+   "name": "Rüegsegger Hans Jörg",
+   "parl_group": "V",
+   "canton": "BE",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 46
+  },
+  {
+   "name": "Rumy Farah",
+   "parl_group": "S",
+   "canton": "SO",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 63
+  },
+  {
+   "name": "Rutz Gregor",
+   "parl_group": "V",
+   "canton": "ZH",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 70
+  },
+  {
+   "name": "Ryser Franziska",
+   "parl_group": "G",
+   "canton": "SG",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 73
+  },
+  {
+   "name": "Salzmann Werner",
+   "parl_group": "V",
+   "canton": "BE",
+   "council": "SR",
+   "federal_council": false,
+   "votes": 166
+  },
+  {
+   "name": "Sauter Regine",
+   "parl_group": "RL",
+   "canton": "ZH",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 60
+  },
+  {
+   "name": "Schaffner Barbara",
+   "parl_group": "GL",
+   "canton": "ZH",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 86
+  },
+  {
+   "name": "Schilliger Peter",
+   "parl_group": "RL",
+   "canton": "LU",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 126
+  },
+  {
+   "name": "Schläfli Nina",
+   "parl_group": "S",
+   "canton": "TG",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 37
+  },
+  {
+   "name": "Schläpfer Therese",
+   "parl_group": "V",
+   "canton": "ZH",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 12
+  },
+  {
+   "name": "Schlatter Marionna",
+   "parl_group": "G",
+   "canton": "ZH",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 85
+  },
+  {
+   "name": "Schmaltz Anna-Béatrice",
+   "parl_group": "G",
+   "canton": "ZH",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 25
+  },
+  {
+   "name": "Schmezer Ueli",
+   "parl_group": "S",
+   "canton": "BE",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 67
+  },
+  {
+   "name": "Schmid Martin",
+   "parl_group": "RL",
+   "canton": "GR",
+   "council": "SR",
+   "federal_council": false,
+   "votes": 86
+  },
+  {
+   "name": "Schmid Pascal",
+   "parl_group": "V",
+   "canton": "TG",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 66
+  },
+  {
+   "name": "Schneeberger Daniela",
+   "parl_group": "RL",
+   "canton": "BL",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 23
+  },
+  {
+   "name": "Schneider Meret",
+   "parl_group": "G",
+   "canton": "ZH",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 28
+  },
+  {
+   "name": "Schneider-Schneiter Elisabeth",
+   "parl_group": "M-E",
+   "canton": "BL",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 54
+  },
+  {
+   "name": "Schnyder Markus",
+   "parl_group": "V",
+   "canton": "GL",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 42
+  },
+  {
+   "name": "Schwander Pirmin",
+   "parl_group": "V",
+   "canton": "SZ",
+   "council": "SR",
+   "federal_council": false,
+   "votes": 152
+  },
+  {
+   "name": "Seiler Graf Priska",
+   "parl_group": "S",
+   "canton": "ZH",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 47
+  },
+  {
+   "name": "Silberschmidt Andri",
+   "parl_group": "RL",
+   "canton": "ZH",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 81
+  },
+  {
+   "name": "Sollberger Sandra",
+   "parl_group": "V",
+   "canton": "BL",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 29
+  },
+  {
+   "name": "Sommaruga Carlo",
+   "parl_group": "S",
+   "canton": "GE",
+   "council": "SR",
+   "federal_council": false,
+   "votes": 288
+  },
+  {
+   "name": "Sormanni Daniel",
+   "parl_group": "V",
+   "canton": "GE",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 36
+  },
+  {
+   "name": "Stadler Simon",
+   "parl_group": "M-E",
+   "canton": "UR",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 46
+  },
+  {
+   "name": "Stämpfli Fabienne",
+   "parl_group": "GL",
+   "canton": "BE",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 16
+  },
+  {
+   "name": "Stark Jakob",
+   "parl_group": "V",
+   "canton": "TG",
+   "council": "SR",
+   "federal_council": false,
+   "votes": 363
+  },
+  {
+   "name": "Steinemann Barbara",
+   "parl_group": "V",
+   "canton": "ZH",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 74
+  },
+  {
+   "name": "Stettler Thomas",
+   "parl_group": "V",
+   "canton": "JU",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 44
+  },
+  {
+   "name": "Stettler-Riem Katja",
+   "parl_group": "V",
+   "canton": "BE",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 4
+  },
+  {
+   "name": "Stocker Simon",
+   "parl_group": "S",
+   "canton": "SH",
+   "council": "SR",
+   "federal_council": false,
+   "votes": 36
+  },
+  {
+   "name": "Storni Bruno",
+   "parl_group": "S",
+   "canton": "TI",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 6
+  },
+  {
+   "name": "Strupler Manuel",
+   "parl_group": "V",
+   "canton": "TG",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 33
+  },
+  {
+   "name": "Suter Gabriela",
+   "parl_group": "S",
+   "canton": "AG",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 120
+  },
+  {
+   "name": "Thalmann-Bieri Vroni",
+   "parl_group": "V",
+   "canton": "LU",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 33
+  },
+  {
+   "name": "Theiler Heinz",
+   "parl_group": "RL",
+   "canton": "SZ",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 39
+  },
+  {
+   "name": "Thurnherr Walter",
+   "parl_group": null,
+   "canton": "AG",
+   "council": "V",
+   "federal_council": false,
+   "votes": 1
+  },
+  {
+   "name": "Töngi Michael",
+   "parl_group": "G",
+   "canton": "LU",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 87
+  },
+  {
+   "name": "Trede Aline",
+   "parl_group": "G",
+   "canton": "BE",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 70
+  },
+  {
+   "name": "Tschopp Jean",
+   "parl_group": "S",
+   "canton": "VD",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 78
+  },
+  {
+   "name": "Tuena Mauro",
+   "parl_group": "V",
+   "canton": "ZH",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 156
+  },
+  {
+   "name": "Tuosto Brenda",
+   "parl_group": "S",
+   "canton": "VD",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 28
+  },
+  {
+   "name": "Umbricht Pieren Nadja",
+   "parl_group": "V",
+   "canton": "BE",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 4
+  },
+  {
+   "name": "Vara Céline",
+   "parl_group": "G",
+   "canton": "NE",
+   "council": "SR",
+   "federal_council": false,
+   "votes": 81
+  },
+  {
+   "name": "Vietze Kris",
+   "parl_group": "RL",
+   "canton": "TG",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 40
+  },
+  {
+   "name": "Vincenz-Stauffacher Susanne",
+   "parl_group": "RL",
+   "canton": "SG",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 67
+  },
+  {
+   "name": "von Falkenstein Patricia",
+   "parl_group": "RL",
+   "canton": "BS",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 54
+  },
+  {
+   "name": "Vontobel Erich",
+   "parl_group": "V",
+   "canton": "ZH",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 36
+  },
+  {
+   "name": "Walder Nicolas",
+   "parl_group": "G",
+   "canton": "GE",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 78
+  },
+  {
+   "name": "Walliser Bruno",
+   "parl_group": "V",
+   "canton": "ZH",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 21
+  },
+  {
+   "name": "Walti Beat",
+   "parl_group": "RL",
+   "canton": "ZH",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 55
+  },
+  {
+   "name": "Wandfluh Ernst",
+   "parl_group": "V",
+   "canton": "BE",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 32
+  },
+  {
+   "name": "Wasserfallen Christian",
+   "parl_group": "RL",
+   "canton": "BE",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 164
+  },
+  {
+   "name": "Wasserfallen Flavia",
+   "parl_group": "S",
+   "canton": "BE",
+   "council": "SR",
+   "federal_council": false,
+   "votes": 111
+  },
+  {
+   "name": "Weber Céline",
+   "parl_group": "GL",
+   "canton": "VD",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 88
+  },
+  {
+   "name": "Wehrli Laurent",
+   "parl_group": "RL",
+   "canton": "VD",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 42
+  },
+  {
+   "name": "Weichelt Manuela",
+   "parl_group": "G",
+   "canton": "ZG",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 132
+  },
+  {
+   "name": "Wermuth Cédric",
+   "parl_group": "S",
+   "canton": "AG",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 98
+  },
+  {
+   "name": "Wettstein Felix",
+   "parl_group": "G",
+   "canton": "SO",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 116
+  },
+  {
+   "name": "Wicki Hans",
+   "parl_group": "RL",
+   "canton": "NW",
+   "council": "SR",
+   "federal_council": false,
+   "votes": 112
+  },
+  {
+   "name": "Widmer Céline",
+   "parl_group": "S",
+   "canton": "ZH",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 57
+  },
+  {
+   "name": "Wismer-Felder Priska",
+   "parl_group": "M-E",
+   "canton": "LU",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 63
+  },
+  {
+   "name": "Würth Benedikt",
+   "parl_group": "M-E",
+   "canton": "SG",
+   "council": "SR",
+   "federal_council": false,
+   "votes": 228
+  },
+  {
+   "name": "Wyss Sarah",
+   "parl_group": "S",
+   "canton": "BS",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 164
+  },
+  {
+   "name": "Wyssmann Rémy",
+   "parl_group": "V",
+   "canton": "SO",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 88
+  },
+  {
+   "name": "Z'graggen Heidi",
+   "parl_group": "M-E",
+   "canton": "UR",
+   "council": "SR",
+   "federal_council": false,
+   "votes": 132
+  },
+  {
+   "name": "Zopfi Mathias",
+   "parl_group": "G",
+   "canton": "GL",
+   "council": "SR",
+   "federal_council": false,
+   "votes": 163
+  },
+  {
+   "name": "Zryd Andrea",
+   "parl_group": "S",
+   "canton": "BE",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 42
+  },
+  {
+   "name": "Zuberbühler David",
+   "parl_group": "V",
+   "canton": "AR",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 26
+  },
+  {
+   "name": "Zybach Ursula",
+   "parl_group": "S",
+   "canton": "BE",
+   "council": "NR",
+   "federal_council": false,
+   "votes": 89
+  }
+ ]
+}
