@@ -259,8 +259,12 @@ class FakePipeline:
         self.warmed.append(mode)
         return None if mode == "fulltext" else 7100.0
 
-    def ask(self, question: str, filters: SearchFilters, *, mode: str | None = None) -> AskResult:
-        self.calls.append({"question": question, "filters": filters, "mode": mode})
+    def ask(
+        self, question: str, filters: SearchFilters, *, mode: str | None = None, detect: bool = True
+    ) -> AskResult:
+        self.calls.append(
+            {"question": question, "filters": filters, "mode": mode, "detect": detect}
+        )
         if isinstance(self.result, Exception):
             raise self.result
         return self.result
@@ -362,3 +366,10 @@ def test_usage_line_counts_cached_prompt_tokens() -> None:
         "claude-haiku-5-5 (claude-code) · 25'366 Input- (davon 25'364 Cache) und 896 "
         "Output-Tokens · ≈ 0.0018 USD geschätzt, im Claude-Abo enthalten · 2 Versuche"
     )
+
+
+def test_ask_no_detect_is_passed_to_the_pipeline(fake_pipeline: FakePipeline) -> None:
+    """Spec 003, AK-19.3: Erkennung pro Aufruf abschaltbar."""
+    assert runner.invoke(cli.app, ["ask", "Was sagte Rösti 2025?"]).exit_code == 0
+    assert runner.invoke(cli.app, ["ask", "Was sagte Rösti 2025?", "--no-detect"]).exit_code == 0
+    assert [call["detect"] for call in fake_pipeline.calls] == [True, False]

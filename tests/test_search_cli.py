@@ -237,3 +237,36 @@ def test_configured_mode_is_used_when_option_is_missing(fake: FakeRetriever) -> 
     runner.invoke(cli.app, ["search", "PFAS", "--mode", "fulltext"])
 
     assert [call["mode"] for call in fake.calls] == ["hybrid", "fulltext"]
+
+
+def test_search_applies_and_reports_detection(
+    monkeypatch: pytest.MonkeyPatch, fake: FakeRetriever
+) -> None:
+    """Spec 003: `search` nutzt dieselbe Erkennung wie `ask` und nennt, was erkannt wurde."""
+    from parlrag.query.search import DetectingRetriever
+    from test_query_pipeline import CATALOG, TODAY
+
+    monkeypatch.setattr(
+        cli,
+        "detecting_retriever",
+        lambda retriever: DetectingRetriever(
+            retriever, lambda: CATALOG, min_similarity=0.0, today=lambda: TODAY
+        ),
+    )
+    result = runner.invoke(cli.app, ["search", "Was sagte Bundesrat Rösti 2025 zum Wolf?"])
+    assert result.exit_code == 0, result.output
+    assert fake.calls[0]["filters"] == SearchFilters(
+        speaker="Rösti Albert", date_from=dt.date(2025, 1, 1), date_to=dt.date(2025, 12, 31)
+    )
+    lines = result.output.splitlines()
+    assert lines[1] == (
+        "Aus der Frage erkannt: speaker=Rösti Albert, date_from=2025-01-01, date_to=2025-12-31"
+    )
+
+    outside = runner.invoke(cli.app, ["search", "Was sagte Funiciello 2022?", "--json"])
+    payload = json.loads(outside.output)
+    assert payload["out_of_range"] is True and payload["hits"] == []
+    assert payload["detected"] == ["speaker", "date_from", "date_to"]
+
+    runner.invoke(cli.app, ["search", "Was sagte Rösti 2025?", "--no-detect"])
+    assert fake.calls[-1]["filters"] == SearchFilters()
