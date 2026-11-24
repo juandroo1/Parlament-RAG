@@ -32,6 +32,10 @@ def test_valid_item() -> None:
     assert item.expected_source_ids == ("transcript:418982", "business:20253906")
     assert item.filters is not None and item.filters.council == "SR"
     assert item.has("filter") and not item.has("fr")
+    with_speaker = GoldenItem.model_validate(
+        _item(filters={"speaker": "Funiciello Tamara"}, tags=["filter"], notes="x")
+    )
+    assert with_speaker.filters is not None and with_speaker.filters.speaker == "Funiciello Tamara"
 
 
 @pytest.mark.parametrize(

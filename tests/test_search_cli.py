@@ -163,6 +163,8 @@ def test_search_prints_hits_and_passes_options(fake: FakeRetriever) -> None:
             "2026-09-30",
             "--parl-group",
             "RL",
+            "--speaker",
+            "Michel Matthias",
         ],
     )
 
@@ -170,10 +172,15 @@ def test_search_prints_hits_and_passes_options(fake: FakeRetriever) -> None:
     (call,) = fake.calls
     assert call["mode"] == "vector" and call["top_n"] == 5
     assert call["filters"] == SearchFilters(
-        council="SR", date_from=dt.date(2026, 9, 1), date_to=dt.date(2026, 9, 30), parl_group="RL"
+        council="SR",
+        date_from=dt.date(2026, 9, 1),
+        date_to=dt.date(2026, 9, 30),
+        parl_group="RL",
+        speaker="Michel Matthias",
     )
     assert "Suche (vector) «Was sagte der Ständerat zu PFAS?»" in result.output
     assert "council=SR" in result.output and "parl_group=RL" in result.output
+    assert "speaker=Michel Matthias" in result.output
     assert "transcript:418982" in result.output
     assert "business:20253906" in result.output
 
@@ -215,6 +222,7 @@ def test_no_hits_prints_a_hint(monkeypatch: pytest.MonkeyPatch) -> None:
         ["--date-from", "30.09.2026"],
         ["--top", "0"],
         ["--mode", "magic"],
+        ["--speaker", "   "],
     ],
 )
 def test_invalid_options_are_rejected(fake: FakeRetriever, args: list[str]) -> None:

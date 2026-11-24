@@ -1,15 +1,16 @@
-"""Filter nach Rat, Zeitraum und Fraktion als SQL-WHERE vor der Suche (AK-4.1 bis AK-4.3).
+"""Filter nach Rat, Zeitraum, Fraktion und Person als SQL-WHERE vor der Suche (AK-4.1 bis AK-4.3,
+AK-18.2).
 
-- Voten: `council`, `date` und `parl_group` des Dokuments.
+- Voten: `council`, `date`, `parl_group` und `speaker_name` des Dokuments.
 - Geschäfte: Rat und Zeitraum über `debate_councils` und `debate_dates`, unabhängig
-  voneinander geprüft (bekannte Grenze, spec.md AK-4.3). Bei einem Fraktionsfilter fallen
-  Geschäfte weg.
+  voneinander geprüft (bekannte Grenze, spec.md AK-4.3). Bei einem Fraktions- oder
+  Personenfilter fallen Geschäfte weg.
 """
 
 import datetime as dt
-from typing import Any, Literal
+from typing import Annotated, Any, Literal
 
-from pydantic import BaseModel, ConfigDict, model_validator
+from pydantic import BaseModel, ConfigDict, StringConstraints, model_validator
 
 # Bedingung auf die Tabelle `documents` mit Alias `d`; ungesetzte Filter sind NULL.
 FILTER_SQL = """
@@ -32,6 +33,10 @@ AND (
     CAST(:parl_group AS text) IS NULL
     OR (d.source_type = 'transcript' AND d.parl_group = CAST(:parl_group AS text))
 )
+AND (
+    CAST(:speaker AS text) IS NULL
+    OR (d.source_type = 'transcript' AND d.speaker_name = CAST(:speaker AS text))
+)
 """
 
 
@@ -44,6 +49,11 @@ class SearchFilters(BaseModel):
     date_from: dt.date | None = None
     date_to: dt.date | None = None
     parl_group: str | None = None
+    # Name wie in `documents.speaker_name` («Nachname Vorname», z. B. «Funiciello Tamara»).
+    speaker: (
+        Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=100)]
+        | None
+    ) = None
 
     @model_validator(mode="after")
     def _check_range(self) -> "SearchFilters":
@@ -57,4 +67,5 @@ class SearchFilters(BaseModel):
             "date_from": self.date_from,
             "date_to": self.date_to,
             "parl_group": self.parl_group,
+            "speaker": self.speaker,
         }

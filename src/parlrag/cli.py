@@ -328,6 +328,7 @@ def _filters(
     date_from: dt.datetime | None,
     date_to: dt.datetime | None,
     parl_group: str | None,
+    speaker: str | None = None,
 ) -> SearchFilters:
     try:
         return SearchFilters(
@@ -335,9 +336,12 @@ def _filters(
             date_from=date_from.date() if date_from else None,
             date_to=date_to.date() if date_to else None,
             parl_group=parl_group,
+            speaker=speaker,
         )
     except ValidationError as exc:
-        raise typer.BadParameter(exc.errors()[0]["msg"], param_hint="--date-from") from exc
+        error = exc.errors()[0]
+        hint = "--speaker" if error["loc"] and error["loc"][0] == "speaker" else "--date-from"
+        raise typer.BadParameter(error["msg"], param_hint=hint) from exc
 
 
 @app.command()
@@ -355,10 +359,16 @@ def search(
     parl_group: Annotated[
         str | None, typer.Option(help="Nur Voten dieser Fraktion, z. B. RL, S, V, M-E, G, GL.")
     ] = None,
+    speaker: Annotated[
+        str | None,
+        typer.Option(
+            help='Nur Voten dieser Person, Name wie in den Daten, z. B. "Funiciello Tamara".'
+        ),
+    ] = None,
     as_json: Annotated[bool, typer.Option("--json", help="Ausgabe als JSON.")] = False,
 ) -> None:
     """Nur Retrieval: Treffer mit Scores, Metadaten, Ausschnitt und Link (zum Prüfen)."""
-    filters = _filters(council, date_from, date_to, parl_group)
+    filters = _filters(council, date_from, date_to, parl_group, speaker)
     retriever = build_retriever()
     chosen = mode.value if mode else retriever.config.mode
     model_load_ms = None
@@ -651,10 +661,16 @@ def ask(
     parl_group: Annotated[
         str | None, typer.Option(help="Nur Voten dieser Fraktion, z. B. RL, S, V, M-E, G, GL.")
     ] = None,
+    speaker: Annotated[
+        str | None,
+        typer.Option(
+            help='Nur Voten dieser Person, Name wie in den Daten, z. B. "Funiciello Tamara".'
+        ),
+    ] = None,
     as_json: Annotated[bool, typer.Option("--json", help="Ausgabe als JSON.")] = False,
 ) -> None:
     """Antwort mit Quellen aus den Debatten und Geschäften (LLM gemäss LLM_BACKEND)."""
-    filters = _filters(council, date_from, date_to, parl_group)
+    filters = _filters(council, date_from, date_to, parl_group, speaker)
     console = Console(stderr=True)
     try:
         pipeline = build_pipeline()
