@@ -43,6 +43,7 @@ SUBSETS: dict[str, Callable[[GoldenItem], bool]] = {
     "filter": lambda item: item.has("filter"),
     "teilkorpus": lambda item: item.has("teilkorpus"),
     "wertend": lambda item: item.has("wertend"),
+    "person-zeit": lambda item: item.has("person-zeit"),
 }
 
 

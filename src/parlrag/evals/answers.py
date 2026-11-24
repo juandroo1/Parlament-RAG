@@ -39,6 +39,7 @@ ANSWER_METRICS = (
     "citation_accuracy",
     "faithfulness",
     "refusal_rate",
+    "out_of_range_rate",
     "false_refusal_rate",
     "neutrality",
     "language_accuracy",
@@ -87,6 +88,16 @@ class AnswerResult(BaseModel):
     @property
     def refused(self) -> bool:
         return bool(self.insufficient_context)
+
+    @property
+    def llm_called(self) -> bool:
+        """Ob für die Antwort ein Modell aufgerufen wurde (Usage mit Modell)."""
+        return bool(self.answer_usage and self.answer_usage.get("model"))
+
+    @property
+    def out_of_range_ok(self) -> bool:
+        """Abgelehnt als «ausserhalb des Datenbestands», ohne LLM-Aufruf (AK-16.1)."""
+        return self.refused and self.insufficient_reason == "out_of_range" and not self.llm_called
 
     @property
     def language_ok(self) -> bool | None:
@@ -162,6 +173,7 @@ def summarize_answers(answers: Sequence[AnswerResult]) -> dict[str, float]:
         "citation_accuracy": _mean_of([a.citation_accuracy for a in answered]),
         "faithfulness": _mean_of([a.faithfulness for a in answered]),
         "refusal_rate": _rate([a.refused for a in ok if not a.answerable]),
+        "out_of_range_rate": _rate([a.out_of_range_ok for a in ok if "ausserhalb" in a.tags]),
         "false_refusal_rate": _rate(
             [a.refused for a in ok if a.answerable and "wertend" not in a.tags]
         ),
