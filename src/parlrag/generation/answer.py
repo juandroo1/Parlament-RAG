@@ -15,6 +15,7 @@ der Schwelle (dann ohne LLM-Aufruf) oder `insufficient_context` vom Modell. In a
 ein fester Hinweis in der Sprache der Frage, ohne Quellen.
 """
 
+import datetime as dt
 import logging
 import re
 from collections.abc import Sequence
@@ -41,8 +42,55 @@ INSUFFICIENT_NOTICE = {
     "et les objets du Parlement fédéral.",
 }
 
-# no_hits: keine Treffer; low_similarity: Schwelle; model: `insufficient_context` vom Modell.
-InsufficientReason = Literal["no_hits", "low_similarity", "model"]
+# Zeitraum ganz ausserhalb der Daten (Spec 003, AK-16.1), mit dem abgedeckten Zeitraum.
+OUT_OF_RANGE_NOTICE = {
+    "de": "Zu diesem Zeitraum gibt es keine Daten. Die Voten reichen vom {first} bis {last}.",
+    "fr": "Il n'y a pas de données pour cette période. Les interventions vont du {first} au "
+    "{last}.",
+}
+MONTH_NAMES = {
+    "de": (
+        "Januar",
+        "Februar",
+        "März",
+        "April",
+        "Mai",
+        "Juni",
+        "Juli",
+        "August",
+        "September",
+        "Oktober",
+        "November",
+        "Dezember",
+    ),
+    "fr": (
+        "janvier",
+        "février",
+        "mars",
+        "avril",
+        "mai",
+        "juin",
+        "juillet",
+        "août",
+        "septembre",
+        "octobre",
+        "novembre",
+        "décembre",
+    ),
+}
+
+# no_hits: keine Treffer; low_similarity: Schwelle; model: `insufficient_context` vom Modell;
+# out_of_range: Zeitraum ausserhalb der Daten, ohne Suche und LLM (Spec 003).
+InsufficientReason = Literal["no_hits", "low_similarity", "model", "out_of_range"]
+
+
+def long_date(day: dt.date, language: str) -> str:
+    """«4. Dezember 2023» bzw. «4 décembre 2023» (1er für den Monatsersten)."""
+    month = MONTH_NAMES[language][day.month - 1]
+    if language == "fr":
+        return f"{'1er' if day.day == 1 else day.day} {month} {day.year}"
+    return f"{day.day}. {month} {day.year}"
+
 
 # [3], [1, 2] und [1][2] (Letzteres als zwei Treffer).
 CITATION_PATTERN = re.compile(r"\[(\d+(?:\s*,\s*\d+)*)\]")
@@ -172,6 +220,24 @@ class AnswerGenerator:
         raise CitationError(
             f"Antwort verletzt die Zitatregeln nach {self.max_attempts} Versuchen: {feedback}",
             sum_usage(usages),
+        )
+
+    def out_of_range(self, question: str, first: dt.date, last: dt.date) -> GeneratedAnswer:
+        """Hinweis «keine Daten zu diesem Zeitraum» mit dem abgedeckten Zeitraum, ohne LLM."""
+        language = detect_query_language(question) or "de"
+        notice = OUT_OF_RANGE_NOTICE[language].format(
+            first=long_date(first, language), last=long_date(last, language)
+        )
+        return GeneratedAnswer(
+            answer=notice,
+            insufficient_context=True,
+            sources=[],
+            context=[],
+            usage=sum_usage([]),
+            attempts=0,
+            prompt_version=self.prompt.version,
+            insufficient_reason="out_of_range",
+            best_similarity=None,
         )
 
     def _insufficient(

@@ -5,6 +5,7 @@ import datetime as dt
 from pydantic import BaseModel, ConfigDict, Field
 
 from parlrag.generation.pipeline import AskResult
+from parlrag.query.speakers import Speaker
 from parlrag.retrieval import SearchFilters
 
 
@@ -15,7 +16,12 @@ class AskRequest(BaseModel):
         min_length=3, max_length=500, description="Frage auf Deutsch oder Französisch."
     )
     filters: SearchFilters | None = Field(
-        default=None, description="Rat, Zeitraum, Fraktion; wie bei `parlrag search`."
+        default=None, description="Rat, Zeitraum, Fraktion, Person; wie bei `parlrag search`."
+    )
+    detect: bool = Field(
+        default=True,
+        description="Person und Zeitraum aus der Frage erkennen und als Filter anwenden "
+        "(gesetzte Filter haben Vorrang).",
     )
 
 
@@ -49,14 +55,35 @@ class Usage(BaseModel):
     latency_ms: float = Field(description="Dauer der ganzen Anfrage.")
 
 
+class AppliedFilters(BaseModel):
+    applied: SearchFilters = Field(description="Filter der Suche: gesetzt plus erkannt.")
+    detected: list[str] = Field(
+        description="Aus der Frage erkannte Filter: speaker, date_from, date_to."
+    )
+
+
+class Coverage(BaseModel):
+    first: dt.date = Field(description="Erstes Datum der Voten im Korpus.")
+    last: dt.date = Field(description="Letztes Datum der Voten im Korpus.")
+    partial: bool = Field(description="Der gefragte Zeitraum geht über die Daten hinaus.")
+
+
 class AskResponse(BaseModel):
     answer: str
     insufficient_context: bool
     insufficient_reason: str | None = Field(
-        description="no_hits, low_similarity oder model; null bei einer Antwort."
+        description="no_hits, low_similarity, model oder out_of_range; null bei einer Antwort."
     )
     sources: list[Source]
     usage: Usage
+    filters: AppliedFilters
+    coverage: Coverage | None = Field(description="Abgedeckter Zeitraum; null ohne Voten.")
+    speaker_candidates: list[Speaker] = Field(
+        description="Bei einem mehrdeutigen Namen die möglichen Personen, sonst leer."
+    )
+    retried_without: list[str] = Field(
+        description="Ohne diese erkannten Filter neu gesucht (z. B. speaker), sonst leer."
+    )
 
 
 def to_response(result: AskResult, latency_ms: float) -> AskResponse:
@@ -101,4 +128,16 @@ def to_response(result: AskResult, latency_ms: float) -> AskResponse:
             cost_estimated=bool(usage and usage.backend == "claude-code"),
             latency_ms=round(latency_ms, 1),
         ),
+        filters=AppliedFilters(applied=result.filters, detected=list(result.detected)),
+        coverage=(
+            Coverage(
+                first=result.coverage.first,
+                last=result.coverage.last,
+                partial=result.coverage.partial,
+            )
+            if result.coverage
+            else None
+        ),
+        speaker_candidates=list(result.speaker_candidates),
+        retried_without=list(result.retried_without),
     )

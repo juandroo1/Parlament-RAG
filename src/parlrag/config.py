@@ -50,6 +50,9 @@ class Settings(BaseSettings):
     # ohne LLM-Aufruf (Task 4.3, auf dem Goldset kalibriert).
     answer_min_similarity: float = Field(default=0.55, ge=0.0, le=1.0)
 
+    # Person und Zeitraum aus der Frage erkennen und als Filter anwenden (Spec 003, AK-19.3).
+    query_detection: bool = True
+
     # Öffentliche Demo (Task 6.3a): Kostendeckel pro Kalendermonat in USD, verteilt auf die Tage,
     # und Fragen pro Stunde und Besucher (IP). 0 schaltet die Grenze aus (Standard, lokal).
     demo_monthly_budget_usd: float = Field(default=0.0, ge=0.0)

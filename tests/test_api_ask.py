@@ -21,6 +21,8 @@ from parlrag.llm import (
     LLMRefusalError,
     Usage,
 )
+from parlrag.query import Speaker
+from parlrag.query.resolve import Coverage
 from parlrag.retrieval import SearchFilters, SearchHit
 
 HIT = SearchHit(
@@ -75,14 +77,22 @@ def _answer(**changes: Any) -> GeneratedAnswer:
 
 
 class FakePipeline:
-    def __init__(self, result: GeneratedAnswer | Exception) -> None:
+    def __init__(self, result: GeneratedAnswer | Exception, **extras: Any) -> None:
         self.result = result
+        self.extras = extras  # erkannte Filter, Kandidaten, Abdeckung (Spec 003)
         self.calls: list[dict[str, Any]] = []
 
     def ask(
-        self, question: str, filters: SearchFilters | None = None, *, mode: str | None = None
+        self,
+        question: str,
+        filters: SearchFilters | None = None,
+        *,
+        mode: str | None = None,
+        detect: bool = True,
     ) -> AskResult:
-        self.calls.append({"question": question, "filters": filters, "mode": mode})
+        self.calls.append(
+            {"question": question, "filters": filters, "mode": mode, "detect": detect}
+        )
         if isinstance(self.result, Exception):
             raise self.result
         return AskResult(
@@ -94,6 +104,7 @@ class FakePipeline:
             min_similarity=0.55,
             retrieval_ms=300.0,
             generation_ms=3000.0,
+            **self.extras,
         )
 
 
@@ -322,3 +333,65 @@ def test_pipeline_is_built_once_per_process(monkeypatch: pytest.MonkeyPatch) -> 
 def test_openapi_documents_ask() -> None:
     schema = TestClient(app).get("/openapi.json").json()
     assert "/ask" in schema["paths"] and "post" in schema["paths"]["/ask"]
+
+
+def test_response_reports_detection(api: dict[str, Any]) -> None:
+    """Spec 003, AK-17.5: angewandte und erkannte Filter, Abdeckung, Kandidaten, Rückfall."""
+    damian = Speaker(
+        name="Müller Damian",
+        parl_group="RL",
+        canton="LU",
+        council="SR",
+        federal_council=False,
+        votes=173,
+    )
+    api["pipeline"] = FakePipeline(
+        _answer(),
+        detected=("speaker", "date_from"),
+        coverage=Coverage(dt.date(2023, 12, 4), dt.date(2026, 10, 2), partial=False),
+        speaker_candidates=(damian,),
+        retried_without=("speaker",),
+    )
+    body = api["client"].post("/ask", json={"question": QUESTION}).json()
+
+    assert body["filters"]["detected"] == ["speaker", "date_from"]
+    assert body["coverage"] == {"first": "2023-12-04", "last": "2026-10-02", "partial": False}
+    assert body["speaker_candidates"][0]["name"] == "Müller Damian"
+    assert body["retried_without"] == ["speaker"]
+    assert api["pipeline"].calls[0]["detect"] is True
+
+
+def test_detection_can_be_switched_off_per_request(api: dict[str, Any]) -> None:
+    body = api["client"].post("/ask", json={"question": QUESTION, "detect": False}).json()
+    assert api["pipeline"].calls[0]["detect"] is False
+    assert body["filters"] == {
+        "applied": {
+            "council": None,
+            "date_from": None,
+            "date_to": None,
+            "parl_group": None,
+            "speaker": None,
+        },
+        "detected": [],
+    }
+    assert body["coverage"] is None and body["speaker_candidates"] == []
+
+
+def test_out_of_range_is_a_normal_answer(api: dict[str, Any]) -> None:
+    api["pipeline"] = FakePipeline(
+        _answer(
+            answer="Zu diesem Zeitraum gibt es keine Daten.",
+            insufficient_context=True,
+            insufficient_reason="out_of_range",
+            sources=[],
+            usage=None,
+            attempts=0,
+        ),
+        detected=("date_from", "date_to"),
+        coverage=Coverage(dt.date(2023, 12, 4), dt.date(2026, 10, 2)),
+    )
+    response = api["client"].post("/ask", json={"question": "Was sagte Funiciello 2022?"})
+    assert response.status_code == 200
+    body = response.json()
+    assert body["insufficient_reason"] == "out_of_range"
+    assert body["usage"]["model"] is None and body["usage"]["cost_usd"] == 0.0

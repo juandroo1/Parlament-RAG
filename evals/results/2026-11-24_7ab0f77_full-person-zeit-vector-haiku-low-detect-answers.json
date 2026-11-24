@@ -1,0 +1,1947 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-11-24T14:37:19.047172+01:00",
+  "git_sha": "7ab0f77a452d5ae97aac0b4fbdcdcea21e0192ee",
+  "git_dirty": false,
+  "suite": "full",
+  "mode": "vector",
+  "rerank": false,
+  "tag": "person-zeit",
+  "label": "haiku-low-detect",
+  "golden": "evals/datasets/golden.jsonl",
+  "questions_total": 17,
+  "skipped_unanswerable": 6,
+  "config": {
+    "chunks_per_query": 100,
+    "retrieval_candidates": 50,
+    "retrieval_rrf_k": 60,
+    "embedding_model": "BAAI/bge-m3",
+    "embedding_max_seq_length": 1024,
+    "index_signature": "BAAI/bge-m3|target=500|overlap=0.15|header=1|chunker=v1",
+    "database": "parlrag",
+    "answer_min_similarity": 0.55,
+    "retrieval_rerank": false,
+    "query_detection": true
+  },
+  "corpus": {
+    "documents": 42515,
+    "chunks": 102891,
+    "chunks_by_signature": {
+      "BAAI/bge-m3|target=500|overlap=0.15|header=1|chunker=v1": 102891
+    }
+  },
+  "metrics": {
+    "recall@5": 0.8409090909090909,
+    "recall@10": 0.9545454545454546,
+    "recall@20": 0.9545454545454546,
+    "mrr@10": 0.8737373737373737,
+    "search_p50_ms": 169.30039995349944,
+    "search_p95_ms": 239.50789996888489,
+    "citation_accuracy": 0.9596736596736597,
+    "faithfulness": 0.9666666666666667,
+    "refusal_rate": 1.0,
+    "out_of_range_rate": 1.0,
+    "false_refusal_rate": 0.0,
+    "language_accuracy": 1.0,
+    "answer_p50_ms": 5330.117299919948,
+    "answer_p95_ms": 12216.33640001528,
+    "answer_cost_usd": 0.0014701470588235294,
+    "judge_cost_usd": 0.03960027272727273
+  },
+  "subsets": {
+    "de": {
+      "n": 7,
+      "metrics": {
+        "recall@5": 0.8928571428571429,
+        "recall@10": 0.9285714285714286,
+        "recall@20": 0.9285714285714286,
+        "mrr@10": 0.9285714285714286,
+        "search_p50_ms": 162.0950000360608,
+        "search_p95_ms": 239.50789996888489
+      }
+    },
+    "fr": {
+      "n": 4,
+      "metrics": {
+        "recall@5": 0.75,
+        "recall@10": 1.0,
+        "recall@20": 1.0,
+        "mrr@10": 0.7777777777777778,
+        "search_p50_ms": 191.9929999858141,
+        "search_p95_ms": 215.94489994458854
+      }
+    },
+    "crosslingual": {
+      "n": 2,
+      "metrics": {
+        "recall@5": 0.5,
+        "recall@10": 1.0,
+        "recall@20": 1.0,
+        "mrr@10": 0.5555555555555556,
+        "search_p50_ms": 148.85450003203005,
+        "search_p95_ms": 191.9929999858141
+      }
+    },
+    "person-zeit": {
+      "n": 11,
+      "metrics": {
+        "recall@5": 0.8409090909090909,
+        "recall@10": 0.9545454545454546,
+        "recall@20": 0.9545454545454546,
+        "mrr@10": 0.8737373737373737,
+        "search_p50_ms": 169.30039995349944,
+        "search_p95_ms": 239.50789996888489
+      }
+    }
+  },
+  "questions": [
+    {
+      "id": "q66",
+      "language": "de",
+      "tags": [
+        "person-zeit"
+      ],
+      "expected_source_ids": [
+        "transcript:352880",
+        "transcript:357712"
+      ],
+      "ranks": {
+        "transcript:352880": 2,
+        "transcript:357712": 1
+      },
+      "top_documents": [
+        "transcript:357712",
+        "transcript:352880",
+        "transcript:367450",
+        "transcript:352491",
+        "transcript:365693",
+        "transcript:363928",
+        "transcript:365528",
+        "transcript:367525",
+        "transcript:364065",
+        "transcript:367514"
+      ],
+      "metrics": {
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "recall@20": 1.0,
+        "mrr@10": 1.0
+      },
+      "search_ms": 239.50789996888489,
+      "best_similarity": 0.6770443301717657
+    },
+    {
+      "id": "q67",
+      "language": "de",
+      "tags": [
+        "person-zeit"
+      ],
+      "expected_source_ids": [
+        "transcript:420425"
+      ],
+      "ranks": {
+        "transcript:420425": 1
+      },
+      "top_documents": [
+        "transcript:420425",
+        "transcript:423088",
+        "transcript:421772",
+        "transcript:423161",
+        "transcript:423167",
+        "transcript:419698",
+        "transcript:419686",
+        "transcript:419648",
+        "transcript:419637",
+        "transcript:422003"
+      ],
+      "metrics": {
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "recall@20": 1.0,
+        "mrr@10": 1.0
+      },
+      "search_ms": 152.68870000727475,
+      "best_similarity": 0.6204015469072405
+    },
+    {
+      "id": "q68",
+      "language": "fr",
+      "tags": [
+        "fr",
+        "person-zeit"
+      ],
+      "expected_source_ids": [
+        "transcript:353634",
+        "transcript:353642"
+      ],
+      "ranks": {
+        "transcript:353634": 3,
+        "transcript:353642": 1
+      },
+      "top_documents": [
+        "transcript:353642",
+        "transcript:351759",
+        "transcript:353634",
+        "transcript:353729",
+        "transcript:351772",
+        "transcript:354405",
+        "transcript:355255",
+        "transcript:351795",
+        "transcript:355245",
+        "transcript:354864"
+      ],
+      "metrics": {
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "recall@20": 1.0,
+        "mrr@10": 1.0
+      },
+      "search_ms": 215.94489994458854,
+      "best_similarity": 0.6507518679351739
+    },
+    {
+      "id": "q69",
+      "language": "de",
+      "tags": [
+        "person-zeit"
+      ],
+      "expected_source_ids": [
+        "transcript:356618",
+        "transcript:356905",
+        "transcript:374646",
+        "transcript:376786"
+      ],
+      "ranks": {
+        "transcript:356618": 3,
+        "transcript:356905": 7,
+        "transcript:374646": 2,
+        "transcript:376786": 1
+      },
+      "top_documents": [
+        "transcript:376786",
+        "transcript:374646",
+        "transcript:356618",
+        "transcript:369467",
+        "transcript:352078",
+        "transcript:369500",
+        "transcript:356905",
+        "transcript:368052",
+        "transcript:375361",
+        "transcript:368249"
+      ],
+      "metrics": {
+        "recall@5": 0.75,
+        "recall@10": 1.0,
+        "recall@20": 1.0,
+        "mrr@10": 1.0
+      },
+      "search_ms": 161.03730001486838,
+      "best_similarity": 0.6484802574825145
+    },
+    {
+      "id": "q70",
+      "language": "de",
+      "tags": [
+        "person-zeit"
+      ],
+      "expected_source_ids": [
+        "transcript:338625",
+        "transcript:339318"
+      ],
+      "ranks": {
+        "transcript:338625": 1,
+        "transcript:339318": 30
+      },
+      "top_documents": [
+        "transcript:338625",
+        "transcript:347385",
+        "transcript:344822",
+        "business:20230082",
+        "transcript:340052",
+        "transcript:339778",
+        "business:20240041",
+        "transcript:351250",
+        "transcript:338587",
+        "transcript:338604"
+      ],
+      "metrics": {
+        "recall@5": 0.5,
+        "recall@10": 0.5,
+        "recall@20": 0.5,
+        "mrr@10": 1.0
+      },
+      "search_ms": 142.17460004147142,
+      "best_similarity": 0.6548476424904094
+    },
+    {
+      "id": "q71",
+      "language": "fr",
+      "tags": [
+        "fr",
+        "crosslingual",
+        "person-zeit"
+      ],
+      "expected_source_ids": [
+        "transcript:358497"
+      ],
+      "ranks": {
+        "transcript:358497": 9
+      },
+      "top_documents": [
+        "transcript:358460",
+        "business:20250009",
+        "business:20253553",
+        "transcript:358466",
+        "business:20250001",
+        "business:20253384",
+        "business:20253552",
+        "transcript:358464",
+        "transcript:358497",
+        "transcript:359280"
+      ],
+      "metrics": {
+        "recall@5": 0.0,
+        "recall@10": 1.0,
+        "recall@20": 1.0,
+        "mrr@10": 0.1111111111111111
+      },
+      "search_ms": 191.9929999858141,
+      "best_similarity": 0.674743115901947
+    },
+    {
+      "id": "q72",
+      "language": "de",
+      "tags": [
+        "person-zeit"
+      ],
+      "expected_source_ids": [
+        "transcript:347290"
+      ],
+      "ranks": {
+        "transcript:347290": 1
+      },
+      "top_documents": [
+        "transcript:347290",
+        "transcript:347297",
+        "business:20240025",
+        "transcript:348440",
+        "transcript:347315",
+        "transcript:348434",
+        "transcript:347301",
+        "transcript:351250",
+        "transcript:349999",
+        "transcript:347638"
+      ],
+      "metrics": {
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "recall@20": 1.0,
+        "mrr@10": 1.0
+      },
+      "search_ms": 169.30039995349944,
+      "best_similarity": 0.6749181941200391
+    },
+    {
+      "id": "q73",
+      "language": "de",
+      "tags": [
+        "person-zeit"
+      ],
+      "expected_source_ids": [
+        "transcript:375872"
+      ],
+      "ranks": {
+        "transcript:375872": 2
+      },
+      "top_documents": [
+        "transcript:375876",
+        "transcript:375872",
+        "transcript:419005",
+        "transcript:422902",
+        "transcript:375868",
+        "transcript:375865",
+        "transcript:375835",
+        "transcript:377382",
+        "business:20250404",
+        "transcript:372812"
+      ],
+      "metrics": {
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "recall@20": 1.0,
+        "mrr@10": 0.5
+      },
+      "search_ms": 162.0950000360608,
+      "best_similarity": 0.567958168034772
+    },
+    {
+      "id": "q74",
+      "language": "de",
+      "tags": [
+        "person-zeit"
+      ],
+      "expected_source_ids": [
+        "transcript:421996",
+        "transcript:422059"
+      ],
+      "ranks": {
+        "transcript:421996": 1,
+        "transcript:422059": 2
+      },
+      "top_documents": [
+        "transcript:421996",
+        "transcript:422059",
+        "transcript:422074",
+        "transcript:421988",
+        "transcript:423053",
+        "transcript:376679",
+        "transcript:362656",
+        "transcript:347580",
+        "transcript:358923",
+        "transcript:370721"
+      ],
+      "metrics": {
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "recall@20": 1.0,
+        "mrr@10": 1.0
+      },
+      "search_ms": 179.11419994197786,
+      "best_similarity": 0.6730911731719971
+    },
+    {
+      "id": "q75",
+      "language": "fr",
+      "tags": [
+        "fr",
+        "crosslingual",
+        "person-zeit"
+      ],
+      "expected_source_ids": [
+        "transcript:333829",
+        "transcript:333817",
+        "transcript:333825"
+      ],
+      "ranks": {
+        "transcript:333829": 1,
+        "transcript:333817": 3,
+        "transcript:333825": 2
+      },
+      "top_documents": [
+        "transcript:333829",
+        "transcript:333825",
+        "transcript:333817",
+        "transcript:422075",
+        "transcript:423070",
+        "transcript:343372",
+        "transcript:422108",
+        "transcript:364065",
+        "transcript:365693",
+        "transcript:333556"
+      ],
+      "metrics": {
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "recall@20": 1.0,
+        "mrr@10": 1.0
+      },
+      "search_ms": 148.85450003203005,
+      "best_similarity": 0.6188843704599892
+    },
+    {
+      "id": "q76",
+      "language": "fr",
+      "tags": [
+        "fr",
+        "person-zeit"
+      ],
+      "expected_source_ids": [
+        "transcript:378244"
+      ],
+      "ranks": {
+        "transcript:378244": 1
+      },
+      "top_documents": [
+        "transcript:378244",
+        "transcript:354906",
+        "transcript:362643",
+        "transcript:342298",
+        "transcript:354905",
+        "transcript:342266",
+        "transcript:363910",
+        "transcript:377137",
+        "transcript:422908",
+        "transcript:363851"
+      ],
+      "metrics": {
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "recall@20": 1.0,
+        "mrr@10": 1.0
+      },
+      "search_ms": 192.4946999642998,
+      "best_similarity": 0.7026706096326578
+    }
+  ],
+  "previous": "2026-11-24_5db9a91_full-person-zeit-vector-haiku-low-answers.json",
+  "similarities": {
+    "q29": null,
+    "q62": null,
+    "q66": 0.6770443301717657,
+    "q67": 0.6204015469072405,
+    "q68": 0.6507518679351739,
+    "q69": 0.6484802574825145,
+    "q70": 0.6548476424904094,
+    "q71": 0.674743115901947,
+    "q72": 0.6749181941200391,
+    "q73": 0.567958168034772,
+    "q74": 0.6730911731719971,
+    "q75": 0.6188843704599892,
+    "q76": 0.7026706096326578,
+    "q77": null,
+    "q78": null,
+    "q79": null,
+    "q80": null
+  },
+  "threshold": null,
+  "answer_config": {
+    "answer_model": "claude-haiku-5-5",
+    "answer_effort": "low",
+    "llm_backend": "claude-code",
+    "judge_model": "claude-sonnet-5-5",
+    "judge_effort": "medium",
+    "answer_prompt_version": "0f66be10c25f",
+    "judge_prompt_version": "19396b23f9a7",
+    "answer_context_chunks": 8,
+    "answer_min_similarity": 0.55,
+    "query_detection": true
+  },
+  "answer_counts": {
+    "questions": 17,
+    "answered": 11,
+    "refused": 6,
+    "judged": 11,
+    "errors": 0,
+    "judge_errors": 0
+  },
+  "answers": [
+    {
+      "id": "q29",
+      "language": "de",
+      "tags": [
+        "unanswerable",
+        "smoke",
+        "person-zeit",
+        "ausserhalb"
+      ],
+      "answerable": false,
+      "answer": "Zu diesem Zeitraum gibt es keine Daten. Die Voten reichen vom 4. Dezember 2023 bis 2. Oktober 2026.",
+      "insufficient_context": true,
+      "insufficient_reason": "out_of_range",
+      "best_similarity": null,
+      "sources": [],
+      "cited_expected": [],
+      "answer_language": "de",
+      "total_ms": 0.42129994835704565,
+      "attempts": 0,
+      "answer_usage": null,
+      "judge": null,
+      "judge_usage": null,
+      "citation_accuracy": null,
+      "faithfulness": null,
+      "neutral": true,
+      "error": null,
+      "judge_error": null
+    },
+    {
+      "id": "q62",
+      "language": "de",
+      "tags": [
+        "unanswerable",
+        "person-zeit",
+        "ausserhalb"
+      ],
+      "answerable": false,
+      "answer": "Zu diesem Zeitraum gibt es keine Daten. Die Voten reichen vom 4. Dezember 2023 bis 2. Oktober 2026.",
+      "insufficient_context": true,
+      "insufficient_reason": "out_of_range",
+      "best_similarity": null,
+      "sources": [],
+      "cited_expected": [],
+      "answer_language": "de",
+      "total_ms": 0.3189999843016267,
+      "attempts": 0,
+      "answer_usage": null,
+      "judge": null,
+      "judge_usage": null,
+      "citation_accuracy": null,
+      "faithfulness": null,
+      "neutral": true,
+      "error": null,
+      "judge_error": null
+    },
+    {
+      "id": "q66",
+      "language": "de",
+      "tags": [
+        "person-zeit"
+      ],
+      "answerable": true,
+      "answer": "Tamara Funiciello begründete im Nationalrat am 10.06.2025, dass Stalking ins Strafgesetzbuch gehört, vor allem damit, dass Stalking kein lästiges Verhalten, sondern psychische, strukturelle und geschlechtsspezifische Gewalt sei [1]. Wer ständig verfolgt, kontrolliert oder beobachtet werde, verliere die Freiheit, das eigene Leben zu gestalten, und in der Summe seien die Handlungen zermürbend und gefährlich [1]. Sie verwies auf eine Studie der Universität St. Gallen, nach der viele Femizide durch Stalking angekündigt werden, und bezeichnete Stalking deshalb oft als «Anfang vom Ende» [1]. Zudem sprach sie sich dafür aus, Stalking in Paarbeziehungen von Amtes wegen zu verfolgen, wie jede andere Form von Gewalt auch [1]. Auf die Argumentation der Mitte-Fraktion, es entstehe eine Mischform aus Antrags- und Offizialdelikt, entgegnete sie, dass eine Mischform auch entstehe, wenn diese Gewaltform in Paarbeziehungen nicht als Offizialdelikt anerkannt werde [1]. Ihre Argumente aus dem Votum vom 10.03.2025 zur Gefährdungsdelikt-Ausgestaltung und zur Auslegung von «erheblich» sind in dieser Frage nicht enthalten [2].",
+      "insufficient_context": false,
+      "insufficient_reason": null,
+      "best_similarity": 0.6770443301717657,
+      "sources": [
+        "[1] transcript:357712",
+        "[2] transcript:352880"
+      ],
+      "cited_expected": [
+        "transcript:352880",
+        "transcript:357712"
+      ],
+      "answer_language": "de",
+      "total_ms": 5330.117299919948,
+      "attempts": 1,
+      "answer_usage": {
+        "model": "claude-haiku-5-5",
+        "input_tokens": 2,
+        "output_tokens": 638,
+        "cache_creation_input_tokens": 6910,
+        "cache_read_input_tokens": 0,
+        "latency_ms": 4800.4721000324935,
+        "cost_usd": 0.0017012000000000002,
+        "backend": "claude-code"
+      },
+      "judge": {
+        "statements": [
+          {
+            "statement": "Funiciello begründete am 10.06.2025, Stalking gehöre ins Strafgesetzbuch, vor allem damit, dass Stalking kein lästiges Verhalten, sondern psychische, strukturelle und geschlechtsspezifische Gewalt sei.",
+            "citations": [
+              {
+                "number": 1,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Wer ständig verfolgt, kontrolliert oder beobachtet werde, verliere die Freiheit, das eigene Leben zu gestalten, und in der Summe seien die Handlungen zermürbend und gefährlich.",
+            "citations": [
+              {
+                "number": 1,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Sie verwies auf eine Studie der Universität St. Gallen, nach der viele Femizide durch Stalking angekündigt werden, und bezeichnete Stalking deshalb oft als «Anfang vom Ende».",
+            "citations": [
+              {
+                "number": 1,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Sie sprach sich dafür aus, Stalking in Paarbeziehungen von Amtes wegen zu verfolgen, wie jede andere Form von Gewalt auch.",
+            "citations": [
+              {
+                "number": 1,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Auf die Argumentation der Mitte-Fraktion, es entstehe eine Mischform aus Antrags- und Offizialdelikt, entgegnete sie, dass eine Mischform auch entstehe, wenn diese Gewaltform in Paarbeziehungen nicht als Offizialdelikt anerkannt werde.",
+            "citations": [
+              {
+                "number": 1,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Ihre Argumente aus dem Votum vom 10.03.2025 zur Gefährdungsdelikt-Ausgestaltung und zur Auslegung von «erheblich» sind in dieser Frage nicht enthalten.",
+            "citations": [
+              {
+                "number": 2,
+                "supports": false
+              }
+            ],
+            "support": "unsupported"
+          }
+        ],
+        "contains_own_evaluation": false,
+        "evaluation_note": ""
+      },
+      "judge_usage": {
+        "model": "claude-sonnet-5-5",
+        "input_tokens": 2,
+        "output_tokens": 1035,
+        "cache_creation_input_tokens": 7611,
+        "cache_read_input_tokens": 0,
+        "latency_ms": 7224.933599936776,
+        "cost_usd": 0.040798,
+        "backend": "claude-code"
+      },
+      "citation_accuracy": 0.8333333333333334,
+      "faithfulness": 0.8333333333333334,
+      "neutral": true,
+      "error": null,
+      "judge_error": null
+    },
+    {
+      "id": "q67",
+      "language": "de",
+      "tags": [
+        "person-zeit"
+      ],
+      "answerable": true,
+      "answer": "Bundesrat Jans sagte in der Nationalratsdebatte vom 22.09.2026, dass die Stiefkindadoption heute frühestens nach zwei Jahren erfolgt, oftmals dauere es deutlich länger [1]. Im Kern soll das in diesen Fällen unnötige Pflegejahr gestrichen werden [2]. Die Quellen enthalten keine genaue Angabe, wie lange die Verfahren in der Praxis im Durchschnitt tatsächlich dauern.",
+      "insufficient_context": false,
+      "insufficient_reason": null,
+      "best_similarity": 0.6204015469072405,
+      "sources": [
+        "[1] transcript:420425",
+        "[2] transcript:420425"
+      ],
+      "cited_expected": [
+        "transcript:420425"
+      ],
+      "answer_language": "de",
+      "total_ms": 4668.728200020269,
+      "attempts": 1,
+      "answer_usage": {
+        "model": "claude-haiku-5-5",
+        "input_tokens": 2,
+        "output_tokens": 556,
+        "cache_creation_input_tokens": 9302,
+        "cache_read_input_tokens": 1746,
+        "latency_ms": 4485.9660000074655,
+        "cost_usd": 0.00215606,
+        "backend": "claude-code"
+      },
+      "judge": {
+        "statements": [
+          {
+            "statement": "Bundesrat Jans sagte in der Nationalratsdebatte vom 22.09.2026, dass die Stiefkindadoption heute frühestens nach zwei Jahren erfolgt, oftmals dauere es deutlich länger [1].",
+            "citations": [
+              {
+                "number": 1,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Im Kern soll das in diesen Fällen unnötige Pflegejahr gestrichen werden [2].",
+            "citations": [
+              {
+                "number": 2,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          }
+        ],
+        "contains_own_evaluation": false,
+        "evaluation_note": ""
+      },
+      "judge_usage": {
+        "model": "claude-sonnet-5-5",
+        "input_tokens": 2,
+        "output_tokens": 292,
+        "cache_creation_input_tokens": 9403,
+        "cache_read_input_tokens": 1987,
+        "latency_ms": 3356.9944999180734,
+        "cost_usd": 0.0407347,
+        "backend": "claude-code"
+      },
+      "citation_accuracy": 1.0,
+      "faithfulness": 1.0,
+      "neutral": true,
+      "error": null,
+      "judge_error": null
+    },
+    {
+      "id": "q68",
+      "language": "fr",
+      "tags": [
+        "fr",
+        "person-zeit"
+      ],
+      "answerable": true,
+      "answer": "Lors du débat du Conseil national du 12 mars 2025, Guy Parmelin a relevé que le Conseil des Etats souhaitait conserver les compétences et procédures d'autorisation éprouvées de Swissmedic, et qu'un changement de responsabilité ou une double procédure devant deux autorités devait être évité [6]. En tant que ministre de l'économie, il a jugé important de simplifier autant que possible les procédures pour les entreprises suisses, et il a estimé que le maintien de la responsabilité de Swissmedic allait dans ce sens [6]. Sur le fond, il a considéré que les différences entre la réglementation actuelle et la LBT étaient plutôt mineures, de sorte que le maintien de la situation juridique actuelle pouvait se justifier, et qu'il semblait logique de confier cette tâche à Swissmedic [7]. Il a donc recommandé de suivre le Conseil des Etats en supprimant l'article 6 concernant les médicaments, mais non d'approuver la règle de priorité ajoutée à l'article 2 [7]. Plus largement, il a présenté la solution comme un compromis, qui n'est pas parfait mais permet d'éviter qu'il n'y ait finalement aucune loi, ce qui a motivé le ralliement du Conseil national [1]. Les sources ne donnent pas les positions des différents groupes ni le résultat du vote.",
+      "insufficient_context": false,
+      "insufficient_reason": null,
+      "best_similarity": 0.6507518679351739,
+      "sources": [
+        "[6] transcript:353634",
+        "[7] transcript:353634",
+        "[1] transcript:353642"
+      ],
+      "cited_expected": [
+        "transcript:353634",
+        "transcript:353642"
+      ],
+      "answer_language": "fr",
+      "total_ms": 10952.166699920781,
+      "attempts": 1,
+      "answer_usage": {
+        "model": "claude-haiku-5-5",
+        "input_tokens": 2,
+        "output_tokens": 2420,
+        "cache_creation_input_tokens": 5163,
+        "cache_read_input_tokens": 1746,
+        "latency_ms": 10769.177100039087,
+        "cost_usd": 0.00226026,
+        "backend": "claude-code"
+      },
+      "judge": {
+        "statements": [
+          {
+            "statement": "Lors du débat du 12 mars 2025, Parmelin a relevé que le Conseil des Etats souhaitait conserver les compétences et procédures d'autorisation éprouvées de Swissmedic, et qu'un changement de responsabilité ou une double procédure devait être évité.",
+            "citations": [
+              {
+                "number": 6,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "En tant que ministre de l'économie, il a jugé important de simplifier autant que possible les procédures pour les entreprises suisses, et estimé que le maintien de la responsabilité de Swissmedic allait dans ce sens.",
+            "citations": [
+              {
+                "number": 6,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Sur le fond, il a considéré que les différences entre la réglementation actuelle et la LBT étaient plutôt mineures, de sorte que le maintien de la situation juridique actuelle pouvait se justifier, et qu'il semblait logique de confier cette tâche à Swissmedic.",
+            "citations": [
+              {
+                "number": 7,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Il a recommandé de suivre le Conseil des Etats en supprimant l'article 6 concernant les médicaments, mais non d'approuver la règle de priorité ajoutée à l'article 2.",
+            "citations": [
+              {
+                "number": 7,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Plus largement, il a présenté la solution comme un compromis, pas parfait mais qui permet d'éviter qu'il n'y ait finalement aucune loi, ce qui a motivé le ralliement du Conseil national.",
+            "citations": [
+              {
+                "number": 1,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          }
+        ],
+        "contains_own_evaluation": false,
+        "evaluation_note": ""
+      },
+      "judge_usage": {
+        "model": "claude-sonnet-5-5",
+        "input_tokens": 2,
+        "output_tokens": 679,
+        "cache_creation_input_tokens": 5571,
+        "cache_read_input_tokens": 1987,
+        "latency_ms": 5185.487000038847,
+        "cost_usd": 0.029276700000000003,
+        "backend": "claude-code"
+      },
+      "citation_accuracy": 1.0,
+      "faithfulness": 1.0,
+      "neutral": true,
+      "error": null,
+      "judge_error": null
+    },
+    {
+      "id": "q69",
+      "language": "de",
+      "tags": [
+        "person-zeit"
+      ],
+      "answerable": true,
+      "answer": "Laut Bundesrätin Keller-Sutter schloss die Staatsrechnung 2025 erstmals seit 2019 mit einem Finanzierungsüberschuss von 259 Millionen Franken ab [3][4]. Im Vorjahr 2024 hatte der Bund noch ein Finanzierungsdefizit von 80 Millionen Franken erzielt [6]. Im ordentlichen Haushalt betrug der Überschuss 1,2 Milliarden Franken, und der strukturelle Saldo lag bei 1,4 Milliarden Franken, während ein strukturell ausgeglichener Haushalt budgetiert war [3][4]. Die Gewinnsteuereinnahmen lagen 1,4 Milliarden Franken über dem Budget, wobei der Kanton Genf allein 1,5 Milliarden Franken beisteuerte [3][4]. Die ordentlichen Ausgaben übertrafen dagegen erstmals seit Einführung der Schuldenbremse das Budget, vor allem wegen Kreditaufstockungen von insgesamt 2,4 Milliarden Franken [4]. Für den Voranschlag 2027 zeichnete sich laut dem Zwischenstand eine Ausgabenverschlechterung von rund 300 Millionen Franken ab, bei den Gewinnsteuern dagegen eine deutliche Verbesserung [5]. Die definitiven Zahlen legt der Bundesrat erst Ende Juni fest, weshalb die Quellen zum endgültigen Ergebnis des Voranschlags 2027 und des Finanzplans 2028–2030 keine Angaben enthalten [5][1].",
+      "insufficient_context": false,
+      "insufficient_reason": null,
+      "best_similarity": 0.6484802574825145,
+      "sources": [
+        "[3] transcript:376786",
+        "[4] transcript:374646",
+        "[6] transcript:356618",
+        "[5] transcript:376786",
+        "[1] transcript:376786"
+      ],
+      "cited_expected": [
+        "transcript:356618",
+        "transcript:374646",
+        "transcript:376786"
+      ],
+      "answer_language": "de",
+      "total_ms": 9553.298700018786,
+      "attempts": 1,
+      "answer_usage": {
+        "model": "claude-haiku-5-5",
+        "input_tokens": 2,
+        "output_tokens": 1783,
+        "cache_creation_input_tokens": 8901,
+        "cache_read_input_tokens": 1746,
+        "latency_ms": 9388.644100050442,
+        "cost_usd": 0.00268936,
+        "backend": "claude-code"
+      },
+      "judge": {
+        "statements": [
+          {
+            "statement": "Die Staatsrechnung 2025 schloss erstmals seit 2019 mit einem Finanzierungsüberschuss von 259 Millionen Franken ab.",
+            "citations": [
+              {
+                "number": 3,
+                "supports": true
+              },
+              {
+                "number": 4,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Im Vorjahr 2024 hatte der Bund noch ein Finanzierungsdefizit von 80 Millionen Franken erzielt.",
+            "citations": [
+              {
+                "number": 6,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Im ordentlichen Haushalt betrug der Überschuss 1,2 Milliarden Franken, und der strukturelle Saldo lag bei 1,4 Milliarden Franken, während ein strukturell ausgeglichener Haushalt budgetiert war.",
+            "citations": [
+              {
+                "number": 3,
+                "supports": true
+              },
+              {
+                "number": 4,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Die Gewinnsteuereinnahmen lagen 1,4 Milliarden Franken über dem Budget, wobei der Kanton Genf allein 1,5 Milliarden Franken beisteuerte.",
+            "citations": [
+              {
+                "number": 3,
+                "supports": true
+              },
+              {
+                "number": 4,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Die ordentlichen Ausgaben übertrafen erstmals seit Einführung der Schuldenbremse das Budget, vor allem wegen Kreditaufstockungen von insgesamt 2,4 Milliarden Franken.",
+            "citations": [
+              {
+                "number": 4,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Für den Voranschlag 2027 zeichnete sich laut Zwischenstand eine Ausgabenverschlechterung von rund 300 Millionen Franken ab, bei den Gewinnsteuern dagegen eine deutliche Verbesserung.",
+            "citations": [
+              {
+                "number": 5,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Die definitiven Zahlen legt der Bundesrat erst Ende Juni fest, weshalb die Quellen zum endgültigen Ergebnis des Voranschlags 2027 und des Finanzplans 2028–2030 keine Angaben enthalten.",
+            "citations": [
+              {
+                "number": 5,
+                "supports": true
+              },
+              {
+                "number": 1,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          }
+        ],
+        "contains_own_evaluation": false,
+        "evaluation_note": ""
+      },
+      "judge_usage": {
+        "model": "claude-sonnet-5-5",
+        "input_tokens": 2,
+        "output_tokens": 907,
+        "cache_creation_input_tokens": 9406,
+        "cache_read_input_tokens": 1987,
+        "latency_ms": 6309.103699983098,
+        "cost_usd": 0.0468967,
+        "backend": "claude-code"
+      },
+      "citation_accuracy": 1.0,
+      "faithfulness": 1.0,
+      "neutral": true,
+      "error": null,
+      "judge_error": null
+    },
+    {
+      "id": "q70",
+      "language": "de",
+      "tags": [
+        "person-zeit"
+      ],
+      "answerable": true,
+      "answer": "In der Debatte zur Staatsrechnung 2023 im Nationalrat vom 28. Mai 2024 nannte Karin Keller-Sutter (SG) keinen Finanzierungssaldo für das Jahr 2023 ausdrücklich. Sie führte aber aus, dass das Ausgleichskonto per Ende 2023 nach der Nachführung der Schuldenbremse per Ende 2022 und den Ergebnissen 2023 einen positiven Stand von 20 Milliarden Franken aufweist, während der Fehlbetrag des Amortisationskontos per Ende 2023 bei 27,2 Milliarden Franken liegt [1]. Offen bleibt damit, wie hoch das Finanzierungsergebnis 2023 selbst war, da die Quelle diese Zahl nicht nennt.",
+      "insufficient_context": false,
+      "insufficient_reason": null,
+      "best_similarity": 0.6548476424904094,
+      "sources": [
+        "[1] transcript:338625"
+      ],
+      "cited_expected": [
+        "transcript:338625"
+      ],
+      "answer_language": "de",
+      "total_ms": 5851.222399971448,
+      "attempts": 1,
+      "answer_usage": {
+        "model": "claude-haiku-5-5",
+        "input_tokens": 2,
+        "output_tokens": 946,
+        "cache_creation_input_tokens": 9090,
+        "cache_read_input_tokens": 1746,
+        "latency_ms": 5698.418399901129,
+        "cost_usd": 0.00230866,
+        "backend": "claude-code"
+      },
+      "judge": {
+        "statements": [
+          {
+            "statement": "In der Debatte zur Staatsrechnung 2023 im Nationalrat vom 28. Mai 2024 nannte Karin Keller-Sutter (SG) keinen Finanzierungssaldo für das Jahr 2023 ausdrücklich.",
+            "citations": [
+              {
+                "number": 1,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Das Ausgleichskonto weist per Ende 2023 nach der Nachführung der Schuldenbremse per Ende 2022 und den Ergebnissen 2023 einen positiven Stand von 20 Milliarden Franken auf, während der Fehlbetrag des Amortisationskontos per Ende 2023 bei 27,2 Milliarden Franken liegt.",
+            "citations": [
+              {
+                "number": 1,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          }
+        ],
+        "contains_own_evaluation": false,
+        "evaluation_note": ""
+      },
+      "judge_usage": {
+        "model": "claude-sonnet-5-5",
+        "input_tokens": 2,
+        "output_tokens": 387,
+        "cache_creation_input_tokens": 9299,
+        "cache_read_input_tokens": 1987,
+        "latency_ms": 4521.37010009028,
+        "cost_usd": 0.0412687,
+        "backend": "claude-code"
+      },
+      "citation_accuracy": 1.0,
+      "faithfulness": 1.0,
+      "neutral": true,
+      "error": null,
+      "judge_error": null
+    },
+    {
+      "id": "q71",
+      "language": "fr",
+      "tags": [
+        "fr",
+        "crosslingual",
+        "person-zeit"
+      ],
+      "answerable": true,
+      "answer": "Les sources ne désignent pas de « chapitre principal » du rapport sur la politique extérieure 2024. Elles mentionnent un dossier spécial consacré aux BRICS, qui met en lumière l'influence de ce groupe d'États sur l'ordre mondial et définit la stratégie de la Suisse à leur égard [2]. La commission de politique extérieure s'est penchée sur ce dossier spécial [1]. Le rapport présente aussi l'objectif Suisse-Europe comme central en 2024 [1]. Le débat au Conseil national a eu lieu le 13 juin 2025 [1][4]. Reste ouvert : les sources ne disent pas quel thème le Conseil fédéral a choisi comme chapitre principal.",
+      "insufficient_context": false,
+      "insufficient_reason": null,
+      "best_similarity": 0.674743115901947,
+      "sources": [
+        "[2] business:20250009",
+        "[1] transcript:358460",
+        "[4] transcript:358466"
+      ],
+      "cited_expected": [],
+      "answer_language": "fr",
+      "total_ms": 7461.991699994542,
+      "attempts": 1,
+      "answer_usage": {
+        "model": "claude-haiku-5-5",
+        "input_tokens": 2,
+        "output_tokens": 1240,
+        "cache_creation_input_tokens": 7532,
+        "cache_read_input_tokens": 1746,
+        "latency_ms": 7204.786599962972,
+        "cost_usd": 0.0021440599999999997,
+        "backend": "claude-code"
+      },
+      "judge": {
+        "statements": [
+          {
+            "statement": "Les sources ne désignent pas de « chapitre principal » du rapport sur la politique extérieure 2024.",
+            "citations": [],
+            "support": "supported"
+          },
+          {
+            "statement": "Elles mentionnent un dossier spécial consacré aux BRICS, qui met en lumière l'influence de ce groupe d'États sur l'ordre mondial et définit la stratégie de la Suisse à leur égard.",
+            "citations": [
+              {
+                "number": 2,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "La commission de politique extérieure s'est penchée sur ce dossier spécial.",
+            "citations": [
+              {
+                "number": 1,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Le rapport présente aussi l'objectif Suisse-Europe comme central en 2024.",
+            "citations": [
+              {
+                "number": 1,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Le débat au Conseil national a eu lieu le 13 juin 2025.",
+            "citations": [
+              {
+                "number": 1,
+                "supports": true
+              },
+              {
+                "number": 4,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          }
+        ],
+        "contains_own_evaluation": false,
+        "evaluation_note": ""
+      },
+      "judge_usage": {
+        "model": "claude-sonnet-5-5",
+        "input_tokens": 2,
+        "output_tokens": 463,
+        "cache_creation_input_tokens": 7713,
+        "cache_read_input_tokens": 1987,
+        "latency_ms": 4243.982800049707,
+        "cost_usd": 0.0356847,
+        "backend": "claude-code"
+      },
+      "citation_accuracy": 1.0,
+      "faithfulness": 1.0,
+      "neutral": true,
+      "error": null,
+      "judge_error": null
+    },
+    {
+      "id": "q72",
+      "language": "de",
+      "tags": [
+        "person-zeit"
+      ],
+      "answerable": true,
+      "answer": "Die Bundesrätin Viola Amherd bezeichnete die Armeebotschaft 2024 im Ständerat am 2. Dezember 2024 als «die erste fähigkeitsbasierte Armeebotschaft», die dem Parlament vorgelegt wurde, und als «Paradigmenwechsel» [1]. Erstmals könne sich das Parlament zur strategischen Ausrichtung der Armee äussern. Sie sprach von einer Planungssicherheit für die nächsten zwölf Jahre und sagte, «so etwas hat es noch nie gegeben» [1]. Die drei verbleibenden Differenzen im Bundesbeschluss 1 wurden in dieser Debatte bereinigt, indem dem Nationalrat gefolgt wurde [1][2]. Offen blieb der Bundesbeschluss 5 über den Zahlungsrahmen, bei dem der Bundesrat sich nicht zu den Anträgen äusserte [1][5].",
+      "insufficient_context": false,
+      "insufficient_reason": null,
+      "best_similarity": 0.6749181941200391,
+      "sources": [
+        "[1] transcript:347290",
+        "[2] transcript:347297",
+        "[5] transcript:348440"
+      ],
+      "cited_expected": [
+        "transcript:347290"
+      ],
+      "answer_language": "de",
+      "total_ms": 11485.425099963322,
+      "attempts": 1,
+      "answer_usage": {
+        "model": "claude-haiku-5-5",
+        "input_tokens": 2,
+        "output_tokens": 2432,
+        "cache_creation_input_tokens": 8353,
+        "cache_read_input_tokens": 1746,
+        "latency_ms": 11291.313500027172,
+        "cost_usd": 0.0029042599999999997,
+        "backend": "claude-code"
+      },
+      "judge": {
+        "statements": [
+          {
+            "statement": "Die Bundesrätin Viola Amherd bezeichnete die Armeebotschaft 2024 im Ständerat am 2. Dezember 2024 als «die erste fähigkeitsbasierte Armeebotschaft», die dem Parlament vorgelegt wurde, und als «Paradigmenwechsel»",
+            "citations": [
+              {
+                "number": 1,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Erstmals könne sich das Parlament zur strategischen Ausrichtung der Armee äussern.",
+            "citations": [
+              {
+                "number": 1,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Sie sprach von einer Planungssicherheit für die nächsten zwölf Jahre und sagte, «so etwas hat es noch nie gegeben»",
+            "citations": [
+              {
+                "number": 1,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Die drei verbleibenden Differenzen im Bundesbeschluss 1 wurden in dieser Debatte bereinigt, indem dem Nationalrat gefolgt wurde",
+            "citations": [
+              {
+                "number": 1,
+                "supports": true
+              },
+              {
+                "number": 2,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Offen blieb der Bundesbeschluss 5 über den Zahlungsrahmen, bei dem der Bundesrat sich nicht zu den Anträgen äusserte",
+            "citations": [
+              {
+                "number": 1,
+                "supports": true
+              },
+              {
+                "number": 5,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          }
+        ],
+        "contains_own_evaluation": false,
+        "evaluation_note": ""
+      },
+      "judge_usage": {
+        "model": "claude-sonnet-5-5",
+        "input_tokens": 2,
+        "output_tokens": 611,
+        "cache_creation_input_tokens": 8616,
+        "cache_read_input_tokens": 1987,
+        "latency_ms": 4995.508600026369,
+        "cost_usd": 0.0407767,
+        "backend": "claude-code"
+      },
+      "citation_accuracy": 1.0,
+      "faithfulness": 1.0,
+      "neutral": true,
+      "error": null,
+      "judge_error": null
+    },
+    {
+      "id": "q73",
+      "language": "de",
+      "tags": [
+        "person-zeit"
+      ],
+      "answerable": true,
+      "answer": "Müller (Damian Müller, Ständerat) begründete seinen Einzelantrag damit, dass die Kennzeichnung von Stopfleber seit dem 1. Juli 2025 bereits auf Verordnungsstufe vorgeschrieben sei, nämlich in Anhang 2 der Lebensmittel- und Gebrauchsgegenständeverordnung (LGV), mit einer Übergangsfrist von zwei Jahren [2]. Eine zusätzliche Regelung auf Gesetzesstufe sei daher aus seiner Sicht überflüssig [2]. Er befürchtete zudem, dass die Anhebung auf Gesetzesstufe ein Präjudiz für weitere Deklarationen schaffen könnte, die über die verbotenen Produktionsmethoden hinausgehen, und die Flexibilität der Verordnungsebene untergraben würde [2]. Ausserdem müssten künftige Anpassungen dann im Gesetz statt auf Verordnungsstufe vorgenommen werden, weshalb er es für sinnvoller hält, die Bestimmung in Anhang 2 LGV zu belassen, sodass das Departement dort gezielt Änderungen vornehmen könne [2]. Welche Position der Bundesrat oder die Mehrheit der Kommission zu diesen Argumenten im Einzelnen vertrat, geht aus den Quellen nicht hervor, ausser dass die Kommission den Einzelantrag Müller Damian später auf die Beibehaltung dieser Bestimmung verzichten liess [3].",
+      "insufficient_context": false,
+      "insufficient_reason": null,
+      "best_similarity": 0.567958168034772,
+      "sources": [
+        "[2] transcript:375872",
+        "[3] transcript:419005"
+      ],
+      "cited_expected": [
+        "transcript:375872"
+      ],
+      "answer_language": "de",
+      "total_ms": 4501.603999990039,
+      "attempts": 1,
+      "answer_usage": {
+        "model": "claude-haiku-5-5",
+        "input_tokens": 2,
+        "output_tokens": 648,
+        "cache_creation_input_tokens": 7856,
+        "cache_read_input_tokens": 1746,
+        "latency_ms": 4342.035899986513,
+        "cost_usd": 0.0019128600000000002,
+        "backend": "claude-code"
+      },
+      "judge": {
+        "statements": [
+          {
+            "statement": "Müller begründete seinen Einzelantrag damit, dass die Kennzeichnung von Stopfleber seit dem 1. Juli 2025 bereits auf Verordnungsstufe vorgeschrieben sei, nämlich in Anhang 2 der LGV, mit einer Übergangsfrist von zwei Jahren.",
+            "citations": [
+              {
+                "number": 2,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Eine zusätzliche Regelung auf Gesetzesstufe sei daher aus seiner Sicht überflüssig.",
+            "citations": [
+              {
+                "number": 2,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Er befürchtete, dass die Anhebung auf Gesetzesstufe ein Präjudiz für weitere Deklarationen schaffen könnte, die über die verbotenen Produktionsmethoden hinausgehen, und die Flexibilität der Verordnungsebene untergraben würde.",
+            "citations": [
+              {
+                "number": 2,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Künftige Anpassungen müssten dann im Gesetz statt auf Verordnungsstufe vorgenommen werden, weshalb er es für sinnvoller hält, die Bestimmung in Anhang 2 LGV zu belassen, sodass das Departement dort gezielt Änderungen vornehmen könne.",
+            "citations": [
+              {
+                "number": 2,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Die Kommission liess den Einzelantrag Müller Damian später auf die Beibehaltung dieser Bestimmung verzichten.",
+            "citations": [
+              {
+                "number": 3,
+                "supports": false
+              }
+            ],
+            "support": "unsupported"
+          }
+        ],
+        "contains_own_evaluation": false,
+        "evaluation_note": ""
+      },
+      "judge_usage": {
+        "model": "claude-sonnet-5-5",
+        "input_tokens": 2,
+        "output_tokens": 1141,
+        "cache_creation_input_tokens": 8325,
+        "cache_read_input_tokens": 1987,
+        "latency_ms": 8298.799099982716,
+        "cost_usd": 0.0449127,
+        "backend": "claude-code"
+      },
+      "citation_accuracy": 0.8,
+      "faithfulness": 0.8,
+      "neutral": true,
+      "error": null,
+      "judge_error": null
+    },
+    {
+      "id": "q74",
+      "language": "de",
+      "tags": [
+        "person-zeit"
+      ],
+      "answerable": true,
+      "answer": "Die Kommissionsmehrheit empfahl, der parlamentarischen Initiative 25.454 keine Folge zu geben, und stützte sich dabei auf mehrere Argumente. Erstens enthalte die Bundesverfassung bereits wichtige Garantien: Artikel 8 verankert die Gleichstellung und das Diskriminierungsverbot, Artikel 41 die Sozialziele, und weitere Bestimmungen regeln die soziale Sicherheit [2][3][6]. Zweitens sei die vorgeschlagene Bestimmung zu unbestimmt und schwer einklagbar, ihre rechtlichen und finanziellen Folgen seien nicht absehbar [3][4]. Drittens könnte sie für Bund und Kantone potenziell hohe Ausgaben auslösen, ohne dass klar wäre, welche Verpflichtungen entstehen und wer sie tragen müsste [4]. Viertens wurde die Kompetenzverteilung angeführt: Bereiche wie die Sozialhilfe liegen weitgehend bei den Kantonen, und die Initiative könnte zu einer Verschiebung von Zuständigkeiten zum Bund und zu stärkerer Harmonisierung führen [3][4]. Fünftens wurde befürchtet, dass sozialpolitische Entscheide stärker von den Gerichten mitgeprägt werden könnten [3]. Schliesslich solle die Verfassung nicht mit politischen Programmen überfrachtet werden; Anliegen wie Lohngleichheit oder Vereinbarkeit von Beruf und Familie sollten vielmehr gezielt auf Gesetzesebene mit messbaren finanziellen Folgen geregelt werden [4]. Der Entscheid fiel mit 13 zu 7 Stimmen bei keiner Enthaltung [1][2][3]. Die Gegenposition der Kommissionsminderheit, die Zustimmung empfahl, ist hier nicht Gegenstand der Frage.",
+      "insufficient_context": false,
+      "insufficient_reason": null,
+      "best_similarity": 0.6730911731719971,
+      "sources": [
+        "[2] transcript:422059",
+        "[3] transcript:422059",
+        "[6] transcript:421996",
+        "[4] transcript:421996",
+        "[1] transcript:421996"
+      ],
+      "cited_expected": [
+        "transcript:421996",
+        "transcript:422059"
+      ],
+      "answer_language": "de",
+      "total_ms": 7800.262600067072,
+      "attempts": 1,
+      "answer_usage": {
+        "model": "claude-haiku-5-5",
+        "input_tokens": 2,
+        "output_tokens": 1431,
+        "cache_creation_input_tokens": 5934,
+        "cache_read_input_tokens": 1746,
+        "latency_ms": 7569.469699985348,
+        "cost_usd": 0.00191996,
+        "backend": "claude-code"
+      },
+      "judge": {
+        "statements": [
+          {
+            "statement": "Die Kommissionsmehrheit empfahl, der parlamentarischen Initiative 25.454 keine Folge zu geben.",
+            "citations": [],
+            "support": "supported"
+          },
+          {
+            "statement": "Erstens enthalte die Bundesverfassung bereits wichtige Garantien: Artikel 8 verankert die Gleichstellung und das Diskriminierungsverbot, Artikel 41 die Sozialziele, und weitere Bestimmungen regeln die soziale Sicherheit.",
+            "citations": [
+              {
+                "number": 2,
+                "supports": false
+              },
+              {
+                "number": 3,
+                "supports": true
+              },
+              {
+                "number": 6,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Zweitens sei die vorgeschlagene Bestimmung zu unbestimmt und schwer einklagbar, ihre rechtlichen und finanziellen Folgen seien nicht absehbar.",
+            "citations": [
+              {
+                "number": 3,
+                "supports": true
+              },
+              {
+                "number": 4,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Drittens könnte sie für Bund und Kantone potenziell hohe Ausgaben auslösen, ohne dass klar wäre, welche Verpflichtungen entstehen und wer sie tragen müsste.",
+            "citations": [
+              {
+                "number": 4,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Viertens: Bereiche wie die Sozialhilfe liegen weitgehend bei den Kantonen, und die Initiative könnte zu einer Verschiebung von Zuständigkeiten zum Bund und zu stärkerer Harmonisierung führen.",
+            "citations": [
+              {
+                "number": 3,
+                "supports": true
+              },
+              {
+                "number": 4,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Fünftens wurde befürchtet, dass sozialpolitische Entscheide stärker von den Gerichten mitgeprägt werden könnten.",
+            "citations": [
+              {
+                "number": 3,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Schliesslich solle die Verfassung nicht mit politischen Programmen überfrachtet werden; Anliegen wie Lohngleichheit oder Vereinbarkeit von Beruf und Familie sollten gezielt auf Gesetzesebene mit messbaren finanziellen Folgen geregelt werden.",
+            "citations": [
+              {
+                "number": 4,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Der Entscheid fiel mit 13 zu 7 Stimmen bei keiner Enthaltung.",
+            "citations": [
+              {
+                "number": 1,
+                "supports": true
+              },
+              {
+                "number": 2,
+                "supports": true
+              },
+              {
+                "number": 3,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          }
+        ],
+        "contains_own_evaluation": false,
+        "evaluation_note": ""
+      },
+      "judge_usage": {
+        "model": "claude-sonnet-5-5",
+        "input_tokens": 2,
+        "output_tokens": 1462,
+        "cache_creation_input_tokens": 6560,
+        "cache_read_input_tokens": 1987,
+        "latency_ms": 9750.482499948703,
+        "cost_usd": 0.0410627,
+        "backend": "claude-code"
+      },
+      "citation_accuracy": 0.9230769230769231,
+      "faithfulness": 1.0,
+      "neutral": true,
+      "error": null,
+      "judge_error": null
+    },
+    {
+      "id": "q75",
+      "language": "fr",
+      "tags": [
+        "fr",
+        "crosslingual",
+        "person-zeit"
+      ],
+      "answerable": true,
+      "answer": "La conseillère nationale Tamara Funiciello a défendu sa motion « Mindestlohn jetzt! » en soulignant qu'environ 160 000 personnes sont des working poor et que 1,3 million de personnes en Suisse sont menacées de pauvreté [1][4]. Elle affirme que la plupart des professions mal rémunérées sont des métiers de soins exercés majoritairement par des femmes, et qu'un salaire plus élevé renforcerait leur indépendance et réduirait la violence [1][4]. Selon elle, un salaire minimum allégerait les finances publiques, car il diminuerait les prestations complémentaires et l'aide sociale versées à des personnes qui travaillent [1]. Elle soutient qu'il n'entraînerait pas davantage de chômage et cite le canton de Neuchâtel, où le chômage aurait diminué après son introduction, ainsi que le renforcement du pouvoir d'achat [1]. Des salaires décents amélioreraient aussi les cotisations à l'AVS et, par conséquent, les rentes [4]. Face à l'objection selon laquelle les personnes travaillant à 100 % ne fourniraient pas assez de prestations, elle répond que ces personnes fournissent un travail suffisant pour vivre de leur salaire [3]. Elle estime que si le revenu ne suffit pas malgré un plein temps, l'État doit intervenir, par exemple par la réduction des primes d'assurance-maladie ou par l'aide sociale [2]. Elle salue l'engagement du Conseil fédéral contre la pauvreté, tout en demandant des actes rapides [1]. Les extraits ne contiennent ni la prise de position détaillée du Conseil fédéral sur cette motion ni le résultat du vote.",
+      "insufficient_context": false,
+      "insufficient_reason": null,
+      "best_similarity": 0.6188843704599892,
+      "sources": [
+        "[1] transcript:333829",
+        "[4] transcript:333829",
+        "[3] transcript:333817",
+        "[2] transcript:333825"
+      ],
+      "cited_expected": [
+        "transcript:333829",
+        "transcript:333817",
+        "transcript:333825"
+      ],
+      "answer_language": "fr",
+      "total_ms": 12216.33640001528,
+      "attempts": 1,
+      "answer_usage": {
+        "model": "claude-haiku-5-5",
+        "input_tokens": 2,
+        "output_tokens": 2389,
+        "cache_creation_input_tokens": 6733,
+        "cache_read_input_tokens": 1746,
+        "latency_ms": 12043.646599981003,
+        "cost_usd": 0.00255876,
+        "backend": "claude-code"
+      },
+      "judge": {
+        "statements": [
+          {
+            "statement": "Funiciello a défendu sa motion en soulignant qu'environ 160 000 personnes sont des working poor et que 1,3 million de personnes en Suisse sont menacées de pauvreté",
+            "citations": [
+              {
+                "number": 1,
+                "supports": true
+              },
+              {
+                "number": 4,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Elle affirme que la plupart des professions mal rémunérées sont des métiers de soins exercés majoritairement par des femmes, et qu'un salaire plus élevé renforcerait leur indépendance et réduirait la violence",
+            "citations": [
+              {
+                "number": 1,
+                "supports": true
+              },
+              {
+                "number": 4,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Un salaire minimum allégerait les finances publiques, car il diminuerait les prestations complémentaires et l'aide sociale versées à des personnes qui travaillent",
+            "citations": [
+              {
+                "number": 1,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Il n'entraînerait pas davantage de chômage; Neuchâtel, où le chômage aurait diminué après l'introduction, ainsi que le renforcement du pouvoir d'achat",
+            "citations": [
+              {
+                "number": 1,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Des salaires décents amélioreraient aussi les cotisations à l'AVS et, par conséquent, les rentes",
+            "citations": [
+              {
+                "number": 4,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Face à l'objection selon laquelle les personnes travaillant à 100 % ne fourniraient pas assez de prestations, elle répond que ces personnes fournissent un travail suffisant pour vivre de leur salaire",
+            "citations": [
+              {
+                "number": 3,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Si le revenu ne suffit pas malgré un plein temps, l'État doit intervenir, par exemple par la réduction des primes d'assurance-maladie ou par l'aide sociale",
+            "citations": [
+              {
+                "number": 2,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Elle salue l'engagement du Conseil fédéral contre la pauvreté, tout en demandant des actes rapides",
+            "citations": [
+              {
+                "number": 1,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          }
+        ],
+        "contains_own_evaluation": false,
+        "evaluation_note": ""
+      },
+      "judge_usage": {
+        "model": "claude-sonnet-5-5",
+        "input_tokens": 2,
+        "output_tokens": 865,
+        "cache_creation_input_tokens": 7270,
+        "cache_read_input_tokens": 1987,
+        "latency_ms": 6349.541799980216,
+        "cost_usd": 0.0379327,
+        "backend": "claude-code"
+      },
+      "citation_accuracy": 1.0,
+      "faithfulness": 1.0,
+      "neutral": true,
+      "error": null,
+      "judge_error": null
+    },
+    {
+      "id": "q76",
+      "language": "fr",
+      "tags": [
+        "fr",
+        "person-zeit"
+      ],
+      "answerable": true,
+      "answer": "Au nom de la commission, Céline Amaudruz a présenté la motion comme un moyen de corriger une asymétrie financière : l'introduction de la 13e rente augmente le revenu imposable des bénéficiaires et génère mécaniquement des recettes fiscales supplémentaires pour les cantons et les communes, alors que la Confédération prend en charge une part importante des coûts supplémentaires de l'AVS [2]. Selon les explications données en commission, la Confédération devrait supporter environ 800 millions de francs de dépenses supplémentaires, tandis que les cantons et les communes pourraient toucher environ 600 millions de francs de recettes supplémentaires [2]. La motion charge le Conseil fédéral de faire reverser ces recettes à la Confédération, qui les transfère directement à l'AVS ; ce point a été précisé en commission, à la suite d'une proposition initiale de M. Silberschmidt [2]. Elle ne vise pas à créer une nouvelle tâche commune ni à remettre en cause le fédéralisme ou l'autonomie fiscale des cantons, mais à rendre l'introduction de la 13e rente neutre pour les finances cantonales et communales [1]. La commission a adopté la motion par 13 voix contre 12, et l'oratrice propose de suivre cette décision [1]. La minorité, emmenée par Thomas Rechsteiner, propose de rejeter la motion : elle estime que le calcul des recettes supplémentaires serait complexe et lourd administrativement, que la part cantonale à l'impôt fédéral direct indemnise des tâches inchangées, et qu'il faudrait éviter un précédent en traitant ces questions dans le cadre général de la répartition des tâches et des flux financiers [1].",
+      "insufficient_context": false,
+      "insufficient_reason": null,
+      "best_similarity": 0.7026706096326578,
+      "sources": [
+        "[2] transcript:378244",
+        "[1] transcript:378244"
+      ],
+      "cited_expected": [
+        "transcript:378244"
+      ],
+      "answer_language": "fr",
+      "total_ms": 10439.868699992076,
+      "attempts": 1,
+      "answer_usage": {
+        "model": "claude-haiku-5-5",
+        "input_tokens": 2,
+        "output_tokens": 2352,
+        "cache_creation_input_tokens": 6217,
+        "cache_read_input_tokens": 1746,
+        "latency_ms": 10232.684399932623,
+        "cost_usd": 0.00243706,
+        "backend": "claude-code"
+      },
+      "judge": {
+        "statements": [
+          {
+            "statement": "Au nom de la commission, Céline Amaudruz a présenté la motion comme un moyen de corriger une asymétrie financière : l'introduction de la 13e rente augmente le revenu imposable des bénéficiaires et génère mécaniquement des recettes fiscales supplémentaires pour les cantons et les communes, alors que la Confédération prend en charge une part importante des coûts supplémentaires de l'AVS",
+            "citations": [
+              {
+                "number": 2,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Selon les explications données en commission, la Confédération devrait supporter environ 800 millions de francs de dépenses supplémentaires, tandis que les cantons et les communes pourraient toucher environ 600 millions de francs de recettes supplémentaires",
+            "citations": [
+              {
+                "number": 2,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "La motion charge le Conseil fédéral de faire reverser ces recettes à la Confédération, qui les transfère directement à l'AVS",
+            "citations": [
+              {
+                "number": 2,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "ce point a été précisé en commission, à la suite d'une proposition initiale de M. Silberschmidt",
+            "citations": [
+              {
+                "number": 2,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "Elle ne vise pas à créer une nouvelle tâche commune ni à remettre en cause le fédéralisme ou l'autonomie fiscale des cantons, mais à rendre l'introduction de la 13e rente neutre pour les finances cantonales et communales",
+            "citations": [
+              {
+                "number": 1,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "La commission a adopté la motion par 13 voix contre 12, et l'oratrice propose de suivre cette décision",
+            "citations": [
+              {
+                "number": 1,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          },
+          {
+            "statement": "La minorité, emmenée par Thomas Rechsteiner, propose de rejeter la motion : elle estime que le calcul des recettes supplémentaires serait complexe et lourd administrativement, que la part cantonale à l'impôt fédéral direct indemnise des tâches inchangées, et qu'il faudrait éviter un précédent en traitant ces questions dans le cadre général de la répartition des tâches et des flux financiers",
+            "citations": [
+              {
+                "number": 1,
+                "supports": true
+              }
+            ],
+            "support": "supported"
+          }
+        ],
+        "contains_own_evaluation": false,
+        "evaluation_note": ""
+      },
+      "judge_usage": {
+        "model": "claude-sonnet-5-5",
+        "input_tokens": 2,
+        "output_tokens": 908,
+        "cache_creation_input_tokens": 6744,
+        "cache_read_input_tokens": 1987,
+        "latency_ms": 6565.1801999192685,
+        "cost_usd": 0.0362587,
+        "backend": "claude-code"
+      },
+      "citation_accuracy": 1.0,
+      "faithfulness": 1.0,
+      "neutral": true,
+      "error": null,
+      "judge_error": null
+    },
+    {
+      "id": "q77",
+      "language": "de",
+      "tags": [
+        "unanswerable",
+        "person-zeit",
+        "ausserhalb"
+      ],
+      "answerable": false,
+      "answer": "Zu diesem Zeitraum gibt es keine Daten. Die Voten reichen vom 4. Dezember 2023 bis 2. Oktober 2026.",
+      "insufficient_context": true,
+      "insufficient_reason": "out_of_range",
+      "best_similarity": null,
+      "sources": [],
+      "cited_expected": [],
+      "answer_language": "de",
+      "total_ms": 0.9580999612808228,
+      "attempts": 0,
+      "answer_usage": null,
+      "judge": null,
+      "judge_usage": null,
+      "citation_accuracy": null,
+      "faithfulness": null,
+      "neutral": true,
+      "error": null,
+      "judge_error": null
+    },
+    {
+      "id": "q78",
+      "language": "de",
+      "tags": [
+        "unanswerable",
+        "person-zeit",
+        "ausserhalb"
+      ],
+      "answerable": false,
+      "answer": "Zu diesem Zeitraum gibt es keine Daten. Die Voten reichen vom 4. Dezember 2023 bis 2. Oktober 2026.",
+      "insufficient_context": true,
+      "insufficient_reason": "out_of_range",
+      "best_similarity": null,
+      "sources": [],
+      "cited_expected": [],
+      "answer_language": "de",
+      "total_ms": 0.6275000050663948,
+      "attempts": 0,
+      "answer_usage": null,
+      "judge": null,
+      "judge_usage": null,
+      "citation_accuracy": null,
+      "faithfulness": null,
+      "neutral": true,
+      "error": null,
+      "judge_error": null
+    },
+    {
+      "id": "q79",
+      "language": "fr",
+      "tags": [
+        "fr",
+        "unanswerable",
+        "person-zeit",
+        "ausserhalb"
+      ],
+      "answerable": false,
+      "answer": "Il n'y a pas de données pour cette période. Les interventions vont du 4 décembre 2023 au 2 octobre 2026.",
+      "insufficient_context": true,
+      "insufficient_reason": "out_of_range",
+      "best_similarity": null,
+      "sources": [],
+      "cited_expected": [],
+      "answer_language": "fr",
+      "total_ms": 0.6202999502420425,
+      "attempts": 0,
+      "answer_usage": null,
+      "judge": null,
+      "judge_usage": null,
+      "citation_accuracy": null,
+      "faithfulness": null,
+      "neutral": true,
+      "error": null,
+      "judge_error": null
+    },
+    {
+      "id": "q80",
+      "language": "de",
+      "tags": [
+        "unanswerable",
+        "person-zeit",
+        "ausserhalb"
+      ],
+      "answerable": false,
+      "answer": "Zu diesem Zeitraum gibt es keine Daten. Die Voten reichen vom 4. Dezember 2023 bis 2. Oktober 2026.",
+      "insufficient_context": true,
+      "insufficient_reason": "out_of_range",
+      "best_similarity": null,
+      "sources": [],
+      "cited_expected": [],
+      "answer_language": "de",
+      "total_ms": 0.48179994337260723,
+      "attempts": 0,
+      "answer_usage": null,
+      "judge": null,
+      "judge_usage": null,
+      "citation_accuracy": null,
+      "faithfulness": null,
+      "neutral": true,
+      "error": null,
+      "judge_error": null
+    }
+  ]
+}

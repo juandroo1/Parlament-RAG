@@ -2,6 +2,7 @@
 
 import datetime as dt
 import io
+import json
 import logging
 import re
 import sys
@@ -59,13 +60,15 @@ from parlrag.evals.runner import (
 )
 from parlrag.evals.threshold import threshold_report, threshold_summary
 from parlrag.generation.formatting import answer_json, format_answer
-from parlrag.generation.pipeline import build_pipeline
+from parlrag.generation.pipeline import build_pipeline, with_detection
 from parlrag.index.indexer import IndexConfig, IndexStats, index_documents, log_progress
 from parlrag.ingest.mapping import LANGUAGES, Language
 from parlrag.ingest.odata import ODataClient
 from parlrag.ingest.pipeline import IngestStats, run_ingest
 from parlrag.ingest.source import ODataSource
 from parlrag.llm import LLMError, get_llm
+from parlrag.query.formatting import detection_notes
+from parlrag.query.search import DetectingRetriever
 from parlrag.retrieval import (
     Reranker,
     RetrievalConfig,
@@ -312,6 +315,13 @@ def _reranker(retriever: Any) -> Reranker | None:
     return getattr(retriever, "reranker", None)
 
 
+def detecting_retriever(retriever: Any) -> DetectingRetriever | None:
+    """Erkennung von Person und Zeitraum für `search` (Spec 003); None für Fakes in Tests."""
+    if not isinstance(retriever, Retriever):
+        return None
+    return with_detection(retriever, Settings())
+
+
 def build_retriever() -> Retriever:
     """Verdrahtet Datenbank, Embedder und Konfiguration (in Tests ersetzbar)."""
     settings = Settings()
@@ -366,10 +376,18 @@ def search(
         ),
     ] = None,
     as_json: Annotated[bool, typer.Option("--json", help="Ausgabe als JSON.")] = False,
+    detect: Annotated[
+        bool,
+        typer.Option(
+            "--detect/--no-detect",
+            help="Person und Zeitraum aus der Frage erkennen (gesetzte Filter haben Vorrang).",
+        ),
+    ] = True,
 ) -> None:
     """Nur Retrieval: Treffer mit Scores, Metadaten, Ausschnitt und Link (zum Prüfen)."""
     filters = _filters(council, date_from, date_to, parl_group, speaker)
     retriever = build_retriever()
+    searcher = detecting_retriever(retriever)
     chosen = mode.value if mode else retriever.config.mode
     model_load_ms = None
     if chosen != "fulltext":
@@ -380,10 +398,37 @@ def search(
             reranker.score("Modell laden", ["Modell laden"])
         model_load_ms = (time.monotonic() - start) * 1000
     start = time.monotonic()
-    hits = retriever.search(query, filters, mode=chosen, top_n=top)
+    notes: list[str] = []
+    extra: dict[str, Any] = {}
+    if searcher is not None:
+        outcome = searcher.run(query, filters, mode=chosen, top_n=top, detect=detect)
+        hits, resolution = outcome.hits, outcome.resolution
+        filters = resolution.filters
+        notes = detection_notes(
+            filters,
+            resolution.detected,
+            resolution.speaker_candidates,
+            resolution.coverage,
+            outcome.retried_without,
+            resolution.out_of_range,
+        )
+        extra = {
+            "detected": list(resolution.detected),
+            "speaker_candidates": [s.model_dump() for s in resolution.speaker_candidates],
+            "out_of_range": resolution.out_of_range,
+            "retried_without": list(outcome.retried_without),
+        }
+    else:
+        hits = retriever.search(query, filters, mode=chosen, top_n=top)
     duration_ms = (time.monotonic() - start) * 1000
-    render = results_json if as_json else format_results
-    typer.echo(render(query, chosen, filters, hits, duration_ms, model_load_ms))
+    if as_json:
+        payload = json.loads(results_json(query, chosen, filters, hits, duration_ms, model_load_ms))
+        typer.echo(json.dumps(payload | extra, ensure_ascii=False, indent=2))
+        return
+    header, _, rest = format_results(
+        query, chosen, filters, hits, duration_ms, model_load_ms
+    ).partition("\n")
+    typer.echo("\n".join([header, *notes, *([rest] if rest else [])]))
 
 
 class SuiteChoice(StrEnum):
@@ -401,7 +446,7 @@ def _check_label(value: str | None) -> str | None:
     return value
 
 
-def describe_eval(retriever: Retriever) -> tuple[dict[str, Any], dict[str, Any]]:
+def describe_eval(retriever: Any) -> tuple[dict[str, Any], dict[str, Any]]:
     """Konfiguration und Korpus-Stand für die Ergebnisdatei (in Tests ersetzbar)."""
     settings = Settings()
     config: dict[str, Any] = {
@@ -414,6 +459,7 @@ def describe_eval(retriever: Retriever) -> tuple[dict[str, Any], dict[str, Any]]
         "database": settings.postgres_db,
         "answer_min_similarity": settings.answer_min_similarity,
         "retrieval_rerank": _reranker(retriever) is not None,
+        "query_detection": settings.query_detection,
     }
     if (reranker := _reranker(retriever)) is not None:
         config["reranker_model"] = reranker.model_name
@@ -423,7 +469,7 @@ def describe_eval(retriever: Retriever) -> tuple[dict[str, Any], dict[str, Any]]
 
 
 def build_answer_evaluation(
-    retriever: Retriever,
+    retriever: Any,
 ) -> tuple[SupportsAsk, Judge, dict[str, Any]]:
     """Pipeline wie `ask` (mit geteiltem Retriever) und Judge (in Tests ersetzbar)."""
     settings = Settings()
@@ -439,6 +485,7 @@ def build_answer_evaluation(
         "judge_prompt_version": judge.prompt.version,
         "answer_context_chunks": settings.answer_context_chunks,
         "answer_min_similarity": settings.answer_min_similarity,
+        "query_detection": settings.query_detection,
     }
     return pipeline, judge, config
 
@@ -494,7 +541,10 @@ def eval_command(
     except (EvalError, GoldenSetError, OSError) as exc:
         console.print(f"[red]{exc}[/red]")
         raise typer.Exit(1) from exc
-    retriever = build_retriever()
+    # Erkennung von Person und Zeitraum wie in der Demo (Spec 003); QUERY_DETECTION=false schaltet
+    # sie für Vergleichsläufe ab (AK-19.3).
+    base = build_retriever()
+    retriever = detecting_retriever(base) or base
     chosen = mode.value if mode else retriever.config.mode
     answer_parts = None
     if answers:
@@ -668,6 +718,13 @@ def ask(
         ),
     ] = None,
     as_json: Annotated[bool, typer.Option("--json", help="Ausgabe als JSON.")] = False,
+    detect: Annotated[
+        bool,
+        typer.Option(
+            "--detect/--no-detect",
+            help="Person und Zeitraum aus der Frage erkennen (gesetzte Filter haben Vorrang).",
+        ),
+    ] = True,
 ) -> None:
     """Antwort mit Quellen aus den Debatten und Geschäften (LLM gemäss LLM_BACKEND)."""
     filters = _filters(council, date_from, date_to, parl_group, speaker)
@@ -676,7 +733,7 @@ def ask(
         pipeline = build_pipeline()
         chosen: SearchMode | None = mode.value if mode else None
         model_load_ms = pipeline.warm_up(chosen)
-        result = pipeline.ask(question, filters, mode=chosen)
+        result = pipeline.ask(question, filters, mode=chosen, detect=detect)
     except LLMError as exc:
         console.print(f"[red]{exc}[/red]")
         raise typer.Exit(1) from exc

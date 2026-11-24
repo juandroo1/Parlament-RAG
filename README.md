@@ -162,6 +162,16 @@ Der Kontext-Header bringt am meisten: Ohne ihn sinkt Recall@10 um 0.116. Kleiner
 
 Ablehnungsquote, falsche Ablehnungen, Neutralität und Antwortsprache sind bei allen vier Modellen fehlerfrei. Die Qualität liegt nah beisammen; mit 13 Antworten sind Unterschiede von wenigen Hundertsteln Rauschen, und Sonnet bewertet als Judge auch die eigenen Antworten. Deutlich sind die Unterschiede bei Antwortzeit und Kosten. Die Kosten sind aus den Tokens zu Listenpreisen gerechnet, ohne Prompt-Caching; die Schätzungen von Claude Code in den Ergebnisdateien sind vom Cache verzerrt (der Lauf mit Opus `high` las den Cache des Laufs mit Opus `low`).
 
+**Person und Zeitraum aus der Frage** (Spec 003, Task 8.4), Goldset v3 (`full`, 66 beantwortbare Fragen, davon 11 im Teilset `person-zeit`). Die Erkennung setzt Person und Zeitraum aus der Frage als Filter, ohne LLM-Aufruf:
+
+| Variante | Recall@5 | Recall@10 | MRR@10 | Recall@10 `person-zeit` | MRR@10 `person-zeit` | Recall@10 sprachübergreifend |
+|---|---|---|---|---|---|---|
+| ohne Erkennung (Baseline, Task 8.1) | 0.658 | 0.770 | 0.611 | 0.750 | 0.617 | 0.667 |
+| **mit Erkennung** | **0.783** | **0.840** | **0.728** | **0.955** | **0.874** | **0.917** |
+| mit Erkennung, Namen und Zeitangaben aus dem Suchtext entfernt | 0.763 | 0.840 | 0.734 | 0.955 | 0.808 | 0.917 |
+
+18 Fragen werden besser, keine schlechter. Der Gewinn kommt nicht nur von den neuen Fragen: Viele Fragen aus Goldset v2 nennen ein Bundesratsmitglied («laut Bundesrat Rösti»), mit dem Personenfilter steigen dort die Treffer nach oben (MRR@10 von q54 etwa von 0.11 auf 1.00). Ohne die Erkennung fand die Suche bei q70 und q71 nur Quellen aus dem falschen Jahr. Bei den Antworten auf `person-zeit` (17 Fragen, Haiku `low`) werden alle 6 Fragen ausserhalb des Datenbestands ohne LLM-Aufruf mit dem abgedeckten Zeitraum beantwortet (vorher 0 von 6), die falschen Ablehnungen sinken von 0.091 auf 0, die Zitiergenauigkeit bleibt bei 0.960 (`evals/results/2026-11-24_7ab0f77_full-person-zeit-vector-haiku-low-detect-answers.md`). Namen und Zeitangaben aus dem Suchtext zu entfernen bringt nichts Eindeutiges und bleibt deshalb weg (`evals/results/2026-11-24_561e4b4_full-vector-detect*.md`, Entscheidungsprotokoll von [Spec 003](specs/003-person-und-zeitraum/plan.md#13-entscheidungsprotokoll)).
+
 ## Designentscheide
 
 Die wichtigsten Entscheide, jeweils mit dem Grund. Alle Entscheide samt Datum stehen im [Entscheidungsprotokoll](specs/001-frag-das-parlament/plan.md#12-entscheidungsprotokoll).
@@ -295,7 +305,9 @@ docker compose run --rm app parlrag search "Stalking im Strafgesetzbuch" --speak
 docker compose run --rm app parlrag search "PFAS" --json
 ```
 
-Standard ist die Vektorsuche (`--mode vector`, einstellbar über `RETRIEVAL_MODE` in `.env`). `fulltext` nutzt nur die Volltextsuche, `hybrid` kombiniert beide mit Reciprocal Rank Fusion. Ein Reranker lässt sich mit `RETRIEVAL_RERANK=true` zuschalten. Filter wirken vor der Suche. `--speaker` sucht nur in den Voten einer Person, mit dem Namen wie in den Daten («Nachname Vorname»); Geschäftstexte fallen dann weg, wie beim Fraktionsfilter. Jeder Treffer zeigt die Dokument-ID im Goldset-Format (`transcript:418982`), die Scores, Redner und Fraktion bzw. Geschäftsnummer, Rat, Datum, einen Ausschnitt und den Link auf parlament.ch.
+Standard ist die Vektorsuche (`--mode vector`, einstellbar über `RETRIEVAL_MODE` in `.env`). `fulltext` nutzt nur die Volltextsuche, `hybrid` kombiniert beide mit Reciprocal Rank Fusion. Ein Reranker lässt sich mit `RETRIEVAL_RERANK=true` zuschalten. Filter wirken vor der Suche. `--speaker` sucht nur in den Voten einer Person, mit dem Namen wie in den Daten («Nachname Vorname»); Geschäftstexte fallen dann weg, wie beim Fraktionsfilter.
+
+Person und Zeitraum werden auch aus der Frage erkannt: «Was sagte Bundesrat Rösti 2025 zum Wolf?» sucht in den Voten von Albert Rösti aus dem Jahr 2025. Erkannt werden Personen mit Voten im Korpus (bei mehrdeutigen Namen wie «Müller» nennt die Ausgabe die Kandidaten, statt zu filtern) sowie Jahr, Monat, Session und Bereiche wie «seit 2024» auf Deutsch und Französisch, ohne zusätzlichen LLM-Aufruf. Gesetzte Filter haben Vorrang; die Ausgabe nennt, was erkannt wurde. Findet die Suche zur erkannten Person keine passenden Voten, sucht sie ohne Personenfilter. `--no-detect` schaltet die Erkennung für einen Aufruf ab, `QUERY_DETECTION=false` in `.env` ganz. Jeder Treffer zeigt die Dokument-ID im Goldset-Format (`transcript:418982`), die Scores, Redner und Fraktion bzw. Geschäftsnummer, Rat, Datum, einen Ausschnitt und den Link auf parlament.ch.
 
 ### Fragen stellen
 
@@ -305,7 +317,7 @@ docker compose run --rm app parlrag ask "Qu'a dit le Conseil fédéral sur la 13
 uv run parlrag ask "Frage" --json        # lokal, z. B. mit LLM_BACKEND=claude-code (siehe «Zugang zum LLM»)
 ```
 
-Die Antwort kommt in der Sprache der Frage. Jede Aussage ist mit [n] belegt, darunter stehen die zitierten Quellen mit Redner, Fraktion, Rat, Datum, Geschäftsnummer, Ausschnitt und Link auf parlament.ch. Die Filter sind dieselben wie bei `search`. Reichen die Quellen nicht, erscheint statt einer Antwort ein klarer Hinweis samt Grund (keine Treffer, Similarity unter `ANSWER_MIN_SIMILARITY` oder Einschätzung des Modells). Die letzten Zeilen zeigen Modell, Tokens, Kosten und die Zeiten für Suche und LLM. Im Container braucht `ask` einen `ANTHROPIC_API_KEY`.
+Die Antwort kommt in der Sprache der Frage. Jede Aussage ist mit [n] belegt, darunter stehen die zitierten Quellen mit Redner, Fraktion, Rat, Datum, Geschäftsnummer, Ausschnitt und Link auf parlament.ch. Die Filter sind dieselben wie bei `search`. Reichen die Quellen nicht, erscheint statt einer Antwort ein klarer Hinweis samt Grund (keine Treffer, Similarity unter `ANSWER_MIN_SIMILARITY` oder Einschätzung des Modells). Liegt der Zeitraum ganz ausserhalb der Daten («Was sagte Funiciello 2022?»), nennt der Hinweis den abgedeckten Zeitraum, ohne Suche und ohne LLM-Aufruf. Die letzten Zeilen zeigen Modell, Tokens, Kosten und die Zeiten für Suche und LLM. Im Container braucht `ask` einen `ANTHROPIC_API_KEY`.
 
 ### API
 
@@ -315,7 +327,7 @@ Die API läuft im Container auf `127.0.0.1:8000`. Die Dokumentation der Schnitts
 curl -X POST http://127.0.0.1:8000/ask -H "Content-Type: application/json"   -d '{"question": "Was sagte Bundesrat Rösti zum Kühlwasser der Kernkraftwerke?", "filters": {"council": "NR"}}'
 ```
 
-Die Antwort enthält `answer` mit den Belegen [n], `sources` (pro Nummer Dokument-ID, Redner, Fraktion, Kanton, Rat, Datum, Geschäftsnummern, Abschnitt, Ausschnitt und Link), `insufficient_context` mit Grund und `usage` (Modell, Input- und Output-Tokens, Kosten in USD, Dauer der Anfrage). Die Filter sind dieselben wie bei `search`. Fehlt der API-Key oder ist das LLM nicht erreichbar, antwortet die API mit 503 und einer Meldung, bei einer ungültigen Antwort des Modells mit 502, bei einer Ablehnung durch das Modell mit 422. Jede Antwort trägt den Header `X-Request-ID`, jeder Fehler zusätzlich einen Code im Header `X-Error-Code` (`llm_unavailable`, `model_output`, `model_refused`, in der Demo `rate_limit`, `daily_budget` und `unavailable`); daraus formuliert die Web-UI die Meldung auf Deutsch oder Französisch. Pro Anfrage schreibt die API eine Logzeile `ask_request` mit Tokens, Kosten und Dauer, ohne den Wortlaut der Frage.
+Die Antwort enthält `answer` mit den Belegen [n], `sources` (pro Nummer Dokument-ID, Redner, Fraktion, Kanton, Rat, Datum, Geschäftsnummern, Abschnitt, Ausschnitt und Link), `insufficient_context` mit Grund (`no_hits`, `low_similarity`, `model` oder `out_of_range`) und `usage` (Modell, Input- und Output-Tokens, Kosten in USD, Dauer der Anfrage). Dazu kommen `filters` (`applied`: die Filter der Suche, `detected`: welche davon aus der Frage erkannt wurden), `coverage` (erstes und letztes Datum der Voten, `partial`, wenn der Zeitraum darüber hinausgeht), `speaker_candidates` bei einem mehrdeutigen Namen und `retried_without` nach einer Suche ohne erkannte Person. Mit `"detect": false` in der Anfrage bleibt die Erkennung aus. Die Filter sind dieselben wie bei `search`. Fehlt der API-Key oder ist das LLM nicht erreichbar, antwortet die API mit 503 und einer Meldung, bei einer ungültigen Antwort des Modells mit 502, bei einer Ablehnung durch das Modell mit 422. Jede Antwort trägt den Header `X-Request-ID`, jeder Fehler zusätzlich einen Code im Header `X-Error-Code` (`llm_unavailable`, `model_output`, `model_refused`, in der Demo `rate_limit`, `daily_budget` und `unavailable`); daraus formuliert die Web-UI die Meldung auf Deutsch oder Französisch. Pro Anfrage schreibt die API eine Logzeile `ask_request` mit Tokens, Kosten und Dauer, ohne den Wortlaut der Frage.
 
 `GET /speakers` liefert alle Personen mit Voten (Name, jüngste Fraktion, Kanton und Rat, `federal_council`, Zahl der Voten), alphabetisch und mit `Cache-Control: max-age=600`. Der Name ist der Wert für den Filter `speaker` (`"filters": {"speaker": "Funiciello Tamara"}`).
 

@@ -134,7 +134,7 @@ def ask(
     if limits.active:
         _admit(limits, http_request, request, request_id)
     try:
-        result = provide().ask(request.question, request.filters)
+        result = provide().ask(request.question, request.filters, detect=request.detect)
     except LLMError as exc:
         http_status, message, code = _error_status(exc)
         latency_ms = (time.perf_counter() - start) * 1000
@@ -165,6 +165,9 @@ def ask(
         status.HTTP_200_OK,
         insufficient=body.insufficient_context,
         reason=body.insufficient_reason or "-",
+        detected=",".join(body.filters.detected) or "-",
+        retried=",".join(body.retried_without) or "-",
+        candidates=len(body.speaker_candidates),
         sources=len(body.sources),
         model=usage.model or "-",
         backend=usage.backend or "-",
