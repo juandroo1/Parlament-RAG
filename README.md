@@ -333,14 +333,15 @@ Die Antwort enthält `answer` mit den Belegen [n], `sources` (pro Nummer Dokumen
 
 ### Web-UI
 
-Die Oberfläche (http://127.0.0.1:8080) zeigt Frage mit Beispielen, aufklappbare Filter (Rat, Fraktion, Zeitraum), die Antwort mit klickbaren Zitat-Marken und die Quellen mit Redner, Rat, Datum, Geschäftsnummer, Ausschnitt und Link auf parlament.ch, dazu Datenquelle und Lizenz.
+Die Oberfläche (http://127.0.0.1:8080) zeigt Frage mit Beispielen, aufklappbare Filter (Person, Rat, Fraktion, Zeitraum), die Antwort mit klickbaren Zitat-Marken und die Quellen mit Redner, Rat, Datum, Geschäftsnummer, Ausschnitt und Link auf parlament.ch, dazu Datenquelle und Lizenz.
 
 - **Kopfzeile:** Logo, Knopf «So funktioniert's» (Datenquelle, Vorgehen, Grenzen, Datenschutz), Umschalter DE/FR und Darstellung (Hell, Dunkel, wie System). Beide Einstellungen bleiben im Browser gespeichert; ohne Wahl gelten Sprache und Farbschema des Systems.
+- **Person und Zeitraum:** Was aus der Frage erkannt wurde, steht über der Antwort («Gesucht in: Voten von Rösti Albert · 2025») und lässt sich mit einem Klick entfernen; dann fragt die Seite ohne Erkennung neu. Bei einem mehrdeutigen Namen bietet sie die Personen zur Auswahl an. Liegt der Zeitraum ausserhalb der Daten, nennt sie den abgedeckten Zeitraum. Das Feld «Person» in den Filtern schlägt beim Tippen Personen mit Voten vor (per Tastatur bedienbar, Akzente egal).
 - **Sprache:** Die Oberfläche spricht Deutsch oder Französisch, auch die Meldungen der API (über den Fehlercode). Die Antwort kommt immer in der Sprache der Frage.
 - **Erscheinungsbild:** Farben aus dem Logo, eigenständig und ohne Anlehnung an Behördenseiten; der Hinweis «Privates Projekt – keine amtliche Veröffentlichung» steht gleich unter der Kopfzeile. Schriften (Inter, Plus Jakarta Sans) liefert der Server selbst aus, ohne Anfragen an Dritte.
 - **Barrierefreiheit:** Kontraste nach WCAG 2.2 AA in beiden Modi, vollständig per Tastatur bedienbar, Rücksicht auf «Bewegung reduzieren». Gemessen mit Lighthouse (mobil, hell und dunkel je 100 in allen vier Kategorien) und mit axe in den Tests.
 
-Spec, Entwürfe und Entscheide zum Redesign: [`specs/002-redesign/`](specs/002-redesign/spec.md).
+Spec, Entwürfe und Entscheide zum Redesign: [`specs/002-redesign/`](specs/002-redesign/spec.md); zu Person und Zeitraum: [`specs/003-person-und-zeitraum/`](specs/003-person-und-zeitraum/spec.md).
 
 ## Evals
 
