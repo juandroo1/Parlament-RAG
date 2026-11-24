@@ -47,6 +47,7 @@ def test_valid_item() -> None:
             {"answerable": False, "expected_source_ids": [], "tags": ["unanswerable", "wertend"]},
             "wertend ist beantwortbar",
         ),
+        ({"tags": ["ausserhalb"]}, "ausserhalb ist unbeantwortbar"),
         ({"language": "fr"}, "Tag fr fehlt"),
         ({"tags": ["fr"]}, "Tag fr bei deutscher Frage"),
         ({"filters": {"council": "NR"}}, "Tag filter fehlt"),
@@ -104,12 +105,12 @@ def _category(item: GoldenItem) -> str:
 
 
 def test_golden_composition(golden: list[GoldenItem]) -> None:
-    """Endstand MVP gemäss spec.md, Abschnitt 6 (Ausbau in Task 4.5b)."""
-    assert [item.id for item in golden] == [f"q{n:02d}" for n in range(1, 66)]
+    """Goldset v3: Endstand MVP (Spec 001, Abschnitt 6) plus q66 bis q80 aus Spec 003 (Task 8.1)."""
+    assert [item.id for item in golden] == [f"q{n:02d}" for n in range(1, 81)]
     assert Counter(_category(item) for item in golden) == {
-        "beantwortbar de": 40,
-        "beantwortbar fr": 10,
-        "unbeantwortbar": 10,
+        "beantwortbar de": 47,
+        "beantwortbar fr": 14,
+        "unbeantwortbar": 14,
         "wertend": 5,
     }
     crosslingual = [item for item in golden if item.has("crosslingual")]
@@ -117,6 +118,18 @@ def test_golden_composition(golden: list[GoldenItem]) -> None:
     assert all(item.answerable and not item.has("wertend") for item in crosslingual)
     assert sum(item.has("teilkorpus") for item in golden) >= 15
     assert not any(item.has("teilkorpus") and not item.answerable for item in golden)
+
+
+def test_person_time_subsets(golden: list[GoldenItem]) -> None:
+    """Spec 003, AK-19.1: mindestens 10 beantwortbare Fragen `person-zeit` (Deutsch und
+    Französisch) und mindestens 3 Fragen `ausserhalb`, alle unbeantwortbar."""
+    person_time = [item for item in golden if item.has("person-zeit") and item.answerable]
+    assert len(person_time) >= 10
+    assert {item.language for item in person_time} == {"de", "fr"}
+    outside = [item for item in golden if item.has("ausserhalb")]
+    assert len(outside) >= 3
+    assert all(not item.answerable for item in outside)
+    assert any(item.language == "fr" for item in outside)
 
 
 def test_smoke_suite_covers_all_categories(golden: list[GoldenItem]) -> None:

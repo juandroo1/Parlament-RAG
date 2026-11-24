@@ -380,6 +380,37 @@ def test_errors_are_excluded_and_unknown_cost_is_omitted() -> None:
     assert report.metrics["false_refusal_rate"] == 0.0  # nur q02 gezählt
 
 
+def test_out_of_range_rate_counts_only_refusals_without_llm() -> None:
+    """Spec 003, AK-16.1: Fragen `ausserhalb` gelten nur als erkannt, wenn sie mit dem Grund
+    `out_of_range` und ohne LLM-Aufruf abgelehnt werden."""
+
+    def outside(id_: str, **fields: Any) -> AnswerResult:
+        return AnswerResult(
+            id=id_, language="de", tags=("unanswerable", "ausserhalb"), answerable=False, **fields
+        )
+
+    recognized = outside(
+        "q66", insufficient_context=True, insufficient_reason="out_of_range", answer_usage=None
+    )
+    via_model = outside(
+        "q67",
+        insufficient_context=True,
+        insufficient_reason="model",
+        answer_usage={"model": "claude-haiku-5-5", "cost_usd": 0.001},
+    )
+    answered = outside("q68", insufficient_context=False, answer_usage={"model": "x"})
+    other = AnswerResult(
+        id="q30", language="de", tags=("unanswerable",), answerable=False, insufficient_context=True
+    )
+
+    assert recognized.out_of_range_ok and not recognized.llm_called
+    assert via_model.llm_called and not via_model.out_of_range_ok
+    metrics = summarize_answers([recognized, via_model, answered, other])
+    assert metrics["out_of_range_rate"] == pytest.approx(1 / 3)  # q30 zählt nicht
+    assert metrics["refusal_rate"] == pytest.approx(3 / 4)
+    assert "out_of_range_rate" not in summarize_answers([other])
+
+
 def test_summarize_without_answers() -> None:
     assert summarize_answers([]) == {}
     assert count_answers([])["questions"] == 0

@@ -39,6 +39,7 @@ METRIC_LABELS = {
     "citation_accuracy": "Zitiergenauigkeit",
     "faithfulness": "Faithfulness",
     "refusal_rate": "Ablehnungsquote (unbeantwortbar)",
+    "out_of_range_rate": "Ausserhalb erkannt, ohne LLM",
     "false_refusal_rate": "Falsche Ablehnungen",
     "neutrality": "Neutralität (wertend)",
     "language_accuracy": "Antwortsprache",
@@ -266,7 +267,12 @@ ANSWER_HEADER = (
     "neutral",
     "Zeit",
 )
-REASON_LABELS = {"low_similarity": "Schwelle", "model": "Modell", "no_hits": "keine Treffer"}
+REASON_LABELS = {
+    "low_similarity": "Schwelle",
+    "model": "Modell",
+    "no_hits": "keine Treffer",
+    "out_of_range": "ausserhalb des Datenbestands",
+}
 
 
 def _kind(answer: AnswerResult) -> str:

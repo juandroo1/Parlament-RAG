@@ -17,8 +17,20 @@ DEFAULT_GOLDEN_PATH = Path("evals/datasets/golden.jsonl")
 
 # fr: Frage auf Französisch; crosslingual: erwartete Voten in der anderen Sprache;
 # filter: Frage mit Filter; unanswerable: Korpus enthält keine Antwort; wertend: verlangt eine
-# Bewertung (AK-7.1); teilkorpus: Quellen in der Herbstsession 2026; smoke: Smoke-Suite.
-Tag = Literal["fr", "crosslingual", "filter", "unanswerable", "wertend", "teilkorpus", "smoke"]
+# Bewertung (AK-7.1); teilkorpus: Quellen in der Herbstsession 2026; smoke: Smoke-Suite;
+# person-zeit: Frage nennt eine Person und/oder einen Zeitraum (Spec 003, US-19);
+# ausserhalb: Zeitraum liegt ausserhalb des Datenbestands (AK-16.1), immer unbeantwortbar.
+Tag = Literal[
+    "fr",
+    "crosslingual",
+    "filter",
+    "unanswerable",
+    "wertend",
+    "teilkorpus",
+    "smoke",
+    "person-zeit",
+    "ausserhalb",
+]
 
 SourceId = Annotated[str, Field(pattern=r"^(transcript|business):[0-9]+$")]
 
@@ -52,6 +64,8 @@ class GoldenItem(BaseModel):
             problems.append("`answerable` passt nicht zum Tag `unanswerable`")
         if self.answerable != bool(self.expected_source_ids):
             problems.append("beantwortbare Fragen brauchen Quellen, unbeantwortbare keine")
+        if self.has("ausserhalb") and self.answerable:
+            problems.append("`ausserhalb` gilt nur für unbeantwortbare Fragen")
         if self.has("wertend") and not self.answerable:
             problems.append("wertende Fragen sind beantwortbar (Entscheidungsprotokoll 3.1)")
         if self.has("fr") != (self.language == "fr"):
