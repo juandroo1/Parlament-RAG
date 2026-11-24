@@ -223,6 +223,8 @@ RESUME_KEYS = (
     "judge_prompt_version",
     "answer_context_chunks",
     "answer_min_similarity",
+    "query_detection",
+    "query_detection_strip",
 )
 
 

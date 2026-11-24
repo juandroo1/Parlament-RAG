@@ -5,11 +5,13 @@ from typing import Any
 
 from parlrag.generation.pipeline import AskResult
 from parlrag.llm import Usage
+from parlrag.query.formatting import detection_notes
 from parlrag.retrieval.formatting import hit_metadata, snippet
 
 REASONS = {
     "no_hits": "Grund: Die Suche fand keine Treffer.",
     "model": "Grund: Das Modell fand in den Quellen keine Antwort auf die Frage.",
+    "out_of_range": "Grund: Zeitraum ausserhalb der Daten (keine Suche, kein LLM-Aufruf).",
 }
 
 
@@ -66,7 +68,8 @@ def format_answer(result: AskResult, model_load_ms: float | None = None) -> str:
     header = f"Frage «{result.question}»"
     if active:
         header += " · Filter " + ", ".join(f"{key}={value}" for key, value in active.items())
-    lines = [header, "", answer.answer]
+    notes = _notes(result)
+    lines = [header, *notes, "", answer.answer]
     if answer.insufficient_context:
         reason = reason_line(result)
         if reason:
@@ -84,6 +87,17 @@ def format_answer(result: AskResult, model_load_ms: float | None = None) -> str:
     return "\n".join(lines)
 
 
+def _notes(result: AskResult) -> list[str]:
+    return detection_notes(
+        result.filters,
+        result.detected,
+        result.speaker_candidates,
+        # «ausserhalb» steht schon als Grund unter der Antwort
+        result.coverage if result.answer.insufficient_reason != "out_of_range" else None,
+        result.retried_without,
+    )
+
+
 def answer_payload(result: AskResult, model_load_ms: float | None = None) -> dict[str, Any]:
     """Strukturiert, nahe an der Antwort von `POST /ask` (plan.md, Abschnitt 8)."""
     answer = result.answer
@@ -91,6 +105,18 @@ def answer_payload(result: AskResult, model_load_ms: float | None = None) -> dic
     return {
         "question": result.question,
         "filters": result.filters.model_dump(exclude_none=True, mode="json"),
+        "detected": list(result.detected),
+        "speaker_candidates": [s.model_dump() for s in result.speaker_candidates],
+        "coverage": (
+            {
+                "first": result.coverage.first.isoformat(),
+                "last": result.coverage.last.isoformat(),
+                "partial": result.coverage.partial,
+            }
+            if result.coverage
+            else None
+        ),
+        "retried_without": list(result.retried_without),
         "mode": result.mode,
         "answer": answer.answer,
         "insufficient_context": answer.insufficient_context,
