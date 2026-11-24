@@ -45,7 +45,7 @@ export function SourceCard({ source, highlighted }: Props) {
             {canExpand && (
               <button
                 type="button"
-                className="min-h-11 font-semibold text-muted hover:underline sm:min-h-8"
+                className="min-h-11 font-semibold text-muted hover:underline sm:min-h-8 sm:pointer-coarse:min-h-11"
                 onClick={() => setExpanded((value) => !value)}
               >
                 {expanded ? t.source.collapse : t.source.expand}
@@ -55,7 +55,7 @@ export function SourceCard({ source, highlighted }: Props) {
               href={source.url}
               target="_blank"
               rel="noreferrer"
-              className="inline-flex min-h-11 items-center gap-1.5 font-semibold text-accent-text hover:underline sm:min-h-8"
+              className="inline-flex min-h-11 items-center gap-1.5 font-semibold text-accent-text hover:underline sm:min-h-8 sm:pointer-coarse:min-h-11"
             >
               {t.source.original}
               <ExternalIcon />
