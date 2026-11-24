@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import type { AskResponse } from "../api";
-import { citationRuns, usageLine } from "../format";
+import { citationRuns, longDate, usageLine } from "../format";
 import { useI18n } from "../i18n/LanguageProvider";
 import { SourceCard } from "./SourceCard";
 
@@ -26,6 +26,28 @@ export function Answer({ result }: { result: AskResponse }) {
     timer.current = window.setTimeout(() => setHighlighted(null), 2000);
   };
 
+  // Spec 003: Zeitraum ausserhalb oder teilweise ausserhalb der Daten, Suche ohne Person.
+  // Der Zeitraum kommt aus `coverage`, damit der Hinweis mit der Sprache der Oberfläche wechselt.
+  const coverage = result.coverage;
+  const span = coverage
+    ? ([
+        longDate(coverage.first, t.locale),
+        longDate(coverage.last, t.locale),
+      ] as const)
+    : null;
+  const outOfRange = result.insufficient_reason === "out_of_range";
+  const notes = [
+    !outOfRange && span && coverage?.partial ? t.answer.partial(...span) : null,
+    result.retried_without?.includes("speaker") ? t.answer.retried : null,
+  ].filter((note): note is string => note !== null);
+  const noteList = notes.length > 0 && (
+    <ul className="mt-3 space-y-1 text-sm text-muted">
+      {notes.map((note) => (
+        <li key={note}>{note}</li>
+      ))}
+    </ul>
+  );
+
   if (result.insufficient_context) {
     return (
       <section
@@ -33,9 +55,12 @@ export function Answer({ result }: { result: AskResponse }) {
         className="rounded-2xl border border-warn-border bg-warn-bg p-5"
       >
         <h2 className="font-display text-lg font-extrabold">
-          {t.answer.insufficientTitle}
+          {outOfRange ? t.answer.outOfRangeTitle : t.answer.insufficientTitle}
         </h2>
-        <p className="mt-2">{result.answer}</p>
+        <p className="mt-2">
+          {outOfRange && span ? t.answer.outOfRange(...span) : result.answer}
+        </p>
+        {noteList}
         {result.insufficient_reason &&
           t.answer.reasons[result.insufficient_reason] && (
             <p className="mt-2 text-sm text-muted">
@@ -92,6 +117,7 @@ export function Answer({ result }: { result: AskResponse }) {
             ),
           )}
         </p>
+        {noteList}
         <p className="mt-3 text-xs text-muted">{usageLine(result.usage, t)}</p>
       </div>
       <div>

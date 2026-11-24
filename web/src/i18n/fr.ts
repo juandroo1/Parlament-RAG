@@ -53,6 +53,14 @@ export const fr: Messages = {
       "Avec un filtre de groupe, seules les interventions sont consultées, pas les textes des objets.",
     from: "Du",
     to: "Au",
+    person: "Personne",
+    personPlaceholder: "Saisir un nom, p. ex. Funiciello",
+    personLoading: "Chargement des personnes …",
+    personError: "Impossible de charger les personnes.",
+    personNone: "Aucune personne correspondante avec des interventions.",
+    personClear: "Retirer la personne",
+    personNote:
+      "Avec un filtre de personne, seules les interventions sont consultées, pas les textes des objets.",
     submit: "Demander",
     searching: "Recherche en cours …",
   },
@@ -74,6 +82,23 @@ export const fr: Messages = {
       model: "Les passages trouvés ne répondent pas à la question.",
     },
     tryAgain: "Essayez une question plus précise ou d’autres filtres.",
+    outOfRangeTitle: "Aucune donnée pour cette période",
+    outOfRange: (first, last) =>
+      `Les interventions vont du ${first} au ${last}. Posez une question sur une période comprise dans cet intervalle.`,
+    partial: (first, last) =>
+      `Les interventions vont du ${first} au ${last}${NBSP}; il n’y a pas de données pour le reste de la période.`,
+    retried: `Aucune intervention de la personne reconnue ne correspondait${NBSP}; les interventions de toutes les personnes sont affichées.`,
+  },
+  detected: {
+    label: `Recherche limitée à${NBSP}:`,
+    speaker: (name) => `Interventions de ${name}`,
+    since: (date) => `depuis le ${date}`,
+    until: (date) => `jusqu’au ${date}`,
+    remove: (label) =>
+      `Retirer le filtre «${NBSP}${label}${NBSP}» et relancer la recherche`,
+    candidates: `Vouliez-vous dire${NBSP}?`,
+    candidatesHint: `Le nom correspond à plusieurs personnes${NBSP}; la recherche a été faite sans filtre de personne.`,
+    choose: (label) => `Consulter uniquement les interventions de ${label}`,
   },
   source: {
     label: "Source",
