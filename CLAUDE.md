@@ -10,8 +10,9 @@ Die Quelle der Wahrheit liegt in `specs/`. Jedes Vorhaben hat einen eigenen Ordn
 
 - `specs/001-frag-das-parlament/`: MVP, abgeschlossen. Architektur, Leitplanken und Akzeptanzkriterien gelten weiter.
 - `specs/002-redesign/`: Redesign der Web-UI (Dark Mode, DE/FR, Handy und Desktop), abgeschlossen (Version 1.1 mit Ergänzung Filter).
+- `specs/003-person-und-zeitraum/`: Person und Zeitraum aus der Frage erkennen, Filter «Person», Hinweis ausserhalb des Datenbestands, **aktive Spec**.
 
-Zurzeit ist keine Spec aktiv. Ein neues Vorhaben beginnt mit einem neuen Ordner `specs/003-…/` (zuerst `spec.md`, nach Freigabe `plan.md` und `tasks.md`); er wird hier als aktive Spec eingetragen.
+Ein neues Vorhaben beginnt mit einem neuen Ordner `specs/004-…/` (zuerst `spec.md`, nach Freigabe `plan.md` und `tasks.md`); er wird hier als aktive Spec eingetragen.
 
 Jeder Ordner enthält:
 
@@ -95,6 +96,7 @@ src/parlrag/
   retrieval/     Volltext, Vektor, RRF, Filter
   llm/           Interface + Anthropic-Implementierung, Usage/Kosten
   generation/    Antwort-Pipeline, Zitatvalidierung
+  query/         Person und Zeitraum aus der Frage erkennen (Spec 003)
   prompts/       Prompts als .md-Dateien
   api/           FastAPI
   cli.py         Typer-CLI
@@ -105,6 +107,7 @@ tests/
   fixtures/      echte OData-Antworten als JSON
 specs/001-frag-das-parlament/
 specs/002-redesign/
+specs/003-person-und-zeitraum/
 web/             React-UI (Phase 5)
 Dockerfile
 docker-compose.yml

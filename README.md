@@ -422,7 +422,7 @@ Das Projekt folgt **Spec-driven Development**. Die Quelle der Wahrheit liegt in 
 - [`plan.md`](specs/001-frag-das-parlament/plan.md): Architektur, Stack, Datenmodell, Eval-Konzept und das Entscheidungsprotokoll
 - [`tasks.md`](specs/001-frag-das-parlament/tasks.md): Umsetzungsschritte mit Checkboxen
 
-Spec 001 beschreibt das MVP. Die zweite Etappe, das Redesign der Web-UI mit Dark Mode, französischer Oberfläche und Handy-Layout, steht in [`specs/002-redesign/`](specs/002-redesign/spec.md), samt drei Designentwürfen, aus denen Variante A gewählt wurde. Beide Specs sind umgesetzt.
+Spec 001 beschreibt das MVP. Die zweite Etappe, das Redesign der Web-UI mit Dark Mode, französischer Oberfläche und Handy-Layout, steht in [`specs/002-redesign/`](specs/002-redesign/spec.md), samt drei Designentwürfen, aus denen Variante A gewählt wurde. Beide Specs sind umgesetzt. In Arbeit ist [`specs/003-person-und-zeitraum/`](specs/003-person-und-zeitraum/spec.md): Person und Zeitraum aus der Frage erkennen, ein Filter «Person» und ein klarer Hinweis, wenn eine Frage ausserhalb des Datenbestands liegt.
 
 Der Ablauf pro Task:
 
