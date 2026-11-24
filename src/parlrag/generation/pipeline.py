@@ -153,5 +153,4 @@ def with_detection(retriever: Retriever, settings: Settings) -> DetectingRetriev
         CatalogCache(retriever.engine).get,
         min_similarity=settings.answer_min_similarity,
         enabled=settings.query_detection,
-        strip=settings.query_detection_strip,
     )

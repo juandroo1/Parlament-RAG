@@ -43,8 +43,6 @@ class Resolution:
     speaker_candidates: tuple[Speaker, ...] = ()
     coverage: Coverage | None = None
     out_of_range: bool = False
-    # Textstellen der übernommenen Erkennung (für einen Suchtext ohne Namen und Zeitangaben)
-    detected_spans: tuple[tuple[int, int], ...] = ()
 
     @property
     def speaker_detected(self) -> bool:
@@ -79,19 +77,15 @@ def resolve(
     found = detect(question, catalog, today) if detection else Detection()
     update: dict[str, object] = {}
     detected: list[str] = []
-    spans: list[tuple[int, int]] = []
     if found.speaker is not None and filters.speaker is None:
         update["speaker"] = found.speaker.name
         detected.append("speaker")
-        spans.extend(found.speaker_spans)
     if found.period is not None and filters.date_from is None and filters.date_to is None:
         period = found.period
         for key, value in (("date_from", period.date_from), ("date_to", period.date_to)):
             if value is not None:
                 update[key] = value
                 detected.append(key)
-        if found.period_span is not None:
-            spans.append(found.period_span)
     applied = filters.model_copy(update=update) if update else filters
     coverage, outside = _coverage(applied, catalog)
     candidates = found.speaker_candidates if filters.speaker is None else ()
@@ -101,18 +95,7 @@ def resolve(
         speaker_candidates=candidates,
         coverage=coverage,
         out_of_range=outside,
-        detected_spans=tuple(sorted(spans)),
     )
-
-
-def without_spans(text: str, spans: tuple[tuple[int, int], ...]) -> str:
-    """Text ohne die Stellen; mehrfache Leerzeichen werden zusammengezogen."""
-    parts, last = [], 0
-    for start, end in sorted(spans):
-        parts.append(text[last:start])
-        last = max(last, end)
-    parts.append(text[last:])
-    return " ".join("".join(parts).split())
 
 
 class CatalogCache:

@@ -224,7 +224,6 @@ RESUME_KEYS = (
     "answer_context_chunks",
     "answer_min_similarity",
     "query_detection",
-    "query_detection_strip",
 )
 
 

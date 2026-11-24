@@ -460,7 +460,6 @@ def describe_eval(retriever: Any) -> tuple[dict[str, Any], dict[str, Any]]:
         "answer_min_similarity": settings.answer_min_similarity,
         "retrieval_rerank": _reranker(retriever) is not None,
         "query_detection": settings.query_detection,
-        "query_detection_strip": settings.query_detection_strip,
     }
     if (reranker := _reranker(retriever)) is not None:
         config["reranker_model"] = reranker.model_name
@@ -487,7 +486,6 @@ def build_answer_evaluation(
         "answer_context_chunks": settings.answer_context_chunks,
         "answer_min_similarity": settings.answer_min_similarity,
         "query_detection": settings.query_detection,
-        "query_detection_strip": settings.query_detection_strip,
     }
     return pipeline, judge, config
 

@@ -18,7 +18,7 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from parlrag.query.catalog import Catalog
-from parlrag.query.resolve import Resolution, resolve, without_spans
+from parlrag.query.resolve import Resolution, resolve
 from parlrag.retrieval import SearchFilters, SearchHit, SearchMode, SupportsSearch
 from parlrag.retrieval.retriever import best_similarity
 
@@ -40,14 +40,12 @@ class DetectingRetriever:
         *,
         min_similarity: float,
         enabled: bool = True,
-        strip: bool = False,
         today: Callable[[], dt.date] = dt.date.today,
     ) -> None:
         self.retriever = retriever
         self.catalog = catalog
         self.min_similarity = min_similarity
         self.enabled = enabled
-        self.strip = strip  # Experiment: erkannte Namen und Zeitangaben aus dem Suchtext entfernen
         self.today = today
 
     def __getattr__(self, name: str) -> Any:
@@ -68,10 +66,7 @@ class DetectingRetriever:
         )
         if resolution.out_of_range:
             return SearchOutcome(hits=[], resolution=resolution)
-        text = query
-        if self.strip and resolution.detected_spans:
-            text = without_spans(query, resolution.detected_spans) or query
-        hits = self.retriever.search(text, resolution.filters, mode=mode, top_n=top_n)
+        hits = self.retriever.search(query, resolution.filters, mode=mode, top_n=top_n)
         if resolution.speaker_detected and self._too_weak(hits):
             without = resolution.filters.model_copy(update={"speaker": None})
             logger.info(

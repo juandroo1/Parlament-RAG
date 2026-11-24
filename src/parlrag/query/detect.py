@@ -25,9 +25,6 @@ class Detection:
     speaker: Speaker | None = None
     speaker_candidates: tuple[Speaker, ...] = ()
     title_mention: bool = False  # ein Name als Teil eines Geschäftstitels («Initiative X»)
-    # Textstellen [start, end) von erkannter Person und Zeitraum in der Frage
-    speaker_spans: tuple[tuple[int, int], ...] = ()
-    period_span: tuple[int, int] | None = None
 
     @property
     def empty(self) -> bool:
@@ -49,19 +46,9 @@ def detect(question: str, catalog: Catalog, today: dt.date) -> Detection:
         person_ends=frozenset(end for _, end in person.spans),
         german=detect_query_language(question) != "fr",
     )
-    speaker_spans = (
-        tuple((tokens[start].start, tokens[end - 1].end) for start, end in person.spans)
-        if person.speaker is not None
-        else ()
-    )
-    period_span = (
-        (tokens[period.start].start, tokens[period.end - 1].end) if period is not None else None
-    )
     return Detection(
         period=period,
         speaker=person.speaker,
         speaker_candidates=person.candidates,
         title_mention=person.title,
-        speaker_spans=speaker_spans,
-        period_span=period_span,
     )

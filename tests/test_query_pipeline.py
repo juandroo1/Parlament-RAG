@@ -13,7 +13,7 @@ from parlrag.generation.formatting import answer_payload, format_answer
 from parlrag.generation.pipeline import AskPipeline
 from parlrag.query import Catalog, Speaker
 from parlrag.query.catalog import build_sessions
-from parlrag.query.resolve import EMPTY_CATALOG, CatalogCache, Coverage, resolve, without_spans
+from parlrag.query.resolve import EMPTY_CATALOG, CatalogCache, Coverage, resolve
 from parlrag.query.search import DetectingRetriever
 from parlrag.retrieval import SearchFilters, SearchHit
 from test_ask import HITS, SPEECH, VALID, FakeLLM, FakeRetriever
@@ -134,15 +134,6 @@ def test_ambiguous_name_gives_candidates_unless_a_speaker_is_set() -> None:
     assert resolve("Was sagte Müller?", explicit, CATALOG, TODAY).speaker_candidates == ()
 
 
-def test_without_spans_removes_detected_text() -> None:
-    question = "Was sagte Bundesrat Rösti 2025 zum Wolf?"
-    resolution = resolve(question, None, CATALOG, TODAY)
-    assert without_spans(question, resolution.detected_spans) == "Was sagte Bundesrat zum Wolf?"
-
-
-# --- Suche mit Erkennung ------------------------------------------------------------------------
-
-
 def _weak(hit: SearchHit) -> SearchHit:
     return dataclasses.replace(hit, vector_similarity=0.40)
 
@@ -187,12 +178,6 @@ def test_no_retry_with_good_hits_or_a_set_speaker() -> None:
     weak = FakeRetriever([_weak(SPEECH)])
     outcome = _detecting(weak).run("Wolf", SearchFilters(speaker="Funiciello Tamara"))
     assert outcome.retried_without == () and len(weak.calls) == 1
-
-
-def test_strip_removes_name_and_year_from_the_search_text() -> None:
-    retriever = FakeRetriever([SPEECH])
-    _detecting(retriever, strip=True).search("Was sagte Rösti 2025 zum Wolf?")
-    assert retriever.calls[0]["query"] == "Was sagte zum Wolf?"
 
 
 def test_disabled_detection_passes_filters_through() -> None:

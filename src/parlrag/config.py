@@ -52,8 +52,6 @@ class Settings(BaseSettings):
 
     # Person und Zeitraum aus der Frage erkennen und als Filter anwenden (Spec 003, AK-19.3).
     query_detection: bool = True
-    # Experiment (Task 8.4): erkannte Namen und Zeitangaben vor der Suche aus dem Text entfernen.
-    query_detection_strip: bool = False
 
     # Öffentliche Demo (Task 6.3a): Kostendeckel pro Kalendermonat in USD, verteilt auf die Tage,
     # und Fragen pro Stunde und Besucher (IP). 0 schaltet die Grenze aus (Standard, lokal).
