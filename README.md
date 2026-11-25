@@ -424,7 +424,15 @@ Die Web-Tests prüfen neben den Funktionen auch Barrierefreiheit (axe in allen Z
 
 Eine andere API-Adresse setzt `API_TARGET`, z. B. `API_TARGET=http://127.0.0.1:8011 npm run dev`. Im Container liefert der Service `web` die gebaute App über nginx aus (http://127.0.0.1:8080).
 
-**Mit dem eigenen Claude-Abo testen** (nur lokal, ohne API-Key, AK-6.3): Die API läuft dann nicht im Container, sondern lokal und ruft das Modell über die Claude-Code-CLI auf (Haiku 5.5, `LLM_BACKEND=claude-code`). Voraussetzungen wie für die Evals: `uv sync`, Claude Code angemeldet, Datenbank im Container.
+**Mit dem eigenen Claude-Abo testen** (nur lokal, ohne API-Key, AK-6.3): Die API läuft dann nicht im Container, sondern lokal und ruft das Modell über die Claude-Code-CLI auf (Haiku 5.5, `LLM_BACKEND=claude-code`). Voraussetzungen wie für die Evals: `uv sync`, `cd web; npm install`, Claude Code angemeldet. Ein Befehl erledigt alles:
+
+```powershell
+.\scripts\dev-up.ps1              # Datenbank an, Container app und web aus, API :8000 und Web-UI :5173
+```
+
+Es prüft zuerst Docker, Node.js, Claude Code, `.venv`, `web/node_modules` und den Port der Web-UI und bricht ab, bevor es etwas ändert. Ctrl+C beendet API und Web-UI; die Datenbank läuft weiter. Optionen: `-WebPort 5180`, `-Port 8011`, `-Model claude-sonnet-5-5`. Danach wieder mit API-Key im Container: `docker compose up -d`.
+
+Dasselbe von Hand, in zwei Terminals:
 
 ```powershell
 docker compose up -d db
