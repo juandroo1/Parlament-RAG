@@ -1,16 +1,30 @@
 import { useState } from "react";
-import { ask, buildRequest, type AskResponse, type Filters } from "./api";
+import {
+  ask,
+  buildRequest,
+  filtersFrom,
+  type AskResponse,
+  type Filters,
+} from "./api";
 import { Answer } from "./components/Answer";
 import { AskForm } from "./components/AskForm";
+import { DetectedFilters } from "./components/DetectedFilters";
 import { Footer } from "./components/Footer";
 import { Header } from "./components/Header";
 import { errorText } from "./i18n/errors";
 import { LanguageProvider, useI18n } from "./i18n/LanguageProvider";
 
+/** Eine Anfrage, so wie sie gestellt wurde (für «Filter entfernen» und «Person wählen»). */
+interface Asked {
+  question: string;
+  filters: Filters;
+  detect: boolean;
+}
+
 type State =
   | { status: "idle" }
   | { status: "loading" }
-  | { status: "done"; result: AskResponse }
+  | { status: "done"; result: AskResponse; asked: Asked }
   | { status: "error"; error: unknown };
 
 export default function App() {
@@ -25,15 +39,38 @@ function Page() {
   const { t } = useI18n();
   const [state, setState] = useState<State>({ status: "idle" });
 
-  const submit = async (question: string, filters: Filters) => {
+  const run = async (asked: Asked) => {
     setState({ status: "loading" });
     try {
-      const result = await ask(buildRequest(question, filters));
-      setState({ status: "done", result });
+      const result = await ask(
+        buildRequest(asked.question, asked.filters, asked.detect),
+      );
+      setState({ status: "done", result, asked });
     } catch (error) {
       // Die Meldung entsteht erst beim Anzeigen, damit sie beim Sprachwechsel mitwechselt.
       setState({ status: "error", error });
     }
+  };
+
+  const submit = (question: string, filters: Filters) =>
+    run({ question, filters, detect: true });
+
+  // Erkannte Filter entfernen: neu fragen mit den übrigen angewandten Filtern als gesetzte
+  // Filter und ohne Erkennung, sonst würde der entfernte Filter wieder erkannt (AK-17.5).
+  const removeDetected = (keys: (keyof Filters)[]) => {
+    if (state.status !== "done") return;
+    const { result, asked } = state;
+    const filters = result.filters
+      ? filtersFrom(result.filters.applied, keys)
+      : asked.filters;
+    void run({ question: asked.question, filters, detect: false });
+  };
+
+  // Mehrdeutiger Name: mit der gewählten Person als gesetztem Filter neu fragen (AK-17.3).
+  const chooseSpeaker = (name: string) => {
+    if (state.status !== "done") return;
+    const { asked } = state;
+    void run({ ...asked, filters: { ...asked.filters, speaker: name } });
   };
 
   return (
@@ -72,7 +109,16 @@ function Page() {
               {errorText(state.error, t)}
             </div>
           )}
-          {state.status === "done" && <Answer result={state.result} />}
+          {state.status === "done" && (
+            <>
+              <DetectedFilters
+                result={state.result}
+                onRemove={removeDetected}
+                onChoose={chooseSpeaker}
+              />
+              <Answer result={state.result} />
+            </>
+          )}
         </div>
       </main>
 

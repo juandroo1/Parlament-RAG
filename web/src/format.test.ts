@@ -3,7 +3,11 @@ import type { Source, Usage } from "./api";
 import { SPEECH } from "./test/fixtures";
 import {
   citationRuns,
+  fold,
   formatDate,
+  longDate,
+  periodLabel,
+  speakerLabel,
   snippet,
   sourceContext,
   sourceTitle,
@@ -11,6 +15,7 @@ import {
   usageLine,
 } from "./format";
 import { fr } from "./i18n/fr";
+import { SPEAKERS } from "./test/fixtures";
 
 describe("splitCitations", () => {
   it("findet einzelne, gruppierte und aufeinanderfolgende Zitate", () => {
@@ -169,5 +174,33 @@ describe("citationRuns", () => {
     expect(citationRuns("Kein Zitat.")).toEqual([
       { kind: "text", text: "Kein Zitat." },
     ]);
+  });
+});
+
+describe("Zeitraum und Personen (Spec 003)", () => {
+  it("schreibt Zeiträume kurz", () => {
+    expect(periodLabel("2025-01-01", "2025-12-31")).toBe("2025");
+    expect(periodLabel("2025-03-01", "2025-03-31")).toBe("März 2025");
+    expect(periodLabel("2025-03-01", "2025-03-31", fr)).toBe("mars 2025");
+    expect(periodLabel("2024-02-01", "2024-02-29")).toBe("Februar 2024"); // Schaltjahr
+    expect(periodLabel("2026-09-14", "2026-10-02")).toBe("14.09.2026–02.10.2026");
+    expect(periodLabel("2025-01-01", null)).toBe("seit 01.01.2025");
+    expect(periodLabel(null, "2024-12-31", fr)).toBe("jusqu’au 31.12.2024");
+  });
+
+  it("schreibt lange Daten je Sprache", () => {
+    expect(longDate("2023-12-04")).toBe("4. Dezember 2023");
+    expect(longDate("2026-10-02", "fr-CH")).toBe("2 octobre 2026");
+  });
+
+  it("beschriftet Personen", () => {
+    const [aebischer, , , , roesti] = SPEAKERS;
+    expect(speakerLabel(aebischer)).toBe("Aebischer Matthias (S, BE)");
+    expect(speakerLabel(roesti)).toBe("Rösti Albert (Bundesrat)");
+    expect(speakerLabel(roesti, fr)).toBe("Rösti Albert (Conseil fédéral)");
+  });
+
+  it("vergleicht ohne Akzente und Grossschreibung", () => {
+    expect(fold("Rösti Céline")).toBe("rosti celine");
   });
 });

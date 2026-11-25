@@ -49,6 +49,15 @@ export const de = {
       "Mit Fraktionsfilter werden nur Voten durchsucht, keine Geschäftstexte.",
     from: "Von",
     to: "Bis",
+    // Feld «Person» (Spec 003, AK-18.1)
+    person: "Person",
+    personPlaceholder: "Name eintippen, z. B. Funiciello",
+    personLoading: "Personen werden geladen …",
+    personError: "Die Personen konnten nicht geladen werden.",
+    personNone: "Keine passende Person mit Voten.",
+    personClear: "Person entfernen",
+    personNote:
+      "Mit Personenfilter werden nur Voten durchsucht, keine Geschäftstexte.",
     submit: "Fragen",
     searching: "Suche läuft …",
   },
@@ -69,6 +78,26 @@ export const de = {
       model: "Die gefundenen Abschnitte beantworten die Frage nicht.",
     } as Record<string, string>,
     tryAgain: "Versuchen Sie eine konkretere Frage oder andere Filter.",
+    // Spec 003: Zeitraum ausserhalb oder teilweise ausserhalb der Daten, Suche ohne Person
+    outOfRangeTitle: "Keine Daten zu diesem Zeitraum",
+    outOfRange: (first: string, last: string) =>
+      `Die Voten reichen vom ${first} bis ${last}. Fragen Sie nach einem Zeitraum in dieser Spanne.`,
+    partial: (first: string, last: string) =>
+      `Die Voten reichen vom ${first} bis ${last}; für den Rest des Zeitraums gibt es keine Daten.`,
+    retried:
+      "Zur erkannten Person gab es dazu keine passenden Voten; gezeigt werden Voten aller Personen.",
+  },
+  // Aus der Frage erkannte Filter über der Antwort (Spec 003, AK-17.3, AK-17.5).
+  detected: {
+    label: "Gesucht in:",
+    speaker: (name: string) => `Voten von ${name}`,
+    since: (date: string) => `seit ${date}`,
+    until: (date: string) => `bis ${date}`,
+    remove: (label: string) => `Filter «${label}» entfernen und neu suchen`,
+    candidates: "Meinten Sie?",
+    candidatesHint:
+      "Der Name passt auf mehrere Personen; gesucht wurde ohne Personenfilter.",
+    choose: (label: string) => `Nur Voten von ${label} durchsuchen`,
   },
   source: {
     label: "Quelle",

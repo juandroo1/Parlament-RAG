@@ -333,14 +333,15 @@ Die Antwort enthält `answer` mit den Belegen [n], `sources` (pro Nummer Dokumen
 
 ### Web-UI
 
-Die Oberfläche (http://127.0.0.1:8080) zeigt Frage mit Beispielen, aufklappbare Filter (Rat, Fraktion, Zeitraum), die Antwort mit klickbaren Zitat-Marken und die Quellen mit Redner, Rat, Datum, Geschäftsnummer, Ausschnitt und Link auf parlament.ch, dazu Datenquelle und Lizenz.
+Die Oberfläche (http://127.0.0.1:8080) zeigt Frage mit Beispielen, aufklappbare Filter (Person, Rat, Fraktion, Zeitraum), die Antwort mit klickbaren Zitat-Marken und die Quellen mit Redner, Rat, Datum, Geschäftsnummer, Ausschnitt und Link auf parlament.ch, dazu Datenquelle und Lizenz.
 
 - **Kopfzeile:** Logo, Knopf «So funktioniert's» (Datenquelle, Vorgehen, Grenzen, Datenschutz), Umschalter DE/FR und Darstellung (Hell, Dunkel, wie System). Beide Einstellungen bleiben im Browser gespeichert; ohne Wahl gelten Sprache und Farbschema des Systems.
+- **Person und Zeitraum:** Was aus der Frage erkannt wurde, steht über der Antwort («Gesucht in: Voten von Rösti Albert · 2025») und lässt sich mit einem Klick entfernen; dann fragt die Seite ohne Erkennung neu. Bei einem mehrdeutigen Namen bietet sie die Personen zur Auswahl an. Liegt der Zeitraum ausserhalb der Daten, nennt sie den abgedeckten Zeitraum. Das Feld «Person» in den Filtern schlägt beim Tippen Personen mit Voten vor (per Tastatur bedienbar, Akzente egal).
 - **Sprache:** Die Oberfläche spricht Deutsch oder Französisch, auch die Meldungen der API (über den Fehlercode). Die Antwort kommt immer in der Sprache der Frage.
 - **Erscheinungsbild:** Farben aus dem Logo, eigenständig und ohne Anlehnung an Behördenseiten; der Hinweis «Privates Projekt – keine amtliche Veröffentlichung» steht gleich unter der Kopfzeile. Schriften (Inter, Plus Jakarta Sans) liefert der Server selbst aus, ohne Anfragen an Dritte.
 - **Barrierefreiheit:** Kontraste nach WCAG 2.2 AA in beiden Modi, vollständig per Tastatur bedienbar, Rücksicht auf «Bewegung reduzieren». Gemessen mit Lighthouse (mobil, hell und dunkel je 100 in allen vier Kategorien) und mit axe in den Tests.
 
-Spec, Entwürfe und Entscheide zum Redesign: [`specs/002-redesign/`](specs/002-redesign/spec.md).
+Spec, Entwürfe und Entscheide zum Redesign: [`specs/002-redesign/`](specs/002-redesign/spec.md); zu Person und Zeitraum: [`specs/003-person-und-zeitraum/`](specs/003-person-und-zeitraum/spec.md).
 
 ## Evals
 
@@ -422,6 +423,17 @@ npm run build        # Typprüfung und Build nach web/dist
 Die Web-Tests prüfen neben den Funktionen auch Barrierefreiheit (axe in allen Zuständen, auf Deutsch und Französisch), die Kontraste der Farb-Tokens, die Tastaturreihenfolge und dass beide Wörterbücher dieselben Texte haben. Logo und Icons entstehen aus den Originalen in [`docs/design/`](docs/design/README.md).
 
 Eine andere API-Adresse setzt `API_TARGET`, z. B. `API_TARGET=http://127.0.0.1:8011 npm run dev`. Im Container liefert der Service `web` die gebaute App über nginx aus (http://127.0.0.1:8080).
+
+**Mit dem eigenen Claude-Abo testen** (nur lokal, ohne API-Key, AK-6.3): Die API läuft dann nicht im Container, sondern lokal und ruft das Modell über die Claude-Code-CLI auf (Haiku 5.5, `LLM_BACKEND=claude-code`). Voraussetzungen wie für die Evals: `uv sync`, Claude Code angemeldet, Datenbank im Container.
+
+```powershell
+docker compose up -d db
+docker compose stop app web       # Port 8000 freigeben
+.\scripts\dev-api.ps1             # API mit Claude-Abo auf http://127.0.0.1:8000
+cd web; npm run dev               # zweites Terminal: http://127.0.0.1:5173
+```
+
+Das Skript nimmt den Interpreter aus `.venv\pyvenv.cfg` statt `uv run`, damit es auch läuft, wenn Windows `.venv\Scripts\python.exe` sperrt. Ohne den Container zu stoppen geht es auf einem anderen Port: `.\scripts\dev-api.ps1 -Port 8011` und `$env:API_TARGET="http://127.0.0.1:8011"; npm run dev`. Ein anderes Modell wählt `-Model claude-sonnet-5-5`.
 
 ## Datenquelle und Lizenz
 

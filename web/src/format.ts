@@ -1,6 +1,6 @@
 // Darstellung: Zitate im Antworttext, Metadaten der Quellen, Verbrauch.
 
-import type { Source, Usage } from "./api";
+import type { Source, Speaker, Usage } from "./api";
 import { de, type Messages } from "./i18n/de";
 
 export type Segment =
@@ -128,4 +128,70 @@ export function usageLine(usage: Usage, t: Messages = de): string {
     cost,
     seconds,
   ].join(" · ");
+}
+
+function utc(iso: string): Date {
+  const [year, month, day] = iso.split("-").map(Number);
+  return new Date(Date.UTC(year, month - 1, day));
+}
+
+/** «4. Dezember 2023» bzw. «4 décembre 2023» (Spec 003, AK-16.4). */
+export function longDate(iso: string, locale = "de-CH"): string {
+  return new Intl.DateTimeFormat(locale, {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    timeZone: "UTC",
+  }).format(utc(iso));
+}
+
+function lastDayOfMonth(iso: string): boolean {
+  const next = utc(iso);
+  next.setUTCDate(next.getUTCDate() + 1);
+  return next.getUTCDate() === 1;
+}
+
+/** Zeitraum kurz: ganzes Jahr «2025», ganzer Monat «März 2025», sonst Datum bis Datum bzw.
+ * «seit …» / «bis …» bei offenem Ende. */
+export function periodLabel(
+  from: string | null,
+  to: string | null,
+  t: Messages = de,
+): string {
+  const day = (iso: string) => formatDate(iso, t.locale);
+  if (from && to) {
+    const sameYear = from.slice(0, 4) === to.slice(0, 4);
+    if (sameYear && from.endsWith("-01-01") && to.endsWith("-12-31"))
+      return from.slice(0, 4);
+    if (
+      from.slice(0, 7) === to.slice(0, 7) &&
+      from.endsWith("-01") &&
+      lastDayOfMonth(to)
+    ) {
+      return new Intl.DateTimeFormat(t.locale, {
+        month: "long",
+        year: "numeric",
+        timeZone: "UTC",
+      }).format(utc(from));
+    }
+    return `${day(from)}–${day(to)}`;
+  }
+  if (from) return t.detected.since(day(from));
+  if (to) return t.detected.until(day(to));
+  return "";
+}
+
+/** «Funiciello Tamara (S, BE)» bzw. «Rösti Albert (Bundesrat)». */
+export function speakerLabel(speaker: Speaker, t: Messages = de): string {
+  if (speaker.federal_council)
+    return `${speaker.name} (${t.source.federalCouncil})`;
+  const details = [speaker.parl_group, speaker.canton]
+    .filter(Boolean)
+    .join(", ");
+  return details ? `${speaker.name} (${details})` : speaker.name;
+}
+
+/** Ohne Akzente und Grossschreibung, für die Suche nach Personen («rosti» findet «Rösti»). */
+export function fold(text: string): string {
+  return text.normalize("NFD").replace(/\p{M}/gu, "").toLowerCase();
 }

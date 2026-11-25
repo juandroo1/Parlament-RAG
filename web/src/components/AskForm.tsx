@@ -3,6 +3,7 @@ import type { Council, Filters } from "../api";
 import { COUNCIL_KEYS, PARL_GROUP_KEYS } from "../format";
 import { useI18n } from "../i18n/LanguageProvider";
 import { ArrowIcon, ChevronIcon, FilterIcon } from "./icons";
+import { SpeakerField } from "./SpeakerField";
 
 interface Props {
   loading: boolean;
@@ -18,6 +19,9 @@ export function AskForm({ loading, onSubmit }: Props) {
   const [question, setQuestion] = useState("");
   const [filters, setFilters] = useState<Filters>({});
   const [showFilters, setShowFilters] = useState(false);
+  // Nach dem Aufklappen darf der Bereich überlaufen, damit die Vorschläge im Feld «Person»
+  // nicht abgeschnitten werden; während der Animation bleibt er abgeschnitten.
+  const [settled, setSettled] = useState(false);
   const id = useId();
   const tooShort = question.trim().length < 3;
   const activeFilters = Object.values(filters).filter(Boolean).length;
@@ -84,7 +88,10 @@ export function AskForm({ loading, onSubmit }: Props) {
           aria-expanded={showFilters}
           aria-controls={`${id}-filters`}
           className="inline-flex min-h-12 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-xl border border-border bg-bg px-3 text-[15px] font-semibold sm:min-h-11 sm:gap-2 sm:border-0 sm:bg-transparent sm:text-sm"
-          onClick={() => setShowFilters((value) => !value)}
+          onClick={() => {
+            setSettled(false);
+            setShowFilters((value) => !value);
+          }}
         >
           <FilterIcon />
           {t.form.filter}
@@ -123,8 +130,14 @@ export function AskForm({ loading, onSubmit }: Props) {
       <div
         data-testid="filter-panel"
         className={`grid transition-[grid-template-rows] duration-200 ease-out ${showFilters ? "grid-rows-[1fr]" : "grid-rows-[0fr]"}`}
+        onTransitionEnd={(event) => {
+          if (event.target === event.currentTarget) setSettled(showFilters);
+        }}
       >
-        <div className="min-h-0 overflow-hidden" inert={!showFilters}>
+        <div
+          className={`min-h-0 ${showFilters && settled ? "overflow-visible" : "overflow-hidden"}`}
+          inert={!showFilters}
+        >
           <fieldset
             id={`${id}-filters`}
             className="mt-4 grid gap-3.5 rounded-xl border border-border p-3.5 sm:grid-cols-2 sm:p-4"
@@ -132,6 +145,21 @@ export function AskForm({ loading, onSubmit }: Props) {
             <legend className="px-1.5 text-[13px] font-semibold">
               {t.form.filter}
             </legend>
+            <div className="block text-[13px] font-semibold sm:col-span-2">
+              <span className="mb-1.5 block" aria-hidden="true">
+                {t.form.person}
+              </span>
+              <SpeakerField
+                className={`${field} h-11`}
+                value={filters.speaker}
+                onChange={(speaker) => update({ speaker })}
+              />
+              {filters.speaker && (
+                <span className="mt-1.5 block text-xs font-normal text-muted">
+                  {t.form.personNote}
+                </span>
+              )}
+            </div>
             <label className="block text-[13px] font-semibold">
               <span className="mb-1.5 block">{t.form.council}</span>
               <select
